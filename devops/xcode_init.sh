@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-mkdir build_xcode
-cd build_xcode
+mkdir xcode
+cd xcode
 cmake -G Xcode ..
