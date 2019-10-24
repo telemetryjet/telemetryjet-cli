@@ -13,6 +13,7 @@ endif()
 # Configuration if this is the main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_EXTENSIONS OFF)
+    set (CMAKE_CXX_FLAGS "-Wall -Wno-ignored-attributes")
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
@@ -53,16 +54,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmtlib)
 
-
-FetchContent_Declare(
-  libserialport
-  GIT_REPOSITORY git://sigrok.org/libserialport
-  GIT_TAG        0.1.1
-)
-FetchContent_MakeAvailable(libserialport)
+add_subdirectory(external)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
-target_link_libraries(${PROJECT_NAME} PRIVATE libserialport)
+target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
