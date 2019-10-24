@@ -1,1 +1,1 @@
-add_subdirectory(libserialport-cmake)
+add_subdirectory(libserialport)

@@ -56,7 +56,7 @@ FetchContent_MakeAvailable(fmtlib)
 add_subdirectory(external)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
-target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------

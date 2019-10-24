@@ -1,3 +1,0 @@
-[submodule "external/libserialport-cmake"]
-	path = external/libserialport-cmake
-	url = https://bitbucket.org/telemetry2/libserialport-cmake.git
