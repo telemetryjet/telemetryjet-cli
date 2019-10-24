@@ -1,10 +1,3 @@
-//
-//  device.hpp
-//  TelemetryServer
-//
-//  Created by Chris Dalke on 10/23/19.
-//
-
 #ifndef device_hpp
 #define device_hpp
 
@@ -13,6 +6,7 @@
 class Device {
 private:
 public:
+    void readData();
 };
 
 #endif /* device_hpp */

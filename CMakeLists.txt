@@ -29,7 +29,6 @@ set(SOURCES
 set(HEADERS_PRIVATE
     src/deviceManager.hpp
     src/simpleTimer.hpp
-    src/logger.hpp
     src/device.hpp
 )
 
