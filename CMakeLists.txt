@@ -22,12 +22,14 @@ set(SOURCES
     src/main.cpp
     src/deviceManager.cpp
     src/simpleTimer.cpp
+    src/device.cpp
 )
 
 set(HEADERS_PRIVATE
     src/deviceManager.hpp
     src/simpleTimer.hpp
     src/logger.hpp
+    src/device.hpp
 )
 
 #------------------- BUILD TARGETS ------------------------
@@ -51,7 +53,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmtlib)
 
+
+FetchContent_Declare(
+  libserialport
+  GIT_REPOSITORY git://sigrok.org/libserialport
+  GIT_TAG        0.1.1
+)
+FetchContent_MakeAvailable(libserialport)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE libserialport)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------

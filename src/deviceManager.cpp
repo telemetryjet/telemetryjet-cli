@@ -1,14 +1,5 @@
-#ifndef H_DEVICE_MANAGER
-#define H_DEVICE_MANAGER
+#include "deviceManager.hpp"
 
-#include <fmt/format.h>
-#include <iostream>
-#include <string>
-
-class DeviceManager {
-private:
-public:
-    void pollDevices();
-};
-
-#endif
+void DeviceManager::pollDevices() {
+    std::cout << "Polling devices...\n";
+}
