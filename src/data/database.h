@@ -17,28 +17,29 @@ struct record_dashboard_t {
 
 struct record_data_t {
     int id;
-    int timestamp;
+    int packet_id;
+    long timestamp;
     std::string key;
     std::string value;
 };
 
 class Database {
 private:
+    int packet_id;
     float test{};
     bool initialized;
-    const DataCache &cache;
     SQLite::Database db;
 public:
-    Database(const DataCache &cache);
-    ~Database();
-    record_data_t createDataRow(int timestamp, std::string key, std::string value);
-    record_data_t updateDataRow(int id, record_data_t rowData);
-    record_data_t getDataRow(int id);
+    Database();
+    record_data_t createDataRow(long timestamp, std::string key, std::string value);
+    //record_data_t getDataRow(int id);
     std::vector<record_data_t> getDataRows();
-    record_dashboard_t createDashboard(std::string name, std::string jsonDefinition);
-    record_dashboard_t updateDashboard(int id, std::string name, std::string jsonDefinition);
-    record_dashboard_t getDashboard(int id);
-    std::vector<record_dashboard_t> getDashboards();
+    //record_dashboard_t createDashboard(std::string name, std::string jsonDefinition);
+    //record_dashboard_t updateDashboard(int id, std::string name, std::string jsonDefinition);
+    //record_dashboard_t getDashboard(int id);
+    //std::vector<record_dashboard_t> getDashboards();
+    void startPacket();
+    void endPacket();
 };
 
 #endif //TELEMETRYSERVER_DATABASE_H

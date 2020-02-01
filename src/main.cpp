@@ -5,7 +5,7 @@ Server server;
 
 void signalHandler(int signum) {
     std::cout << "Interrupt signal (" << signum << ") received.\n";
-    server.stop();
+    server.triggerStop();
     exit(signum);
 }
 
@@ -14,10 +14,6 @@ int main() {
     signal(SIGTERM, signalHandler);
 
     server.start();
-
-    while (server.shouldUpdate()) {
-        server.update();
-    }
 
     return 0;
 }

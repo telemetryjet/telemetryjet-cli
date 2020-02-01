@@ -55,7 +55,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
 include(FetchContent)
 
 SET(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS log log_setup system filesystem REQUIRED)
+find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
 
 FetchContent_Declare(
   fmtlib
@@ -71,15 +71,22 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SQLiteCpp)
 
+FetchContent_Declare(
+        Simple-Web-Server
+        GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
+)
+FetchContent_MakeAvailable(Simple-Web-Server)
+
 add_subdirectory(external)
 
 link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 # IDEs should put the headers in a nice place

@@ -6,20 +6,19 @@
 #include <data/database.h>
 #include "simpleTimer.hpp"
 #include <iostream>
+#include <server/apiServer.h>
 
 class Server {
 private:
-    DataCache dataCache;
+    void stop();
+public:
+    DataCache cache;
     Database database;
     DeviceManager deviceManager;
-    SimpleTimer timer;
+    ApiServer apiServer;
     bool running = true;
-public:
     Server();
-    ~Server();
     void start();
-    void update();
-    bool shouldUpdate();
-    void stop();
+    void triggerStop();
 };
 #endif
