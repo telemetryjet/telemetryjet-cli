@@ -21,15 +21,25 @@ endif()
 
 set(SOURCES
     src/main.cpp
-    src/deviceManager.cpp
+    src/device/deviceManager.cpp
     src/simpleTimer.cpp
-    src/device.cpp
+    src/device/device.cpp
+    src/data/dataCache.cpp
+    src/data/database.cpp
+    src/config/configManager.cpp
+    src/server.cpp
+    src/server/apiServer.cpp
 )
 
 set(HEADERS_PRIVATE
-    src/deviceManager.hpp
+    src/device/deviceManager.hpp
     src/simpleTimer.hpp
-    src/device.hpp
+    src/device/device.hpp
+    src/data/dataCache.h
+    src/data/database.h
+    src/config/configManager.h
+    src/server.h
+    src/server/apiServer.h
 )
 
 #------------------- BUILD TARGETS ------------------------
@@ -38,13 +48,14 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
 include(FetchContent)
 
 SET(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS log log_setup system REQUIRED)
+find_package(Boost COMPONENTS log log_setup system filesystem REQUIRED)
 
 FetchContent_Declare(
   fmtlib
@@ -53,11 +64,22 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmtlib)
 
+FetchContent_Declare(
+        SQLiteCpp
+        GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
+        GIT_TAG        3.0.0
+)
+FetchContent_MakeAvailable(SQLiteCpp)
+
 add_subdirectory(external)
 
+link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system)
+target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 # IDEs should put the headers in a nice place
