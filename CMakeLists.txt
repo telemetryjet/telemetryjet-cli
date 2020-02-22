@@ -21,30 +21,37 @@ endif()
 
 set(SOURCES
     src/main.cpp
-    src/device/deviceManager.cpp
-    src/simpleTimer.cpp
+        OLD/deviceManager.cpp
+        src/utility/simpleTimer.cpp
     src/device/device.cpp
-    src/data/dataCache.cpp
-    src/data/database.cpp
-    src/config/configManager.cpp
+        src/config/configManager.cpp
     src/server.cpp
-    src/server/apiServer.cpp
+        OLD/apiServer.cpp
+        OLD/wsServer.cpp
 )
 
 set(HEADERS_PRIVATE
-    src/device/deviceManager.hpp
-    src/simpleTimer.hpp
+        OLD/deviceManager.hpp
+        src/utility/simpleTimer.hpp
     src/device/device.hpp
-    src/data/dataCache.h
-    src/data/database.h
+        src/services/database/sqlite/SqliteDatabase.h
     src/config/configManager.h
     src/server.h
-    src/server/apiServer.h
+        OLD/apiServer.h
+        OLD/wsServer.h
 )
+
+# Auto add new source files to the directory
+# Probably bad practice, and requires rerunning cmake
+# But is a nice dev convenience
+file(GLOB_RECURSE SOURCES_AUTO
+        "${PROJECT_SOURCE_DIR}/src/*.h"
+        "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 #------------------- BUILD TARGETS ------------------------
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
+#add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
+add_executable(${PROJECT_NAME} ${SOURCES_AUTO})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
@@ -77,12 +84,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 
+FetchContent_Declare(
+        Simple-WebSocket-Server
+        GIT_REPOSITORY https://gitlab.com/eidheim/Simple-WebSocket-Server.git
+)
+FetchContent_MakeAvailable(Simple-WebSocket-Server)
+
 add_subdirectory(external)
 
 link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
+target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)

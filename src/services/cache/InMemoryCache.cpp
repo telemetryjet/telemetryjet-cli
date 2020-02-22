@@ -1,18 +1,17 @@
-//
-// Created by Chris Dalke on 1/29/20.
-//
-
-#include "dataCache.h"
+#include "InMemoryCache.h"
+#include <unordered_map>
+#include <vector>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <algorithm>
+#include <services/ServiceManager.h>
+#include <data/dataTypes.h>
 
 namespace pt = boost::posix_time;
 
-DataCache::DataCache() {
-    std::cout << "Initialized in-memory data cache...\n";
+InMemoryCache::InMemoryCache() {
+    ServiceManager::getLogger().info("Initialized In-Memory Data Cache.");
 }
 
-float DataCache::getFloat(const std::string& key){
+float InMemoryCache::getFloat(const std::string& key) {
     if (cache.find(key) == cache.end()){
         return 0;
     } else {
@@ -20,21 +19,21 @@ float DataCache::getFloat(const std::string& key){
     }
 }
 
-float DataCache::setFloat(const std::string& key, float value){
+float InMemoryCache::setFloat(const std::string& key, float value) {
     pt::ptime current_date_microseconds = pt::microsec_clock::local_time();
     long milliseconds = current_date_microseconds.time_of_day().total_milliseconds();
 
     if (cache.find(key) == cache.end()){
         data_key_t valueObj = {
-            -1,
-            -1,
-            key,
-            value,
-            0,
-            0,
-            0,
-            0,
-            false
+                -1,
+                -1,
+                key,
+                value,
+                0,
+                0,
+                0,
+                0,
+                false
         };
         cache[key] = valueObj;
         keys.push_back(key);
@@ -47,6 +46,6 @@ float DataCache::setFloat(const std::string& key, float value){
     cache[key].min_value = std::min(value, cache[key].min_value);
 }
 
-std::vector<std::string> DataCache::getKeys() {
+std::vector<std::string> InMemoryCache::getKeys() {
     return keys;
 }
