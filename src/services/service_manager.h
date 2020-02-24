@@ -1,8 +1,8 @@
-#ifndef TELEMETRYSERVER_SERVICEMANAGER_H
-#define TELEMETRYSERVER_SERVICEMANAGER_H
+#ifndef TELEMETRYSERVER_SERVICE_MANAGER_H
+#define TELEMETRYSERVER_SERVICE_MANAGER_H
 
-#include <services/logger/Logger.h>
-#include <services/config/Config.h>
+#include <services/logger/logger.h>
+#include <services/config/config.h>
 
 /**
  * ServiceManager
@@ -21,4 +21,4 @@ public:
     static Logger* getLogger() { return logger; }
 };
 
-#endif //TELEMETRYSERVER_SERVICEMANAGER_H
+#endif //TELEMETRYSERVER_SERVICE_MANAGER_H

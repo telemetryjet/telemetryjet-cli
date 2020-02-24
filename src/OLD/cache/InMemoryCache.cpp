@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <services/ServiceManager.h>
+#include <services/service_manager.h>
 #include <data/dataTypes.h>
 
 namespace pt = boost::posix_time;

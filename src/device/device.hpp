@@ -1,7 +1,7 @@
 #ifndef device_hpp
 #define device_hpp
 
-#include "utility/simpleTimer.hpp"
+#include "utility/simple_timer.h"
 #include <chrono>
 #include <cstdint>
 #include <iostream>

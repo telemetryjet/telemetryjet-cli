@@ -1,4 +1,4 @@
-#include "simpleTimer.hpp"
+#include "simple_timer.h"
 #include <iostream>
 
 SimpleTimer::SimpleTimer(uint64_t interval)

@@ -21,16 +21,21 @@ endif()
 
 set(SOURCES
         src/main.cpp
-        src/services/ServiceManager.cpp
-        src/services/logger/ConsoleLogger.cpp
+        src/services/config/json_env_config.cpp
+        src/services/service_manager.cpp
+        src/services/logger/console_logger.cpp
+        src/utility/simple_timer.cpp
 )
 
 set(HEADERS_PRIVATE
-        src/utility/timeUtils.h
-        src/services/ServiceManager.h
-        src/services/config/Config.h
-        src/services/logger/Logger.h
-        src/services/logger/ConsoleLogger.h
+        src/constants.h
+        src/services/service_manager.h
+        src/services/config/config.h
+        src/services/config/json_env_config.h
+        src/services/logger/logger.h
+        src/services/logger/console_logger.h
+        src/utility/time_utils.h
+        src/utility/simple_timer.h
 )
 
 #------------------- BUILD TARGETS ------------------------

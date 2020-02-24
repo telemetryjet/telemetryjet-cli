@@ -1,6 +1,6 @@
 #include "SqliteDatabase.h"
 #include <boost/filesystem.hpp>
-#include <services/ServiceManager.h>
+#include <services/service_manager.h>
 
 namespace fs = boost::filesystem;
 

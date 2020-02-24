@@ -1,6 +1,6 @@
-#include <services/ServiceManager.h>
+#include <services/service_manager.h>
 #include <iostream>
-#include <utility/timeUtils.h>
+#include <utility/time_utils.h>
 #include <fmt/format.h>
 
 /**
@@ -18,15 +18,7 @@ void signalHandler(int signum) {
 int main() {
     long long startInit = getCurrentMillis();
 
-    std::cout << "  _ _  ______  __     __\n";
-    std::cout << "  __  /_  __/ / /__  / /_\n";
-    std::cout << "   ___ / /_  / / _ \\/ __/\n";
-    std::cout << "  __  / / /_/ /  __/ /_\n";
-    std::cout << " _ _ /_/\\____/\\___/\\__/\n";
-    std::cout << "TelemetryJet Server v0.1.0\n";
-    std::cout << "--------------------------\n";
-
-            signal(SIGINT, signalHandler);
+    signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 
     // Initialize the common services.
@@ -34,7 +26,7 @@ int main() {
 
     long long elapsedInitTime = getCurrentMillis() - startInit;
 
-    ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.",elapsedInitTime));
+    ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));
 
     // Run the server loop
     while (running) {
