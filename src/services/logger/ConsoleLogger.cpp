@@ -27,9 +27,9 @@ void ConsoleLogger::warning (std::string message) { log(message, "WARNING"); }
 void ConsoleLogger::error   (std::string message) { logErr(message, "ERROR"); }
 
 ConsoleLogger::ConsoleLogger() {
-    error("Initialized Console Logger.");
+    info("Started Console Logger.");
 }
 
 ConsoleLogger::~ConsoleLogger() {
-    info("Shutdown Console Logger.");
+    info("Stopped Console Logger.");
 }

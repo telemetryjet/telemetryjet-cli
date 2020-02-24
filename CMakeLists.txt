@@ -26,6 +26,7 @@ set(SOURCES
 )
 
 set(HEADERS_PRIVATE
+        src/utility/timeUtils.h
         src/services/ServiceManager.h
         src/services/config/Config.h
         src/services/logger/Logger.h
