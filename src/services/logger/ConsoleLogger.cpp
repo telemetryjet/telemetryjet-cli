@@ -1,25 +1,33 @@
 #include "ConsoleLogger.h"
-#include <iostream>
-#include <boost/log/sources/logger.hpp>
+#include <fmt/format.h>
 
-void ConsoleLogger::debug(std::string message) {
-    std::cout << message << "\n";
+std::string getTimestamp() {
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[80];
+
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer,sizeof(buffer),"%D %T",timeinfo);
+    std::string str(buffer);
+    return str;
 }
 
-void ConsoleLogger::info(std::string message) {
-    std::cout << message << "\n";
+void log(const std::string& message, const std::string& level){
+    fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
+}
+void logErr(const std::string& message, const std::string& level){
+    fmt::print(stderr,"[{}] {}: {}\n", getTimestamp(), level, message);
 }
 
-void ConsoleLogger::warning(std::string message) {
-    std::cout << message << "\n";
-}
-
-void ConsoleLogger::error(std::string message) {
-    std::cout << message << "\n";
-}
+void ConsoleLogger::debug   (std::string message) { log(message, "DEBUG"); }
+void ConsoleLogger::info    (std::string message) { log(message, "INFO"); }
+void ConsoleLogger::warning (std::string message) { log(message, "WARNING"); }
+void ConsoleLogger::error   (std::string message) { logErr(message, "ERROR"); }
 
 ConsoleLogger::ConsoleLogger() {
-    info("Initialized Console Logger.");
+    error("Initialized Console Logger.");
 }
 
 ConsoleLogger::~ConsoleLogger() {

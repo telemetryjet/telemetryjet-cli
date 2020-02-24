@@ -10,7 +10,7 @@
 class ConsoleLogger: public Logger {
 public:
     ConsoleLogger();
-    ~ConsoleLogger();
+    ~ConsoleLogger() override;
     void debug(std::string message) override;
     void info(std::string message) override;
     void warning(std::string message) override;
