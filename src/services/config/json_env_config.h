@@ -16,7 +16,6 @@
  */
 class JsonEnvConfig : public Config {
 private:
-    std::unordered_map<std::string, int> intValues;
     std::unordered_map<std::string, std::string> stringValues;
     void loadConfig(const std::string& userConfig, const std::string &localConfig);
 public:

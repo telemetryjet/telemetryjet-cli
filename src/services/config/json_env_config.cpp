@@ -8,6 +8,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <string>
+#include <stdlib.h>
 namespace pt = boost::property_tree;
 
 #define TELEMETRYJET_CONFIG_FILENAME ".telemetryjet"
@@ -15,20 +16,37 @@ namespace pt = boost::property_tree;
 
 extern char **environ;
 
+// Int value is backed by string value
+// Parsed when we go to get the config value
+// The performance should be enhanced here through memoizing the int value
 bool JsonEnvConfig::hasInt(std::string key) {
-    return intValues.count(key) > 0;
+    // Check if we have a string value
+    if (hasString(key)){
+        // Parse the value to see if it can be used as an int
+        try {
+            std::stoi(stringValues[key]);
+        } catch (std::exception &e) {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+int JsonEnvConfig::getInt(std::string key, int defaultVal) {
+    if (hasString(key)) {
+        try {
+            return std::stoi(stringValues[key]);
+        } catch (std::exception &e) {
+            return defaultVal;
+        }
+    } else {
+        return defaultVal;
+    }
 }
 
 bool JsonEnvConfig::hasString(std::string key) {
     return stringValues.count(key) > 0;
-}
-
-int JsonEnvConfig::getInt(std::string key, int defaultVal) {
-    if (hasInt(key)) {
-        return intValues[key];
-    } else {
-        return defaultVal;
-    }
 }
 
 std::string JsonEnvConfig::getString(std::string key, std::string defaultVal) {
@@ -146,7 +164,7 @@ JsonEnvConfig::JsonEnvConfig() {
     char pathBuffer[1024];
     getcwd(pathBuffer,1024);
 
-    std::string userConfigFilename = fmt::format("~/{}",TELEMETRYJET_CONFIG_FILENAME);
+    std::string userConfigFilename = fmt::format("{}/{}",getenv("HOME"), TELEMETRYJET_CONFIG_FILENAME);
     std::string localConfigFilename = fmt::format("{}/{}",pathBuffer,TELEMETRYJET_CONFIG_FILENAME);
 
     loadConfig(userConfigFilename, localConfigFilename);
