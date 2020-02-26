@@ -3,6 +3,7 @@
 
 #include <services/logger/logger.h>
 #include <services/config/config.h>
+#include <services/database/database.h>
 
 /**
  * ServiceManager
@@ -14,11 +15,13 @@ class ServiceManager {
 private:
     static Config *config;
     static Logger *logger;
+    static Database *database;
 public:
     static void init();
     static void destroy();
     static Config* getConfig() { return config; }
     static Logger* getLogger() { return logger; }
+    static Database* getDatabase() { return database; }
 };
 
 #endif //TELEMETRYSERVER_SERVICE_MANAGER_H
