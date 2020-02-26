@@ -40,6 +40,7 @@ std::string getTimestamp() {
 void log(const std::string& message, const std::string& level){
     fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
 }
+
 void logColor(ansi_color_code colorCode, const std::string& message, const std::string& level){
     fmt::print("\033[1;{}m[{}] {}: {}\033[0m\n", static_cast<int>(colorCode), getTimestamp(), level, message);
 }
@@ -47,23 +48,59 @@ void logHeader(ansi_color_code colorCode, const std::string& message){
     fmt::print("\033[1;{}m{}\033[0m\n", static_cast<int>(colorCode), message);
 }
 
-void ConsoleLogger::header  (std::string message) { logHeader(ansi_color_code::blue, message); }
-void ConsoleLogger::debug   (std::string message) { log(message, "DEBUG"); }
-void ConsoleLogger::info    (std::string message) { log(message, "INFO"); }
-void ConsoleLogger::warning (std::string message) { logColor(ansi_color_code::yellow, message, "WARNING"); }
-void ConsoleLogger::error   (std::string message) { logColor(ansi_color_code::red, message, "ERROR"); }
+void ConsoleLogger::header  (std::string message) {
+    if (level <= LoggerLevel::LEVEL_HEADER) {
+        logHeader(ansi_color_code::blue, message);
+    }
+}
+
+void ConsoleLogger::debug   (std::string message) {
+    if (level <= LoggerLevel::LEVEL_DEBUG) {
+        log(message, "DEBUG");
+    }
+}
+
+void ConsoleLogger::info    (std::string message) {
+    if (level <= LoggerLevel::LEVEL_INFO) {
+        log(message, "INFO");
+    }
+}
+
+void ConsoleLogger::warning (std::string message) {
+    if (level <= LoggerLevel::LEVEL_WARNING) {
+        logColor(ansi_color_code::yellow, message, "WARNING");
+    }
+}
+
+void ConsoleLogger::error   (std::string message) {
+    if (level <= LoggerLevel::LEVEL_ERROR) {
+        logColor(ansi_color_code::red, message, "ERROR");
+    }
+}
 
 ConsoleLogger::ConsoleLogger() {
-    header("  _ _  ______  __     __");
-    header( "  __  /_  __/ / /__  / /_");
-    header( "   ___ / /_  / / _ \\/ __/");
-    header( "  __  / / /_/ /  __/ /_");
-    header( " _ _ /_/\\____/\\___/\\__/");
-    header( fmt::format("TelemetryJet Server v{}",TELEMETRYJET_VERSION));
-    header( "--------------------------");
-    info("Started Console Logger.");
 }
 
 ConsoleLogger::~ConsoleLogger() {
     info("Stopped Console Logger.");
+}
+
+LoggerLevel ConsoleLogger::getLevel() {
+    return level;
+}
+
+void ConsoleLogger::setLevel(LoggerLevel newLevel) {
+    level = newLevel;
+}
+
+void ConsoleLogger::setLevel(std::string newLevel) {
+    if (newLevel == "header") { level = LoggerLevel::LEVEL_HEADER; }
+    else if (newLevel == "debug") { level = LoggerLevel::LEVEL_DEBUG; }
+    else if (newLevel == "info") { level = LoggerLevel::LEVEL_INFO; }
+    else if (newLevel == "warning") { level = LoggerLevel::LEVEL_WARNING; }
+    else if (newLevel == "error") { level = LoggerLevel::LEVEL_ERROR; }
+    else if (newLevel == "none") { level = LoggerLevel::LEVEL_NONE; }
+    else {
+        error(fmt::format("Unknown log level {}, options are ( header | debug | info | warning | error | none )",newLevel));
+    }
 }

@@ -53,9 +53,31 @@ bool JsonEnvConfig::hasString(std::string key) {
     return stringValues.count(key) > 0;
 }
 
+bool JsonEnvConfig::hasBool(std::string key) {
+    if (stringValues.count(key) > 0) {
+        std::string val = stringValues[key];
+        if (val == "true" || val == "false"){
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+
 std::string JsonEnvConfig::getString(std::string key, std::string defaultVal) {
     if (hasString(key)) {
         return stringValues[key];
+    } else {
+        return defaultVal;
+    }
+}
+
+bool JsonEnvConfig::getBool(std::string key, bool defaultVal) {
+    if (hasBool(key)) {
+        return stringValues[key] == "true";
     } else {
         return defaultVal;
     }
