@@ -20,38 +20,27 @@ endif()
 #--------------- SOURCE & HEADER FILES --------------------
 
 set(SOURCES
-    src/main.cpp
-        OLD/deviceManager.cpp
-        src/utility/simpleTimer.cpp
-    src/device/device.cpp
-        src/config/configManager.cpp
-    src/server.cpp
-        OLD/apiServer.cpp
-        OLD/wsServer.cpp
+        src/main.cpp
+        src/services/config/json_env_config.cpp
+        src/services/service_manager.cpp
+        src/services/logger/console_logger.cpp
+        src/utility/simple_timer.cpp
 )
 
 set(HEADERS_PRIVATE
-        OLD/deviceManager.hpp
-        src/utility/simpleTimer.hpp
-    src/device/device.hpp
-        src/services/database/sqlite/SqliteDatabase.h
-    src/config/configManager.h
-    src/server.h
-        OLD/apiServer.h
-        OLD/wsServer.h
+        src/constants.h
+        src/services/service_manager.h
+        src/services/config/config.h
+        src/services/config/json_env_config.h
+        src/services/logger/logger.h
+        src/services/logger/console_logger.h
+        src/utility/time_utils.h
+        src/utility/simple_timer.h
 )
-
-# Auto add new source files to the directory
-# Probably bad practice, and requires rerunning cmake
-# But is a nice dev convenience
-file(GLOB_RECURSE SOURCES_AUTO
-        "${PROJECT_SOURCE_DIR}/src/*.h"
-        "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 #------------------- BUILD TARGETS ------------------------
 
-#add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
-add_executable(${PROJECT_NAME} ${SOURCES_AUTO})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
@@ -90,7 +79,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Simple-WebSocket-Server)
 
-add_subdirectory(external)
+add_subdirectory(lib)
 
 link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
 

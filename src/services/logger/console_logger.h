@@ -1,7 +1,7 @@
-#ifndef TELEMETRYSERVER_CONSOLELOGGER_H
-#define TELEMETRYSERVER_CONSOLELOGGER_H
+#ifndef TELEMETRYSERVER_CONSOLE_LOGGER_H
+#define TELEMETRYSERVER_CONSOLE_LOGGER_H
 
-#include "Logger.h"
+#include "logger.h"
 
 /**
  * ConsoleLogger
@@ -10,11 +10,12 @@
 class ConsoleLogger: public Logger {
 public:
     ConsoleLogger();
-    ~ConsoleLogger();
+    ~ConsoleLogger() override;
+    void header(std::string message) override;
     void debug(std::string message) override;
     void info(std::string message) override;
     void warning(std::string message) override;
     void error(std::string message) override;
 };
 
-#endif //TELEMETRYSERVER_CONSOLELOGGER_H
+#endif //TELEMETRYSERVER_CONSOLE_LOGGER_H
