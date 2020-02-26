@@ -28,9 +28,6 @@ int main() {
 
     ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));
 
-    int testValue = ServiceManager::getConfig()->getInt("test",-1);
-    ServiceManager::getLogger()->info(fmt::format("Test value: {}",testValue));
-
     // Run the server loop
     while (running) {
     }
