@@ -6,9 +6,12 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <string>
 #include <stdlib.h>
+#include <utility/path_utils.h>
+
 namespace pt = boost::property_tree;
 
 #define TELEMETRYJET_CONFIG_FILENAME ".telemetryjet"
@@ -25,6 +28,7 @@ bool JsonEnvConfig::hasInt(std::string key) {
         // Parse the value to see if it can be used as an int
         try {
             std::stoi(stringValues[key]);
+            return true;
         } catch (std::exception &e) {
             return false;
         }
@@ -49,9 +53,31 @@ bool JsonEnvConfig::hasString(std::string key) {
     return stringValues.count(key) > 0;
 }
 
+bool JsonEnvConfig::hasBool(std::string key) {
+    if (stringValues.count(key) > 0) {
+        std::string val = stringValues[key];
+        if (val == "true" || val == "false"){
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+
 std::string JsonEnvConfig::getString(std::string key, std::string defaultVal) {
     if (hasString(key)) {
         return stringValues[key];
+    } else {
+        return defaultVal;
+    }
+}
+
+bool JsonEnvConfig::getBool(std::string key, bool defaultVal) {
+    if (hasBool(key)) {
+        return stringValues[key] == "true";
     } else {
         return defaultVal;
     }
@@ -168,6 +194,15 @@ JsonEnvConfig::JsonEnvConfig() {
     std::string localConfigFilename = fmt::format("{}/{}",pathBuffer,TELEMETRYJET_CONFIG_FILENAME);
 
     loadConfig(userConfigFilename, localConfigFilename);
+
+    // Create the TelemetryJet data directory if it does not already exist
+    // Resolve user home and relative paths if relevant.
+    stringValues["data_dir"] = resolveUserHome(getString("data_dir","~/telemetryjet"));
+    boost::filesystem::create_directory(stringValues["data_dir"]);
+    stringValues["data_dir"] = boost::filesystem::canonical(stringValues["data_dir"]).generic_string();
+
+    ServiceManager::getLogger()->info(fmt::format("Created TelemetryJet data directory: {}", stringValues["data_dir"]));
+
     ServiceManager::getLogger()->info("---------- Initialized Configuration ---------");
 }
 

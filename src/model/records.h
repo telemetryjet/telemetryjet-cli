@@ -1,10 +1,17 @@
-#ifndef TELEMETRYSERVER_RECORDTYPES_H
-#define TELEMETRYSERVER_RECORDTYPES_H
+#ifndef TELEMETRYSERVER_RECORDS_H
+#define TELEMETRYSERVER_RECORDS_H
 
 #include <string>
 
+struct record_system_t {
+    int id;
+    std::string name;
+};
+
+/*
 struct record_dashboard_t {
     int id;
+    int system_id;
     std::string name;
     std::string jsonDefinition;
 };
@@ -22,5 +29,6 @@ struct record_debug_log_t {
     long timestamp;
     std::string message;
 };
+*/
 
-#endif //TELEMETRYSERVER_RECORDTYPES_H
+#endif //TELEMETRYSERVER_RECORDS_H

@@ -38,6 +38,5 @@ int main() {
     ServiceManager::destroy();
 
     // Exit main program
-    std::cout << "Done.\n";
     return exitCode;
 }
