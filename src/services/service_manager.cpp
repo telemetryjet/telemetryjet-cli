@@ -26,7 +26,6 @@ void ServiceManager::init() {
         setLogLevelViaEnv = true;
     }
 
-
     logger->header("  _ _  ______  __     __");
     logger->header( "  __  /_  __/ / /__  / /_");
     logger->header( "   ___ / /_  / / _ \\/ __/");

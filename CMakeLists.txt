@@ -24,7 +24,8 @@ set(SOURCES
         src/services/config/json_env_config.cpp
         src/services/service_manager.cpp
         src/services/logger/console_logger.cpp
-        src/services/database/sqlite_database.cpp
+        src/services/database/sqlite/sqlite_database.cpp
+        src/services/database/sqlite/sqlite_database_systems.cpp
         src/utility/simple_timer.cpp
 )
 
@@ -36,10 +37,11 @@ set(HEADERS_PRIVATE
         src/services/logger/logger.h
         src/services/logger/console_logger.h
         src/services/database/database.h
-        src/services/database/sqlite_database.h
+        src/services/database/sqlite/sqlite_database.h
         src/utility/time_utils.h
         src/utility/path_utils.h
         src/utility/simple_timer.h
+        src/model/records.h
 )
 
 #------------------- BUILD TARGETS ------------------------

@@ -78,8 +78,7 @@ void ConsoleLogger::error   (std::string message) {
     }
 }
 
-ConsoleLogger::ConsoleLogger() {
-}
+ConsoleLogger::ConsoleLogger() = default;
 
 ConsoleLogger::~ConsoleLogger() {
     info("Stopped Console Logger.");
