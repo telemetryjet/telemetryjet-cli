@@ -1,6 +1,6 @@
 #include <services/logger/console_logger.h>
 #include <services/config/json_env_config.h>
-#include <services/database/sqlite_database.h>
+#include <services/database/sqlite/sqlite_database.h>
 #include <fmt/format.h>
 #include <constants.h>
 #include "service_manager.h"
