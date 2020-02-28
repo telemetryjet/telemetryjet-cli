@@ -3,7 +3,7 @@
 #include <services/database/sqlite/sqlite_database.h>
 #include <fmt/format.h>
 #include <constants.h>
-#include <services/api/rest/rest_api_server_impl.h>
+#include <services/api/rest/rest_api_server.h>
 #include "service_manager.h"
 
 Config *ServiceManager::config;
@@ -54,7 +54,7 @@ void ServiceManager::init() {
     }
 
     database = new SqliteDatabase();
-    restApiServer = new RestApiServerImpl();
+    restApiServer = new RestApiServer();
 }
 
 void ServiceManager::destroy() {

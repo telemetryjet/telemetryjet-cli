@@ -26,7 +26,7 @@ set(SOURCES
         src/services/logger/console_logger.cpp
         src/services/database/sqlite/sqlite_database.cpp
         src/services/database/sqlite/sqlite_database_systems.cpp
-        src/services/api/rest/rest_api_server_impl.cpp
+        src/services/api/rest/rest_api_server.cpp
         src/utility/simple_timer.cpp
 )
 
@@ -40,9 +40,9 @@ set(HEADERS_PRIVATE
         src/services/database/database.h
         src/services/database/sqlite/sqlite_database.h
         src/services/api/rest/rest_api_server.h
-        src/services/api/rest/rest_api_server_impl.h
         src/utility/time_utils.h
         src/utility/path_utils.h
+        src/utility/json_utils.h
         src/utility/simple_timer.h
         src/model/records.h
 )
