@@ -26,6 +26,7 @@ set(SOURCES
         src/services/logger/console_logger.cpp
         src/services/database/sqlite/sqlite_database.cpp
         src/services/database/sqlite/sqlite_database_systems.cpp
+        src/services/api/rest/rest_api_server.cpp
         src/utility/simple_timer.cpp
 )
 
@@ -38,8 +39,10 @@ set(HEADERS_PRIVATE
         src/services/logger/console_logger.h
         src/services/database/database.h
         src/services/database/sqlite/sqlite_database.h
+        src/services/api/rest/rest_api_server.h
         src/utility/time_utils.h
         src/utility/path_utils.h
+        src/utility/json_utils.h
         src/utility/simple_timer.h
         src/model/records.h
 )
@@ -75,7 +78,7 @@ FetchContent_MakeAvailable(SQLiteCpp)
 
 FetchContent_Declare(
         Simple-Web-Server
-        GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
+        GIT_REPOSITORY https://gitlab.com/chrisdalke/Simple-Web-Server.git
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 

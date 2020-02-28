@@ -4,6 +4,7 @@
 #include <services/logger/logger.h>
 #include <services/config/config.h>
 #include <services/database/database.h>
+#include <services/api/rest/rest_api_server.h>
 
 /**
  * ServiceManager
@@ -16,12 +17,18 @@ private:
     static Config *config;
     static Logger *logger;
     static Database *database;
+    static RestApiServer *restApiServer;
 public:
     static void init();
     static void destroy();
     static Config* getConfig() { return config; }
     static Logger* getLogger() { return logger; }
     static Database* getDatabase() { return database; }
+    static RestApiServer* getRestApiServer() { return restApiServer; }
 };
+
+
+// Alias ServiceManager to SM for shorter code
+typedef ServiceManager SM;
 
 #endif //TELEMETRYSERVER_SERVICE_MANAGER_H
