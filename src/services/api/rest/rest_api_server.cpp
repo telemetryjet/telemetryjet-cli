@@ -77,15 +77,17 @@ void handleGetSystem(const std::shared_ptr<HttpServer::Response>& response, cons
 
 void handleCreateSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
     try {
+        SM::getLogger()->info(fmt::format("Creating system from json [{}]",request->content.string()));
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         record_system_t record = SM::getDatabase()->createSystem({
            -1,
            pt.get<std::string>("name")
         });
         std::string jsonString = propertyTreeToString(record_system_t::toPropertyTree(record));
-        response->write(StatusCode::success_ok, jsonString);
+        sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        SM::getLogger()->error(error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -101,6 +103,14 @@ void handleUpdateSystem(const std::shared_ptr<HttpServer::Response>& response, c
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
     }
+}
+
+void genericOptionsResponse(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+    SimpleWeb::CaseInsensitiveMultimap commonHeader;
+    commonHeader.emplace("Access-Control-Allow-Origin", "*");
+    commonHeader.emplace("Access-Control-Allow-Headers", "*");
+    commonHeader.emplace("Content-Type", "application/json");
+    response->write(StatusCode::success_ok,commonHeader);
 }
 
 void handleDeleteSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
@@ -123,12 +133,13 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/hello_world"]["GET"] = handleHelloWorld;
     server->resource["^/v1/systems"]["GET"] = handleGetSystems;
     server->resource["^/v1/system"]["POST"] = handleCreateSystem;
+    server->resource["^/v1/system"]["OPTIONS"] = genericOptionsResponse;
     server->resource["^/v1/system/([0-9]+)$"]["GET"] = handleGetSystem;
     server->resource["^/v1/system/([0-9]+)$"]["PUT"] = handleUpdateSystem;
     server->resource["^/v1/system/([0-9]+)$"]["DELETE"] = handleDeleteSystem;
 
     server->on_error = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code & ec) {
-        SM::getLogger()->error(fmt::format("Error occurred while handling request {}: {}",request->path, ec.message()));
+        SM::getLogger()->error(fmt::format("Error occurred while handling request {}: {}",request->query_string, ec.message()));
     };
 
     serverThread = std::thread{&RestApiServer::_runServerThread, this};
