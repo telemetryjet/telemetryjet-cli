@@ -1,5 +1,4 @@
 #include <services/service_manager.h>
-#include <iostream>
 #include <utility/time_utils.h>
 #include <fmt/format.h>
 

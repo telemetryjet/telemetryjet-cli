@@ -3,11 +3,13 @@
 #include <services/database/sqlite/sqlite_database.h>
 #include <fmt/format.h>
 #include <constants.h>
+#include <services/api/rest/rest_api_server_impl.h>
 #include "service_manager.h"
 
 Config *ServiceManager::config;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
+RestApiServer *ServiceManager::restApiServer;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
@@ -52,10 +54,12 @@ void ServiceManager::init() {
     }
 
     database = new SqliteDatabase();
+    restApiServer = new RestApiServerImpl();
 }
 
 void ServiceManager::destroy() {
     delete config;
     delete logger;
     delete database;
+    delete restApiServer;
 }
