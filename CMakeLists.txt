@@ -78,7 +78,7 @@ FetchContent_MakeAvailable(SQLiteCpp)
 
 FetchContent_Declare(
         Simple-Web-Server
-        GIT_REPOSITORY https://gitlab.com/chrisdalke/Simple-Web-Server.git
+        GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 
