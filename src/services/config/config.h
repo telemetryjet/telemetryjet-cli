@@ -17,6 +17,9 @@ public:
     virtual int getInt(std::string key, int defaultVal) = 0;
     virtual std::string getString(std::string key, std::string defaultVal) = 0;
     virtual bool getBool(std::string key, bool defaultVal) = 0;
+    virtual void setInt(std::string key, int val) = 0;
+    virtual void setString(std::string key, std::string val) = 0;
+    virtual void setBool(std::string key, bool val) = 0;
 };
 
 #endif

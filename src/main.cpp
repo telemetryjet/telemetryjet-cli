@@ -23,6 +23,8 @@ int main() {
     // Initialize the common services.
     ServiceManager::init();
 
+    SM::getConfig()->setString("systemEnabled","true");
+
     long long elapsedInitTime = getCurrentMillis() - startInit;
 
     ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));

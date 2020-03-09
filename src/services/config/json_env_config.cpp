@@ -83,6 +83,19 @@ bool JsonEnvConfig::getBool(std::string key, bool defaultVal) {
     }
 }
 
+void JsonEnvConfig::setInt(std::string key, int val) {
+    setString(key, fmt::format("{}",val));
+}
+
+void JsonEnvConfig::setString(std::string key, std::string val) {
+    ServiceManager::getLogger()->info(fmt::format("Set config keypair: [{}: {}]", key, val));
+    stringValues[key] = val;
+}
+
+void JsonEnvConfig::setBool(std::string key, bool val) {
+    setString(key, val ? "true" : "false");
+}
+
 // Load the config file hierarchy into the map
 void JsonEnvConfig::loadConfig(const std::string& userConfig, const std::string &localConfig) {
     ServiceManager::getLogger()->info("Loading config file hierarchy...");

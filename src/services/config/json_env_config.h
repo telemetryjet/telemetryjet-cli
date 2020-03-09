@@ -27,6 +27,9 @@ public:
     int getInt(std::string key, int defaultVal) override;
     std::string getString(std::string key, std::string defaultVal) override;
     bool getBool(std::string key, bool defaultVal) override;
+    virtual void setInt(std::string key, int val) override;
+    virtual void setString(std::string key, std::string val) override;
+    virtual void setBool(std::string key, bool val) override;
 };
 
 
