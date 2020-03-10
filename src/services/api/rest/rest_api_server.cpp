@@ -79,15 +79,35 @@ void handleGetActiveSystem(const std::shared_ptr<HttpServer::Response>& response
     // Get the ID for active system
     // If the ID is not set, choose the first system in the list
     int activeSystemId = SM::getConfig()->getInt("activeSystem", -1);
+
+    if (activeSystemId > 0) {
+        SM::getLogger()->warning("Checking that active system exists...");
+        // Check that the system actually exists
+        try {
+            record_system_t system = SM::getDatabase()->getSystem(activeSystemId);
+            SM::getLogger()->warning("Active system exists");
+        } catch (std::exception &error){
+            // If system doesn't exist, set a default
+            activeSystemId = -1;
+            SM::getConfig()->setInt("activeSystem", -1);
+            SM::getLogger()->warning("Active system doesn't exist");
+        }
+    }
+
+    // Set Default System
     if (activeSystemId == -1) {
         const std::vector<record_system_t> &systems = SM::getDatabase()->getSystems();
         if (!systems.empty()) {
             activeSystemId = systems.front().id;
             SM::getConfig()->setInt("activeSystem", systems.front().id);
+            SM::getLogger()->warning("Set a new default active system");
         } else {
             sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : null }}"));
+            SM::getLogger()->warning("Could not set a new default active system");
+            return;
         }
     }
+
     sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", activeSystemId));
 }
 
