@@ -2,6 +2,8 @@
 #include "sqlite_database.h"
 
 std::vector<record_device_t> SqliteDatabase::getDevices(int system_id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     std::vector<record_device_t> devices;
     try {
         SQLite::Statement query(*db, fmt::format("select * from devices where system_id={}", system_id));
@@ -19,6 +21,8 @@ std::vector<record_device_t> SqliteDatabase::getDevices(int system_id) {
 }
 
 record_device_t SqliteDatabase::getDevice(int id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     SQLite::Statement query(*db, "select * from devices where id=?");
     query.bind(1, id);
     query.executeStep();
@@ -34,6 +38,8 @@ record_device_t SqliteDatabase::getDevice(int id) {
 }
 
 record_device_t SqliteDatabase::createDevice(record_device_t device) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement insertStatement(*db, "insert into devices values (null,?,?)");
         insertStatement.bind(1, device.system_id);
@@ -47,6 +53,8 @@ record_device_t SqliteDatabase::createDevice(record_device_t device) {
 }
 
 void SqliteDatabase::updateDevice(record_device_t device) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement updateStatement(*db, "update devices set system_id=?, name=? where id=?");
         updateStatement.bind(1, device.system_id);

@@ -16,10 +16,11 @@ public:
     virtual void deleteById(std::string table, int id) = 0;
     virtual void deleteAll(std::string table) = 0;
 
-    // Persisted Config Key/Values
-    // Simple mechanism for persisting key and value pairs
-    // virtual record_config_item_t setPersistedConfigItem(std::string key, std::string value);
-    // virtual std::string getPersistedConfigItem(std::string key, std::string defaultValue);
+    // Config Items
+    virtual std::vector<record_config_item_t> getConfigItems() = 0;
+    virtual             record_config_item_t  getConfigItem(std::string key) = 0;
+    virtual             record_config_item_t  createConfigItem(record_config_item_t configItem) = 0;
+    virtual                             void  updateConfigItem(record_config_item_t configItem) = 0;
 
     // Systems
     virtual std::vector<record_system_t> getSystems() = 0;
@@ -38,6 +39,24 @@ public:
     virtual             record_device_t  getDevice(int id) = 0;
     virtual             record_device_t  createDevice(record_device_t device) = 0;
     virtual                        void  updateDevice(record_device_t device) = 0;
+
+    // Dashboards
+    virtual std::vector<record_dashboard_t> getDashboards(int system_id) = 0;
+    virtual             record_dashboard_t  getDashboard(int id) = 0;
+    virtual             record_dashboard_t  createDashboard(record_dashboard_t dashboard) = 0;
+    virtual                           void  updateDashboard(record_dashboard_t dashboard) = 0;
+
+    // Data Points
+    virtual std::vector<record_data_point_t> getDataPoints(int system_id) = 0;
+    virtual             record_data_point_t  getDataPoint(int id) = 0;
+    virtual             record_data_point_t  createDataPoint(record_data_point_t dataPoint) = 0;
+    virtual                            void  updateDataPoint(record_data_point_t dataPoint) = 0;
+
+    // Data Frames
+    virtual std::vector<record_data_frame_t> getDataFrames(int system_id) = 0;
+    virtual             record_data_frame_t  getDataFrame(int id) = 0;
+    virtual             record_data_frame_t  createDataFrame(record_data_frame_t dataFrame) = 0;
+    virtual                            void  updateDataFrame(record_data_frame_t dataFrame) = 0;
 };
 
 #endif //TELEMETRYSERVER_DATABASE_H

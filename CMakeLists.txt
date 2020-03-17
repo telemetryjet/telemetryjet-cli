@@ -28,6 +28,10 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_systems.cpp
         src/services/database/sqlite/sqlite_database_devices.cpp
         src/services/database/sqlite/sqlite_database_logs.cpp
+        src/services/database/sqlite/sqlite_database_config_items.cpp
+        src/services/database/sqlite/sqlite_database_dashboards.cpp
+        src/services/database/sqlite/sqlite_database_data_frames.cpp
+        src/services/database/sqlite/sqlite_database_data_points.cpp
         src/services/api/rest/rest_api_server.cpp
         src/services/model/system_record_manager.cpp
         src/services/model/log_record_manager.cpp

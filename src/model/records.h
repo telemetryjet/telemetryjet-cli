@@ -10,6 +10,7 @@
 struct record_config_item_t {
     std::string key;
     std::string value;
+
     static boost::property_tree::ptree toPropertyTree(const record_config_item_t& record) {
         boost::property_tree::ptree pt;
         pt.add("key", record.key);
@@ -66,6 +67,30 @@ struct record_dashboard_t {
         pt.add("system_id", record.system_id);
         pt.add("name", record.name);
         pt.add("jsonDefinition", record.jsonDefinition);
+        return pt;
+    }
+};
+
+struct record_data_point_t {
+    int id;
+    int system_id;
+    int data_frame_id;
+    static boost::property_tree::ptree toPropertyTree(const record_data_point_t& record) {
+        boost::property_tree::ptree pt;
+        pt.add("id", record.id);
+        pt.add("system_id", record.system_id);
+        pt.add("data_frame_id", record.data_frame_id);
+        return pt;
+    }
+};
+
+struct record_data_frame_t {
+    int id;
+    int system_id;
+    static boost::property_tree::ptree toPropertyTree(const record_data_frame_t& record) {
+        boost::property_tree::ptree pt;
+        pt.add("id", record.id);
+        pt.add("system_id", record.system_id);
         return pt;
     }
 };

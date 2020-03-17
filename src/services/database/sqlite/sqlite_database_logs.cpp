@@ -2,6 +2,8 @@
 #include "sqlite_database.h"
 
 std::vector<record_log_t> SqliteDatabase::getLogs(int system_id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     std::vector<record_log_t> logs;
     try {
         SQLite::Statement query(*db, fmt::format("select * from logs where system_id={}", system_id));
@@ -19,6 +21,8 @@ std::vector<record_log_t> SqliteDatabase::getLogs(int system_id) {
 }
 
 record_log_t SqliteDatabase::getLog(int id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     SQLite::Statement query(*db, "select * from logs where id=?");
     query.bind(1, id);
     query.executeStep();
@@ -34,6 +38,8 @@ record_log_t SqliteDatabase::getLog(int id) {
 }
 
 record_log_t SqliteDatabase::createLog(record_log_t log) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement insertStatement(*db, "insert into logs values (null,?,?)");
         insertStatement.bind(1, log.system_id);
@@ -47,6 +53,8 @@ record_log_t SqliteDatabase::createLog(record_log_t log) {
 }
 
 void SqliteDatabase::updateLog(record_log_t log) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement updateStatement(*db, "update logs set system_id=?, message=? where id=?");
         updateStatement.bind(1, log.system_id);

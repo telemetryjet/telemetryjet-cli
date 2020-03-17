@@ -2,6 +2,8 @@
 #include "sqlite_database.h"
 
 std::vector<record_system_t> SqliteDatabase::getSystems() {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     std::vector<record_system_t> systems;
     try {
         SQLite::Statement query(*db, "select * from systems");
@@ -18,6 +20,8 @@ std::vector<record_system_t> SqliteDatabase::getSystems() {
 }
 
 record_system_t SqliteDatabase::getSystem(int id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     SQLite::Statement query(*db, "select * from systems where id=?");
     query.bind(1, id);
     query.executeStep();
@@ -32,6 +36,8 @@ record_system_t SqliteDatabase::getSystem(int id) {
 }
 
 record_system_t SqliteDatabase::createSystem(record_system_t system) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement insertStatement(*db, "insert into systems values (null,?)");
         insertStatement.bind(1, system.name);
@@ -44,6 +50,8 @@ record_system_t SqliteDatabase::createSystem(record_system_t system) {
 }
 
 void SqliteDatabase::updateSystem(record_system_t system) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
     try {
         SQLite::Statement updateStatement(*db, "update systems set name=? where id=?");
         updateStatement.bind(1, system.name);
