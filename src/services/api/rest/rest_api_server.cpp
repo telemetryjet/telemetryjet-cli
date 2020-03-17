@@ -46,27 +46,31 @@ void handleStatus(REQUEST_RESPONSE_PARAMS) {
 
 void handleSystemState(REQUEST_RESPONSE_PARAMS) {
     if (SM::getSystemRecordManager()->isSystemRunning()) {
-        sendSuccessResponse(response, "{\"systemEnabled\" : true }");
+        sendSuccessResponse(response, "{\"enabled\" : true }");
     } else {
-        sendSuccessResponse(response, "{\"systemEnabled\" : false }");
+        sendSuccessResponse(response, "{\"enabled\" : false }");
     }
 }
 
-void handleSystemEnable(REQUEST_RESPONSE_PARAMS) {
-    SM::getSystemRecordManager()->startSystem();
+void handleSystemStateChange(REQUEST_RESPONSE_PARAMS) {
+    boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+
+    bool enabled = pt.get<bool>("enabled");
+    if (enabled) {
+        SM::getSystemRecordManager()->startSystem();
+    } else {
+        SM::getSystemRecordManager()->stopSystem();
+    }
     handleSystemState(response, request);
 }
 
-void handleSystemDisable(REQUEST_RESPONSE_PARAMS) {
-    SM::getSystemRecordManager()->stopSystem();
-    handleSystemState(response, request);
-}
 
 void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     try {
-        int id = getIntPathParam(request, 1);
+        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+        int id = pt.get<int>("id");
         SM::getSystemRecordManager()->setActiveSystem(id);
-        sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", id));
+        sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", id));
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
     }
@@ -74,7 +78,7 @@ void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
 
 void handleGetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     record_system_t activeSystem = SM::getSystemRecordManager()->getActiveSystem();
-    sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", activeSystem.id));
+    sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", activeSystem.id));
 }
 
 void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
@@ -160,18 +164,31 @@ RestApiServer::RestApiServer() {
     server->config.port = SM::getConfig()->getInt("rest_api_port",9000);
 
     // Register functions
+
+    // Status Healthcheck
     server->resource["^/v1/status"]["GET"] = handleStatus;
+
+    // System CRUD Functionality
     server->resource["^/v1/systems"]["GET"] = handleGetSystems;
     server->resource["^/v1/system"]["POST"] = handleCreateSystem;
     server->resource["^/v1/system"]["OPTIONS"] = genericOptionsResponse;
     server->resource["^/v1/system/([0-9]+)$"]["GET"] = handleGetSystem;
     server->resource["^/v1/system/([0-9]+)$"]["PUT"] = handleUpdateSystem;
     server->resource["^/v1/system/([0-9]+)$"]["DELETE"] = handleDeleteSystem;
-    server->resource["^/v1/system_state"]["GET"] = handleSystemState;
-    server->resource["^/v1/system_state_enable"]["GET"] = handleSystemEnable;
-    server->resource["^/v1/system_state_disable"]["GET"] = handleSystemDisable;
-    server->resource["^/v1/system/([0-9]+)/set_active$"]["GET"] = handleSetActiveSystem;
-    server->resource["^/v1/system/get_active$"]["GET"] = handleGetActiveSystem;
+
+    // Active System State
+    server->resource["^/v1/system/state"]["GET"] = handleSystemState;
+    server->resource["^/v1/system/state"]["POST"] = handleSystemStateChange;
+    server->resource["^/v1/system/state"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/system/active"]["POST"] = handleSetActiveSystem;
+    server->resource["^/v1/system/active"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/system/active"]["GET"] = handleGetActiveSystem;
+
+    // Devices
+
+    // Logs
+
+    // Dashboards
 
     server->on_error = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code & ec) {
         if (ec != SimpleWeb::errc::operation_canceled) {

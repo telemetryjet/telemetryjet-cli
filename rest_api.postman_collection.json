@@ -6,157 +6,51 @@
 	},
 	"item": [
 		{
-			"name": "Dashboards",
-			"item": [
-				{
-					"name": "Create Dashboard",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"name\" : \"test\",\n\t\"jsonDefinition\" : \"\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{server}}/v1/dashboard",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"dashboard"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Dashboard",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{server}}/v1/dashboard/:id",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"dashboard",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Dashboard",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{server}}/v1/dashboard/:id",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"dashboard",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Dashboards",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{server}}/v1/dashboards",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"dashboards"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Edit Dashboard",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"name\": \"testetset\",\n\t\"jsonDefinition\": \"awteawetawet\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{server}}/v1/dashboard/:id",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"dashboard",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
 			"name": "Systems",
 			"item": [
+				{
+					"name": "Get System",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Systems",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/systems",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"systems"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Create System",
 					"request": {
@@ -170,7 +64,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\":\"test4\"\n}"
+							"raw": "{\n\t\"name\":\"Test System\"\n}"
 						},
 						"url": {
 							"raw": "{{server}}/v1/system",
@@ -186,12 +80,9 @@
 					"response": []
 				},
 				{
-					"name": "Get All Systems",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Update System",
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -201,22 +92,161 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\":\"test4\"\n}"
+							"raw": "{\n\t\"name\":\"Test System\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/v1/systems",
+							"raw": "{{server}}/v1/system/:id",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"v1",
-								"systems"
+								"system",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete System",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
 					"response": []
 				}
 			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Active System",
+			"item": [
+				{
+					"name": "Get Active System",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/active",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Active System",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : 1\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/system/active",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active System State",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/state",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Active System State",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"enabled\" : false\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/system/state",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"state"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Devices",
+			"item": [],
 			"protocolProfileBehavior": {}
 		}
 	],
