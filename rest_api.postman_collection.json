@@ -1,0 +1,224 @@
+{
+	"info": {
+		"_postman_id": "cba13ac5-3afb-451e-81b1-22f687934176",
+		"name": "Telemetry Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Dashboards",
+			"item": [
+				{
+					"name": "Create Dashboard",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"test\",\n\t\"jsonDefinition\" : \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}/v1/dashboard",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Dashboard",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Dashboards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboards",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Dashboard",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"testetset\",\n\t\"jsonDefinition\": \"awteawetawet\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Systems",
+			"item": [
+				{
+					"name": "Create System",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\":\"test4\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/system",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Systems",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\":\"test4\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/systems",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"systems"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
