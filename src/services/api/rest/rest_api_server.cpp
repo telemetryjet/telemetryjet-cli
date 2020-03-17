@@ -81,7 +81,7 @@ void handleGetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", activeSystem.id));
 }
 
-void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleGetSystems(REQUEST_RESPONSE_PARAMS) {
     try {
         boost::property_tree::ptree pt;
         boost::property_tree::ptree list;
@@ -102,7 +102,7 @@ void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, con
     }
 }
 
-void handleGetSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleGetSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         record_system_t system = SM::getSystemRecordManager()->getSystem(id);
@@ -113,7 +113,7 @@ void handleGetSystem(const std::shared_ptr<HttpServer::Response>& response, cons
     }
 }
 
-void handleCreateSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleCreateSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         SM::getLogger()->info(fmt::format("Creating system from json [{}]",request->content.string()));
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
@@ -126,7 +126,7 @@ void handleCreateSystem(const std::shared_ptr<HttpServer::Response>& response, c
     }
 }
 
-void handleUpdateSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleUpdateSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
@@ -140,7 +140,7 @@ void handleUpdateSystem(const std::shared_ptr<HttpServer::Response>& response, c
     }
 }
 
-void genericOptionsResponse(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
     commonHeader.emplace("Access-Control-Allow-Headers", "*");
@@ -148,7 +148,7 @@ void genericOptionsResponse(const std::shared_ptr<HttpServer::Response>& respons
     response->write(StatusCode::success_ok,commonHeader);
 }
 
-void handleDeleteSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleDeleteSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         SM::getSystemRecordManager()->deleteSystem(getIntPathParam(request, 1));
         response->write(StatusCode::success_no_content);
@@ -156,6 +156,43 @@ void handleDeleteSystem(const std::shared_ptr<HttpServer::Response>& response, c
         response->write(StatusCode::client_error_bad_request, error.what());
     }
 }
+
+void handleGetDevices(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleCreateDevice(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleGetDevice(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleUpdateDevice(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleDeleteDevice(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleGetLogs(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleDeleteAllLogs(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleGetLog(REQUEST_RESPONSE_PARAMS) {
+
+}
+
+void handleDeleteLog(REQUEST_RESPONSE_PARAMS) {
+
+}
+
 
 RestApiServer::RestApiServer() {
     // Configure server options
@@ -185,8 +222,18 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/system/active"]["GET"] = handleGetActiveSystem;
 
     // Devices
+    server->resource["^/v1/devices"]["GET"] = handleGetDevices;
+    server->resource["^/v1/device"]["POST"] = handleCreateDevice;
+    server->resource["^/v1/device"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/device/([0-9]+)$"]["GET"] = handleGetDevice;
+    server->resource["^/v1/device/([0-9]+)$"]["PUT"] = handleUpdateDevice;
+    server->resource["^/v1/device/([0-9]+)$"]["DELETE"] = handleDeleteDevice;
 
     // Logs
+    server->resource["^/v1/logs"]["GET"] = handleGetLogs;
+    server->resource["^/v1/logs$"]["DELETE"] = handleDeleteAllLogs;
+    server->resource["^/v1/log/([0-9]+)$"]["GET"] = handleGetLog;
+    server->resource["^/v1/log/([0-9]+)$"]["DELETE"] = handleDeleteLog;
 
     // Dashboards
 

@@ -55,4 +55,19 @@ struct record_device_t {
     }
 };
 
+struct record_dashboard_t {
+    int id;
+    int system_id;
+    std::string name;
+    std::string jsonDefinition;
+    static boost::property_tree::ptree toPropertyTree(const record_dashboard_t& record) {
+        boost::property_tree::ptree pt;
+        pt.add("id", record.id);
+        pt.add("system_id", record.system_id);
+        pt.add("name", record.name);
+        pt.add("jsonDefinition", record.jsonDefinition);
+        return pt;
+    }
+};
+
 #endif //TELEMETRYSERVER_RECORDS_H
