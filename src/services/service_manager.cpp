@@ -10,6 +10,7 @@ Config *ServiceManager::config;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
+SystemRecordManager *ServiceManager::systemRecordManager;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
@@ -53,7 +54,11 @@ void ServiceManager::init() {
         logger->setLevel(logLevel);
     }
 
+    // Setup SQLite database and record managers for interacting with model
     database = new SqliteDatabase();
+    systemRecordManager = new SystemRecordManager();
+
+    // Set up REST API server
     restApiServer = new RestApiServer();
 }
 

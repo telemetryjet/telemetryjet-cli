@@ -4,7 +4,7 @@
 
 // Manages devices
 // Devices are managed for the current system
-class device_record_manager {
+class DeviceRecordManager {
 
 };
 

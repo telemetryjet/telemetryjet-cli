@@ -23,6 +23,10 @@ int main() {
     // Initialize the common services.
     ServiceManager::init();
 
+    // Get the active system, and write some basic data about the setup stats.
+    record_system_t activeSystem = SM::getSystemRecordManager()->getActiveSystem();
+    SM::getLogger()->info(fmt::format("Active System: [id={},name={}]", activeSystem.id, activeSystem.name));
+
     SM::getConfig()->setString("systemEnabled","true");
 
     long long elapsedInitTime = getCurrentMillis() - startInit;

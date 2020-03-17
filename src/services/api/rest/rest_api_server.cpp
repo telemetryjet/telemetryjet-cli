@@ -8,6 +8,8 @@
 #include <functional>
 #include "utility/json_utils.h"
 
+#define REQUEST_RESPONSE_PARAMS const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request
+
 using namespace boost::property_tree;
 using namespace SimpleWeb;
 
@@ -38,86 +40,41 @@ void sendFailureResponse(const std::shared_ptr<HttpServer::Response>& response, 
 }
 
 // Helper functions used to handle requests
-void handleStatus(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
+void handleStatus(REQUEST_RESPONSE_PARAMS) {
     sendSuccessResponse(response, "ONLINE");
 }
 
-void handleSystemState(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    bool systemState = SM::getConfig()->getBool("systemEnabled",true);
-    if (systemState) {
+void handleSystemState(REQUEST_RESPONSE_PARAMS) {
+    if (SM::getSystemRecordManager()->isSystemRunning()) {
         sendSuccessResponse(response, "{\"systemEnabled\" : true }");
     } else {
         sendSuccessResponse(response, "{\"systemEnabled\" : false }");
     }
 }
 
-void handleSystemEnable(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    SM::getConfig()->setBool("systemEnabled",true);
+void handleSystemEnable(REQUEST_RESPONSE_PARAMS) {
+    SM::getSystemRecordManager()->startSystem();
     handleSystemState(response, request);
 }
 
-void handleSystemDisable(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    SM::getConfig()->setBool("systemEnabled",false);
+void handleSystemDisable(REQUEST_RESPONSE_PARAMS) {
+    SM::getSystemRecordManager()->stopSystem();
     handleSystemState(response, request);
 }
 
-void handleSetActiveSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    // Request contains an ID for an active system
-    // Check that this ID is valid before setting
-    // Return active system object
+void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
-        record_system_t system = SM::getDatabase()->getSystem(id);
-        SM::getConfig()->setInt("activeSystem", id);
+        SM::getSystemRecordManager()->setActiveSystem(id);
         sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", id));
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
     }
 }
 
-void handleGetActiveSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    // Get the ID for active system
-    // If the ID is not set, choose the first system in the list
-    int activeSystemId = SM::getConfig()->getInt("activeSystem", -1);
-
-    if (activeSystemId > 0) {
-        SM::getLogger()->warning("Checking that active system exists...");
-        // Check that the system actually exists
-        try {
-            record_system_t system = SM::getDatabase()->getSystem(activeSystemId);
-            SM::getLogger()->warning("Active system exists");
-        } catch (std::exception &error){
-            // If system doesn't exist, set a default
-            activeSystemId = -1;
-            SM::getConfig()->setInt("activeSystem", -1);
-            SM::getLogger()->warning("Active system doesn't exist");
-        }
-    }
-
-    // Set Default System
-    if (activeSystemId == -1) {
-        const std::vector<record_system_t> &systems = SM::getDatabase()->getSystems();
-        if (!systems.empty()) {
-            activeSystemId = systems.front().id;
-            SM::getConfig()->setInt("activeSystem", systems.front().id);
-            SM::getLogger()->warning("Set a new default active system");
-        } else {
-            sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : null }}"));
-            SM::getLogger()->warning("Could not set a new default active system");
-            return;
-        }
-    }
-
-    sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", activeSystemId));
-}
-
-void requestTemplate(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
-    try {
-        int id = getIntPathParam(request, 1);
-        sendSuccessResponse(response, "");
-    } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
-    }
+void handleGetActiveSystem(REQUEST_RESPONSE_PARAMS) {
+    record_system_t activeSystem = SM::getSystemRecordManager()->getActiveSystem();
+    sendSuccessResponse(response, fmt::format("{{\"activeSystem\" : {} }}", activeSystem.id));
 }
 
 void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
@@ -125,7 +82,7 @@ void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, con
         boost::property_tree::ptree pt;
         boost::property_tree::ptree list;
 
-        const std::vector<record_system_t> &systems = SM::getDatabase()->getSystems();
+        const std::vector<record_system_t> &systems = SM::getSystemRecordManager()->getSystems();
         if (systems.empty()) {
             sendSuccessResponse(response, "{\"systems\" : []}");
             return;
@@ -144,7 +101,7 @@ void handleGetSystems(const std::shared_ptr<HttpServer::Response>& response, con
 void handleGetSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
     try {
         int id = getIntPathParam(request, 1);
-        record_system_t system = SM::getDatabase()->getSystem(id);
+        record_system_t system = SM::getSystemRecordManager()->getSystem(id);
         std::string jsonString = propertyTreeToString(record_system_t::toPropertyTree(system));
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
@@ -156,10 +113,7 @@ void handleCreateSystem(const std::shared_ptr<HttpServer::Response>& response, c
     try {
         SM::getLogger()->info(fmt::format("Creating system from json [{}]",request->content.string()));
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_system_t record = SM::getDatabase()->createSystem({
-           -1,
-           pt.get<std::string>("name")
-        });
+        record_system_t record = SM::getSystemRecordManager()->createSystem(pt.get<std::string>("name"));
         std::string jsonString = propertyTreeToString(record_system_t::toPropertyTree(record));
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
@@ -172,7 +126,7 @@ void handleUpdateSystem(const std::shared_ptr<HttpServer::Response>& response, c
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        SM::getDatabase()->updateSystem({
+        SM::getSystemRecordManager()->updateSystem({
             id,
             pt.get<std::string>("name")
         });
@@ -192,8 +146,7 @@ void genericOptionsResponse(const std::shared_ptr<HttpServer::Response>& respons
 
 void handleDeleteSystem(const std::shared_ptr<HttpServer::Response>& response, const std::shared_ptr<HttpServer::Request>& request) {
     try {
-        int id = getIntPathParam(request, 1);
-        SM::getDatabase()->deleteSystem(id);
+        SM::getSystemRecordManager()->deleteSystem(getIntPathParam(request, 1));
         response->write(StatusCode::success_no_content);
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
@@ -220,9 +173,10 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/system/([0-9]+)/set_active$"]["GET"] = handleSetActiveSystem;
     server->resource["^/v1/system/get_active$"]["GET"] = handleGetActiveSystem;
 
-
     server->on_error = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code & ec) {
-        SM::getLogger()->error(fmt::format("Error occurred while handling request {}: {}",request->query_string, ec.message()));
+        if (ec != SimpleWeb::errc::operation_canceled) {
+            SM::getLogger()->error(fmt::format("Error occurred while handling request {}: {}",request->query_string, ec.message()));
+        }
     };
 
     serverThread = std::thread{&RestApiServer::_runServerThread, this};

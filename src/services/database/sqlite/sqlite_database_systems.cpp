@@ -1,11 +1,5 @@
-#include <services/service_manager.h>
 #include <fmt/format.h>
 #include "sqlite_database.h"
-
-void throwError(std::string message){
-    ServiceManager::getLogger()->error(message);
-    throw std::runtime_error(message);
-}
 
 std::vector<record_system_t> SqliteDatabase::getSystems() {
     std::vector<record_system_t> systems;
@@ -57,15 +51,5 @@ void SqliteDatabase::updateSystem(record_system_t system) {
         updateStatement.exec();
     } catch (std::exception &e) {
         throwError(fmt::format("Error in updateSystem: {}", e.what()));
-    }
-}
-
-void SqliteDatabase::deleteSystem(int id) {
-    try {
-        SQLite::Statement deleteStatement(*db, "delete from systems where id=?");
-        deleteStatement.bind(1, id);
-        deleteStatement.exec();
-    } catch (std::exception &e) {
-        throwError(fmt::format("Error in deleteSystem: {}", e.what()));
     }
 }

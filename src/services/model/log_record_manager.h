@@ -4,7 +4,7 @@
 
 // Manages logs
 // logs exist for the current system
-class log_record_manager {
+class LogRecordManager {
     // create log
     // get logs
     // get log
