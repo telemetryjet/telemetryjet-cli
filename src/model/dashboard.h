@@ -29,7 +29,7 @@ struct record_dashboard_t {
     static             record_dashboard_t  createDashboard(std::string name);
     static             record_dashboard_t  getDashboard(int id);
     static std::vector<record_dashboard_t> getDashboards();
-    static                           void  updateDashboard(record_dashboard_t recordToUpdate);
+    static             record_dashboard_t  updateDashboard(record_dashboard_t recordToUpdate);
     static                           void  deleteDashboard(const record_dashboard_t& recordToDelete);
     static                           void  deleteDashboard(int id);
 };

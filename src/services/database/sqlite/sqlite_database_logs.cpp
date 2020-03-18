@@ -11,7 +11,9 @@ std::vector<record_log_t> SqliteDatabase::getLogs(int system_id) {
             logs.push_back({
                   query.getColumn(0),
                   query.getColumn(1),
-                  query.getColumn(2)
+                  query.getColumn(2),
+                  query.getColumn(3),
+                  query.getColumn(4)
             });
         }
     } catch (std::exception& e) {
@@ -30,7 +32,9 @@ record_log_t SqliteDatabase::getLog(int id) {
         return {
                 query.getColumn(0),
                 query.getColumn(1),
-                query.getColumn(2)
+                query.getColumn(2),
+                query.getColumn(3),
+                query.getColumn(4)
         };
     } else {
         throwError(fmt::format("Error in getLog: Log with id = {} not found.",id));
@@ -41,9 +45,11 @@ record_log_t SqliteDatabase::createLog(record_log_t log) {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 
     try {
-        SQLite::Statement insertStatement(*db, "insert into logs values (null,?,?)");
+        SQLite::Statement insertStatement(*db, "insert into logs values (null,?,?,?,?)");
         insertStatement.bind(1, log.system_id);
-        insertStatement.bind(2, log.message);
+        insertStatement.bind(2, log.timestamp);
+        insertStatement.bind(3, log.level);
+        insertStatement.bind(4, log.message);
         insertStatement.exec();
         log.id = db->getLastInsertRowid();
         return log;
@@ -56,10 +62,12 @@ void SqliteDatabase::updateLog(record_log_t log) {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 
     try {
-        SQLite::Statement updateStatement(*db, "update logs set system_id=?, message=? where id=?");
+        SQLite::Statement updateStatement(*db, "update logs set system_id=?, timestamp=?, level=?, message=? where id=?");
         updateStatement.bind(1, log.system_id);
-        updateStatement.bind(2, log.message);
-        updateStatement.bind(3, log.id);
+        updateStatement.bind(2, log.timestamp);
+        updateStatement.bind(3, log.level);
+        updateStatement.bind(4, log.message);
+        updateStatement.bind(5, log.id);
         updateStatement.exec();
     } catch (std::exception &e) {
         throwError(fmt::format("Error in updateLog: {}", e.what()));

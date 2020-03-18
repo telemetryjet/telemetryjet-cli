@@ -30,6 +30,7 @@ void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
     commonHeader.emplace("Access-Control-Allow-Headers", "*");
+    commonHeader.emplace("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
     commonHeader.emplace("Content-Type", "application/json");
     response->write(StatusCode::success_ok,commonHeader);
 }
@@ -37,6 +38,8 @@ void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
 void sendSuccessResponse(const std::shared_ptr<HttpServer::Response>& response, std::string content) {
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
+    commonHeader.emplace("Access-Control-Allow-Headers", "*");
+    commonHeader.emplace("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
     commonHeader.emplace("Content-Type", "application/json");
     commonHeader.emplace("Content-Length", fmt::format("{}",content.length()));
     //SM::getLogger()->info(fmt::format("{}",content));
@@ -47,6 +50,8 @@ void sendSuccessResponse(const std::shared_ptr<HttpServer::Response>& response, 
 void sendFailureResponse(const std::shared_ptr<HttpServer::Response>& response, std::string content) {
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
+    commonHeader.emplace("Access-Control-Allow-Headers", "*");
+    commonHeader.emplace("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
     commonHeader.emplace("Content-Type", "application/json");
     commonHeader.emplace("Content-Length", fmt::format("{}",content.length()));
     //SM::getLogger()->info(fmt::format("{}",content));
@@ -86,7 +91,7 @@ void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
         record_system_t::setActiveSystem(id);
         sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", id));
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -112,7 +117,7 @@ void handleGetSystems(REQUEST_RESPONSE_PARAMS) {
         pt.add_child("systems",list);
         sendSuccessResponse(response, propertyTreeToString(pt));
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -123,7 +128,7 @@ void handleGetSystem(REQUEST_RESPONSE_PARAMS) {
         std::string jsonString = propertyTreeToString(system.toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -144,22 +149,23 @@ void handleUpdateSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_system_t::updateSystem({
+        record_system_t record = record_system_t::updateSystem({
             id,
             pt.get<std::string>("name")
         });
-        response->write(StatusCode::success_ok);
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
+        sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
 void handleDeleteSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         record_system_t::deleteSystem(getIntPathParam(request, 1));
-        response->write(StatusCode::success_no_content);
+        sendSuccessResponse(response, "");
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -180,7 +186,7 @@ void handleGetDevices(REQUEST_RESPONSE_PARAMS) {
         pt.add_child("devices",list);
         sendSuccessResponse(response, propertyTreeToString(pt));
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -203,7 +209,7 @@ void handleGetDevice(REQUEST_RESPONSE_PARAMS) {
         std::string jsonString = propertyTreeToString(record_device_t::getDevice(id).toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -211,23 +217,24 @@ void handleUpdateDevice(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_device_t::updateDevice({
+        record_device_t record = record_device_t::updateDevice({
                                               id,
                                               pt.get<int>("system_id"),
                                               pt.get<std::string>("name")
                                       });
-        response->write(StatusCode::success_ok);
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
+        sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
 void handleDeleteDevice(REQUEST_RESPONSE_PARAMS) {
     try {
         record_device_t::deleteDevice(getIntPathParam(request, 1));
-        response->write(StatusCode::success_no_content);
+        sendSuccessResponse(response, "");
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -248,16 +255,16 @@ void handleGetLogs(REQUEST_RESPONSE_PARAMS) {
         pt.add_child("logs",list);
         sendSuccessResponse(response, propertyTreeToString(pt));
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
 void handleDeleteAllLogs(REQUEST_RESPONSE_PARAMS) {
     try {
         record_log_t::clearLogs();
-        response->write(StatusCode::success_no_content);
+        sendSuccessResponse(response, "");
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -267,16 +274,16 @@ void handleGetLog(REQUEST_RESPONSE_PARAMS) {
         std::string jsonString = propertyTreeToString(record_log_t::getLog(id).toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
 void handleDeleteLog(REQUEST_RESPONSE_PARAMS) {
     try {
         record_log_t::deleteLog(getIntPathParam(request, 1));
-        response->write(StatusCode::success_no_content);
+        sendSuccessResponse(response, "");
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -297,7 +304,7 @@ void handleGetDashboards(REQUEST_RESPONSE_PARAMS) {
         pt.add_child("dashboards",list);
         sendSuccessResponse(response, propertyTreeToString(pt));
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -320,7 +327,7 @@ void handleGetDashboard(REQUEST_RESPONSE_PARAMS) {
         std::string jsonString = propertyTreeToString(record_dashboard_t::getDashboard(id).toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -328,24 +335,25 @@ void handleUpdateDashboard(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_dashboard_t::updateDashboard({
+        record_dashboard_t record = record_dashboard_t::updateDashboard({
                                               id,
                                               pt.get<int>("system_id"),
                                               pt.get<std::string>("name"),
                                               pt.get<std::string>("jsonDefinition")
                                       });
-        response->write(StatusCode::success_ok);
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
+        sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
 void handleDeleteDashboard(REQUEST_RESPONSE_PARAMS) {
     try {
         record_dashboard_t::deleteDashboard(getIntPathParam(request, 1));
-        response->write(StatusCode::success_no_content);
+        sendSuccessResponse(response, "");
     } catch (std::exception &error){
-        response->write(StatusCode::client_error_bad_request, error.what());
+        sendFailureResponse(response, error.what());
     }
 }
 
@@ -367,6 +375,7 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/system/([0-9]+)$"]["GET"] = handleGetSystem;
     server->resource["^/v1/system/([0-9]+)$"]["PUT"] = handleUpdateSystem;
     server->resource["^/v1/system/([0-9]+)$"]["DELETE"] = handleDeleteSystem;
+    server->resource["^/v1/system/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     // Active System State
     server->resource["^/v1/system/state$"]["GET"] = handleSystemState;
@@ -383,12 +392,14 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/device/([0-9]+)$"]["GET"] = handleGetDevice;
     server->resource["^/v1/device/([0-9]+)$"]["PUT"] = handleUpdateDevice;
     server->resource["^/v1/device/([0-9]+)$"]["DELETE"] = handleDeleteDevice;
+    server->resource["^/v1/device/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     // Logs
     server->resource["^/v1/logs$"]["GET"] = handleGetLogs;
     server->resource["^/v1/logs$"]["DELETE"] = handleDeleteAllLogs;
     server->resource["^/v1/log/([0-9]+)$"]["GET"] = handleGetLog;
     server->resource["^/v1/log/([0-9]+)$"]["DELETE"] = handleDeleteLog;
+    server->resource["^/v1/log/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     // Dashboards
     server->resource["^/v1/dashboards$"]["GET"] = handleGetDashboards;
@@ -397,6 +408,7 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/dashboard/([0-9]+)$"]["GET"] = handleGetDashboard;
     server->resource["^/v1/dashboard/([0-9]+)$"]["PUT"] = handleUpdateDashboard;
     server->resource["^/v1/dashboard/([0-9]+)$"]["DELETE"] = handleDeleteDashboard;
+    server->resource["^/v1/dashboard/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     server->on_error = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code & ec) {
         if (ec != SimpleWeb::errc::operation_canceled) {

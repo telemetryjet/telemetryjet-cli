@@ -5,8 +5,8 @@
 #include "utility/time_utils.h"
 
 record_log_t record_log_t::createLog(std::string message) {
-    std::string formattedMessage = fmt::format("[{}] {}: {}",getTimestamp(),"log",message);
-    return SM::getDatabase()->createLog({ -1, record_system_t::getActiveSystem().id, formattedMessage });
+    std::string timestamp = fmt::format("{}",getTimestamp());
+    return SM::getDatabase()->createLog({ -1, record_system_t::getActiveSystem().id, timestamp, "log", message });
 }
 
 record_log_t record_log_t::getLog(int id) {
@@ -17,8 +17,9 @@ std::vector<record_log_t> record_log_t::getLogs() {
     return SM::getDatabase()->getLogs(record_system_t::getActiveSystem().id);
 }
 
-void record_log_t::updateLog(record_log_t recordToUpdate) {
-    return SM::getDatabase()->updateLog(std::move(recordToUpdate));
+record_log_t record_log_t::updateLog(record_log_t recordToUpdate) {
+    SM::getDatabase()->updateLog(std::move(recordToUpdate));
+    return recordToUpdate;
 }
 
 void record_log_t::deleteLog(const record_log_t& recordToDelete) {

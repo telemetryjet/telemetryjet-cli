@@ -20,7 +20,7 @@ SqliteDatabase::SqliteDatabase() {
     // Create tables if they do not already exist.
     db->exec("create table if not exists config_items (key text primary key, value text not null)");
     db->exec("create table if not exists systems (id integer primary key, name text not null)");
-    db->exec("create table if not exists logs (id integer primary key, system_id integer, message text not null)");
+    db->exec("create table if not exists logs (id integer primary key, system_id integer, timestamp text not null, level text not null, message text not null)");
     db->exec("create table if not exists devices (id integer primary key, system_id integer, name text not null)");
     db->exec("create table if not exists dashboards (id integer primary key, system_id integer, name text not null, json_definition text not null)");
     db->exec("create table if not exists data_points (id integer primary key, system_id integer, data_frame_id integer)");

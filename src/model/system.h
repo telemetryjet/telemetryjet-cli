@@ -25,7 +25,7 @@ struct record_system_t {
     static             record_system_t  createSystem(std::string name);
     static             record_system_t  getSystem(int id);
     static std::vector<record_system_t> getSystems();
-    static                        void  updateSystem(record_system_t recordToUpdate);
+    static             record_system_t  updateSystem(record_system_t recordToUpdate);
     static                        void  deleteSystem(const record_system_t& recordToDelete);
     static                        void  deleteSystem(int id);
 

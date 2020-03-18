@@ -20,8 +20,9 @@ std::vector<record_dashboard_t> record_dashboard_t::getDashboards() {
     return SM::getDatabase()->getDashboards(record_system_t::getActiveSystem().id);
 }
 
-void record_dashboard_t::updateDashboard(record_dashboard_t recordToUpdate) {
-    return SM::getDatabase()->updateDashboard(std::move(recordToUpdate));
+record_dashboard_t record_dashboard_t::updateDashboard(record_dashboard_t recordToUpdate) {
+    SM::getDatabase()->updateDashboard(std::move(recordToUpdate));
+    return recordToUpdate;
 }
 
 void record_dashboard_t::deleteDashboard(const record_dashboard_t& recordToDelete) {

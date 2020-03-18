@@ -27,7 +27,7 @@ struct record_device_t {
     static             record_device_t  createDevice(std::string name);
     static             record_device_t  getDevice(int id);
     static std::vector<record_device_t> getDevices();
-    static                        void  updateDevice(record_device_t recordToUpdate);
+    static             record_device_t  updateDevice(record_device_t recordToUpdate);
     static                        void  deleteDevice(const record_device_t& recordToDelete);
     static                        void  deleteDevice(int id);
 };

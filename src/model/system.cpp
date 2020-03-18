@@ -18,11 +18,14 @@ record_system_t record_system_t::getSystem(int id) {
 }
 
 std::vector<record_system_t> record_system_t::getSystems() {
+    // Check that the default system exists before returning the list
+    getActiveSystem();
     return SM::getDatabase()->getSystems();
 }
 
-void record_system_t::updateSystem(record_system_t recordToUpdate) {
+record_system_t record_system_t::updateSystem(record_system_t recordToUpdate) {
     SM::getDatabase()->updateSystem(std::move(recordToUpdate));
+    return recordToUpdate;
 }
 
 void record_system_t::deleteSystem(const record_system_t& recordToDelete) {

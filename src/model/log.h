@@ -13,12 +13,16 @@
 struct record_log_t {
     int id;
     int system_id;
+    std::string timestamp;
+    std::string level;
     std::string message;
 
     [[nodiscard]] boost::property_tree::ptree toPropertyTree() const {
         boost::property_tree::ptree pt;
         pt.add("id", id);
         pt.add("system_id", system_id);
+        pt.add("timestamp", timestamp);
+        pt.add("level", level);
         pt.add("message", message);
         return pt;
     }
@@ -27,7 +31,7 @@ struct record_log_t {
     static             record_log_t  createLog(std::string message);
     static             record_log_t  getLog(int id);
     static std::vector<record_log_t> getLogs();
-    static                     void  updateLog(record_log_t recordToUpdate);
+    static             record_log_t  updateLog(record_log_t recordToUpdate);
     static                     void  deleteLog(const record_log_t& recordToDelete);
     static                     void  deleteLog(int id);
     static                     void  clearLogs();
