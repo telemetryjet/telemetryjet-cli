@@ -6,6 +6,108 @@
 	},
 	"item": [
 		{
+			"name": "Active System",
+			"item": [
+				{
+					"name": "Get Active System",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/active",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Active System",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\" : 1\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/system/active",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active System State",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/system/state",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Active System State",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"enabled\" : false\n}"
+						},
+						"url": {
+							"raw": "{{server}}/v1/system/state",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"system",
+								"state"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Systems",
 			"item": [
 				{
@@ -143,29 +245,53 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Active System",
+			"name": "Devices",
 			"item": [
 				{
-					"name": "Get Active System",
+					"name": "Get Device",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{server}}/v1/system/active",
+							"raw": "{{server}}/v1/device/:id",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"v1",
-								"system",
-								"active"
+								"device",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Set Active System",
+					"name": "Get All Devices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/devices",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"devices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Device",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -177,45 +303,25 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"id\" : 1\n}"
+							"raw": "{\n\t\"name\" : \"Test Device\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/v1/system/active",
+							"raw": "{{server}}/v1/device",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"v1",
-								"system",
-								"active"
+								"device"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Active System State",
+					"name": "Update Device",
 					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{server}}/v1/system/state",
-							"host": [
-								"{{server}}"
-							],
-							"path": [
-								"v1",
-								"system",
-								"state"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set Active System State",
-					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -225,17 +331,48 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"enabled\" : false\n}"
+							"raw": "{\n\t\"name\" : \"Test Device\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/v1/system/state",
+							"raw": "{{server}}/v1/device/:id",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"v1",
-								"system",
-								"state"
+								"device",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/device/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"device",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -245,7 +382,221 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Devices",
+			"name": "Logs",
+			"item": [
+				{
+					"name": "Get Log",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/log/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"log",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/logs",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Log",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/log/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"log",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete All Logs",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/logs",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Dashboards",
+			"item": [
+				{
+					"name": "Get Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Dashboards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboards",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Dashboard",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Dashboard",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Dashboard",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/v1/dashboard/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"v1",
+								"dashboard",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Data Points",
+			"item": [],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Data Frames",
 			"item": [],
 			"protocolProfileBehavior": {}
 		}
