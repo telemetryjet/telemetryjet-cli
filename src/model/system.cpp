@@ -78,5 +78,5 @@ void record_system_t::stopSystem() {
 }
 
 bool record_system_t::isSystemRunning() {
-    SM::getPersistedConfig()->getBool("systemEnabled",true);
+    return SM::getPersistedConfig()->getBool("systemEnabled",true);
 }

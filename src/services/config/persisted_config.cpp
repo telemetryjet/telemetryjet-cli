@@ -6,8 +6,10 @@
 // Prevents unnecessary calls to the database
 void PersistedConfig::refreshCache() {
     cache.clear();
+    //SM::getLogger()->info("Refreshed config cache");
     for (const auto &configItem :  SM::getDatabase()->getConfigItems()) {
         cache[configItem.key] = configItem.value;
+        //SM::getLogger()->info(fmt::format("{} = {}",configItem.key, configItem.value));
     }
 }
 

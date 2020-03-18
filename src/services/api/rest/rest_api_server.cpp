@@ -38,6 +38,9 @@ void sendSuccessResponse(const std::shared_ptr<HttpServer::Response>& response, 
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
     commonHeader.emplace("Content-Type", "application/json");
+    commonHeader.emplace("Content-Length", fmt::format("{}",content.length()));
+    //SM::getLogger()->info(fmt::format("{}",content));
+    //SM::getLogger()->info(fmt::format("Content-Length: {}",content.length()));
     response->write(StatusCode::success_ok,content,commonHeader);
 }
 
@@ -45,6 +48,9 @@ void sendFailureResponse(const std::shared_ptr<HttpServer::Response>& response, 
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
     commonHeader.emplace("Content-Type", "application/json");
+    commonHeader.emplace("Content-Length", fmt::format("{}",content.length()));
+    //SM::getLogger()->info(fmt::format("{}",content));
+    //SM::getLogger()->info(fmt::format("Content-Length: {}",content.length()));
     response->write(StatusCode::client_error_bad_request,content,commonHeader);
 }
 
