@@ -1,4 +1,5 @@
 #include "console_logger.h"
+#include "utility/time_utils.h"
 #include <fmt/format.h>
 #include <constants.h>
 
@@ -23,19 +24,6 @@ enum class ansi_color_code: int{
     bright_cyan=96,
     bright_white=97,
 };
-
-std::string getTimestamp() {
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer[80];
-
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer,sizeof(buffer),"%D %T",timeinfo);
-    std::string str(buffer);
-    return str;
-}
 
 void log(const std::string& message, const std::string& level){
     fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);

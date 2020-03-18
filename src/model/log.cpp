@@ -2,9 +2,11 @@
 #include "services/service_manager.h"
 #include <fmt/format.h>
 #include <utility>
+#include "utility/time_utils.h"
 
 record_log_t record_log_t::createLog(std::string message) {
-    return SM::getDatabase()->createLog({ -1, record_system_t::getActiveSystem().id, std::move(message) });
+    std::string formattedMessage = fmt::format("[{}] {}: {}",getTimestamp(),"log",message);
+    return SM::getDatabase()->createLog({ -1, record_system_t::getActiveSystem().id, formattedMessage });
 }
 
 record_log_t record_log_t::getLog(int id) {
