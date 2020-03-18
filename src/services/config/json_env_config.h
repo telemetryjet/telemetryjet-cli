@@ -23,13 +23,13 @@ public:
     ~JsonEnvConfig() override;
     bool hasInt(std::string key) override;
     bool hasString(std::string key) override;
-    virtual bool hasBool(std::string key) override;
+    bool hasBool(std::string key) override;
     int getInt(std::string key, int defaultVal) override;
     std::string getString(std::string key, std::string defaultVal) override;
     bool getBool(std::string key, bool defaultVal) override;
-    virtual void setInt(std::string key, int val) override;
-    virtual void setString(std::string key, std::string val) override;
-    virtual void setBool(std::string key, bool val) override;
+    void setInt(std::string key, int val) override;
+    void setString(std::string key, std::string val) override;
+    void setBool(std::string key, bool val) override;
 };
 
 

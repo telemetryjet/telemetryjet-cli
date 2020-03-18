@@ -16,6 +16,7 @@
 class ServiceManager {
 private:
     static Config *config;
+    static Config *persistedConfig;
     static Logger *logger;
     static Database *database;
     static RestApiServer *restApiServer;
@@ -24,6 +25,7 @@ public:
     static void init();
     static void destroy();
     static Config* getConfig() { return config; }
+    static Config* getPersistedConfig() { return persistedConfig; }
     static Logger* getLogger() { return logger; }
     static Database* getDatabase() { return database; }
     static RestApiServer* getRestApiServer() { return restApiServer; }

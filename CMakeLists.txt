@@ -22,6 +22,7 @@ endif()
 set(SOURCES
         src/main.cpp
         src/services/config/json_env_config.cpp
+        src/services/config/persisted_config.cpp
         src/services/service_manager.cpp
         src/services/logger/console_logger.cpp
         src/services/database/sqlite/sqlite_database.cpp
@@ -36,6 +37,9 @@ set(SOURCES
         src/services/model/system_record_manager.cpp
         src/services/model/log_record_manager.cpp
         src/services/model/device_record_manager.cpp
+        src/services/model/dashboard_record_manager.cpp
+        src/services/model/data_point_record_manager.cpp
+        src/services/model/data_frame_record_manager.cpp
         src/utility/simple_timer.cpp
 )
 
@@ -44,6 +48,7 @@ set(HEADERS_PRIVATE
         src/services/service_manager.h
         src/services/config/config.h
         src/services/config/json_env_config.h
+        src/services/config/persisted_config.h
         src/services/logger/logger.h
         src/services/logger/console_logger.h
         src/services/database/database.h
@@ -51,6 +56,9 @@ set(HEADERS_PRIVATE
         src/services/model/system_record_manager.h
         src/services/model/log_record_manager.h
         src/services/model/device_record_manager.h
+        src/services/model/dashboard_record_manager.h
+        src/services/model/data_point_record_manager.h
+        src/services/model/data_frame_record_manager.h
         src/services/api/rest/rest_api_server.h
         src/utility/time_utils.h
         src/utility/path_utils.h

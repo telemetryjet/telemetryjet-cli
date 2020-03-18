@@ -1,5 +1,6 @@
 #include <services/logger/console_logger.h>
 #include <services/config/json_env_config.h>
+#include <services/config/persisted_config.h>
 #include <services/database/sqlite/sqlite_database.h>
 #include <fmt/format.h>
 #include <constants.h>
@@ -7,6 +8,7 @@
 #include "service_manager.h"
 
 Config *ServiceManager::config;
+Config *ServiceManager::persistedConfig;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
@@ -54,8 +56,13 @@ void ServiceManager::init() {
         logger->setLevel(logLevel);
     }
 
-    // Setup SQLite database and record managers for interacting with model
+    // Setup SQLite database
     database = new SqliteDatabase();
+
+    // Set up persisted configuration, which pulls from the database
+    persistedConfig = new PersistedConfig();
+
+    // Setup record managers for interacting with model
     systemRecordManager = new SystemRecordManager();
 
     // Set up REST API server
