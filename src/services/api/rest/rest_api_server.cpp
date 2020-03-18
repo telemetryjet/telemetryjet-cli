@@ -26,6 +26,14 @@ int getIntPathParam(const std::shared_ptr<HttpServer::Request>& request, int pos
     }
 }
 
+void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
+    SimpleWeb::CaseInsensitiveMultimap commonHeader;
+    commonHeader.emplace("Access-Control-Allow-Origin", "*");
+    commonHeader.emplace("Access-Control-Allow-Headers", "*");
+    commonHeader.emplace("Content-Type", "application/json");
+    response->write(StatusCode::success_ok,commonHeader);
+}
+
 void sendSuccessResponse(const std::shared_ptr<HttpServer::Response>& response, std::string content) {
     SimpleWeb::CaseInsensitiveMultimap commonHeader;
     commonHeader.emplace("Access-Control-Allow-Origin", "*");
@@ -64,7 +72,6 @@ void handleSystemStateChange(REQUEST_RESPONSE_PARAMS) {
     }
     handleSystemState(response, request);
 }
-
 
 void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     try {
@@ -141,14 +148,6 @@ void handleUpdateSystem(REQUEST_RESPONSE_PARAMS) {
     }
 }
 
-void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
-    SimpleWeb::CaseInsensitiveMultimap commonHeader;
-    commonHeader.emplace("Access-Control-Allow-Origin", "*");
-    commonHeader.emplace("Access-Control-Allow-Headers", "*");
-    commonHeader.emplace("Content-Type", "application/json");
-    response->write(StatusCode::success_ok,commonHeader);
-}
-
 void handleDeleteSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         record_system_t::deleteSystem(getIntPathParam(request, 1));
@@ -159,41 +158,190 @@ void handleDeleteSystem(REQUEST_RESPONSE_PARAMS) {
 }
 
 void handleGetDevices(REQUEST_RESPONSE_PARAMS) {
+    try {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ptree list;
 
+        const std::vector<record_device_t> &devices = record_device_t::getDevices();
+        if (devices.empty()) {
+            sendSuccessResponse(response, "{\"devices\" : []}");
+            return;
+        }
+
+        for (const record_device_t &device : devices) {
+            list.push_back(std::make_pair("", device.toPropertyTree()));
+        }
+        pt.add_child("devices",list);
+        sendSuccessResponse(response, propertyTreeToString(pt));
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleCreateDevice(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        SM::getLogger()->info(fmt::format("Creating device from json [{}]",request->content.string()));
+        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+        record_device_t record = record_device_t::createDevice(pt.get<std::string>("name"));
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
+        sendSuccessResponse(response, jsonString);
+    } catch (std::exception &error){
+        SM::getLogger()->error(error.what());
+        sendFailureResponse(response, error.what());
+    }
 }
 
 void handleGetDevice(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        int id = getIntPathParam(request, 1);
+        std::string jsonString = propertyTreeToString(record_device_t::getDevice(id).toPropertyTree());
+        sendSuccessResponse(response, jsonString);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleUpdateDevice(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        int id = getIntPathParam(request, 1);
+        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+        record_device_t::updateDevice({
+                                              id,
+                                              pt.get<int>("system_id"),
+                                              pt.get<std::string>("name")
+                                      });
+        response->write(StatusCode::success_ok);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleDeleteDevice(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        record_device_t::deleteDevice(getIntPathParam(request, 1));
+        response->write(StatusCode::success_no_content);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleGetLogs(REQUEST_RESPONSE_PARAMS) {
+    try {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ptree list;
 
+        const std::vector<record_log_t> &logs = record_log_t::getLogs();
+        if (logs.empty()) {
+            sendSuccessResponse(response, "{\"logs\" : []}");
+            return;
+        }
+
+        for (const record_log_t &log : logs) {
+            list.push_back(std::make_pair("", log.toPropertyTree()));
+        }
+        pt.add_child("logs",list);
+        sendSuccessResponse(response, propertyTreeToString(pt));
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleDeleteAllLogs(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        record_log_t::clearLogs();
+        response->write(StatusCode::success_no_content);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleGetLog(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        int id = getIntPathParam(request, 1);
+        std::string jsonString = propertyTreeToString(record_log_t::getLog(id).toPropertyTree());
+        sendSuccessResponse(response, jsonString);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
 void handleDeleteLog(REQUEST_RESPONSE_PARAMS) {
-
+    try {
+        record_log_t::deleteLog(getIntPathParam(request, 1));
+        response->write(StatusCode::success_no_content);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
 }
 
+void handleGetDashboards(REQUEST_RESPONSE_PARAMS) {
+    try {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ptree list;
+
+        const std::vector<record_dashboard_t> &dashboards = record_dashboard_t::getDashboards();
+        if (dashboards.empty()) {
+            sendSuccessResponse(response, "{\"dashboards\" : []}");
+            return;
+        }
+
+        for (const record_dashboard_t &dashboard : dashboards) {
+            list.push_back(std::make_pair("", dashboard.toPropertyTree()));
+        }
+        pt.add_child("dashboards",list);
+        sendSuccessResponse(response, propertyTreeToString(pt));
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
+}
+
+void handleCreateDashboard(REQUEST_RESPONSE_PARAMS) {
+    try {
+        SM::getLogger()->info(fmt::format("Creating dashboard from json [{}]",request->content.string()));
+        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+        record_dashboard_t record = record_dashboard_t::createDashboard(pt.get<std::string>("name"));
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
+        sendSuccessResponse(response, jsonString);
+    } catch (std::exception &error){
+        SM::getLogger()->error(error.what());
+        sendFailureResponse(response, error.what());
+    }
+}
+
+void handleGetDashboard(REQUEST_RESPONSE_PARAMS) {
+    try {
+        int id = getIntPathParam(request, 1);
+        std::string jsonString = propertyTreeToString(record_dashboard_t::getDashboard(id).toPropertyTree());
+        sendSuccessResponse(response, jsonString);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
+}
+
+void handleUpdateDashboard(REQUEST_RESPONSE_PARAMS) {
+    try {
+        int id = getIntPathParam(request, 1);
+        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
+        record_dashboard_t::updateDashboard({
+                                              id,
+                                              pt.get<int>("system_id"),
+                                              pt.get<std::string>("name"),
+                                              pt.get<std::string>("jsonDefinition")
+                                      });
+        response->write(StatusCode::success_ok);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
+}
+
+void handleDeleteDashboard(REQUEST_RESPONSE_PARAMS) {
+    try {
+        record_dashboard_t::deleteDashboard(getIntPathParam(request, 1));
+        response->write(StatusCode::success_no_content);
+    } catch (std::exception &error){
+        response->write(StatusCode::client_error_bad_request, error.what());
+    }
+}
 
 RestApiServer::RestApiServer() {
     // Configure server options
@@ -204,39 +352,45 @@ RestApiServer::RestApiServer() {
     // Register functions
 
     // Status Healthcheck
-    server->resource["^/v1/status"]["GET"] = handleStatus;
+    server->resource["^/v1/status$"]["GET"] = handleStatus;
 
     // System CRUD Functionality
-    server->resource["^/v1/systems"]["GET"] = handleGetSystems;
-    server->resource["^/v1/system"]["POST"] = handleCreateSystem;
-    server->resource["^/v1/system"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/systems$"]["GET"] = handleGetSystems;
+    server->resource["^/v1/system$"]["POST"] = handleCreateSystem;
+    server->resource["^/v1/system$"]["OPTIONS"] = genericOptionsResponse;
     server->resource["^/v1/system/([0-9]+)$"]["GET"] = handleGetSystem;
     server->resource["^/v1/system/([0-9]+)$"]["PUT"] = handleUpdateSystem;
     server->resource["^/v1/system/([0-9]+)$"]["DELETE"] = handleDeleteSystem;
 
     // Active System State
-    server->resource["^/v1/system/state"]["GET"] = handleSystemState;
-    server->resource["^/v1/system/state"]["POST"] = handleSystemStateChange;
-    server->resource["^/v1/system/state"]["OPTIONS"] = genericOptionsResponse;
-    server->resource["^/v1/system/active"]["POST"] = handleSetActiveSystem;
-    server->resource["^/v1/system/active"]["OPTIONS"] = genericOptionsResponse;
-    server->resource["^/v1/system/active"]["GET"] = handleGetActiveSystem;
+    server->resource["^/v1/system/state$"]["GET"] = handleSystemState;
+    server->resource["^/v1/system/state$"]["POST"] = handleSystemStateChange;
+    server->resource["^/v1/system/state$"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/system/active$"]["POST"] = handleSetActiveSystem;
+    server->resource["^/v1/system/active$"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/system/active$"]["GET"] = handleGetActiveSystem;
 
     // Devices
-    server->resource["^/v1/devices"]["GET"] = handleGetDevices;
-    server->resource["^/v1/device"]["POST"] = handleCreateDevice;
-    server->resource["^/v1/device"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/devices$"]["GET"] = handleGetDevices;
+    server->resource["^/v1/device$"]["POST"] = handleCreateDevice;
+    server->resource["^/v1/device$"]["OPTIONS"] = genericOptionsResponse;
     server->resource["^/v1/device/([0-9]+)$"]["GET"] = handleGetDevice;
     server->resource["^/v1/device/([0-9]+)$"]["PUT"] = handleUpdateDevice;
     server->resource["^/v1/device/([0-9]+)$"]["DELETE"] = handleDeleteDevice;
 
     // Logs
-    server->resource["^/v1/logs"]["GET"] = handleGetLogs;
+    server->resource["^/v1/logs$"]["GET"] = handleGetLogs;
     server->resource["^/v1/logs$"]["DELETE"] = handleDeleteAllLogs;
     server->resource["^/v1/log/([0-9]+)$"]["GET"] = handleGetLog;
     server->resource["^/v1/log/([0-9]+)$"]["DELETE"] = handleDeleteLog;
 
     // Dashboards
+    server->resource["^/v1/dashboards$"]["GET"] = handleGetDashboards;
+    server->resource["^/v1/dashboard$"]["POST"] = handleCreateDashboard;
+    server->resource["^/v1/dashboard$"]["OPTIONS"] = genericOptionsResponse;
+    server->resource["^/v1/dashboard/([0-9]+)$"]["GET"] = handleGetDashboard;
+    server->resource["^/v1/dashboard/([0-9]+)$"]["PUT"] = handleUpdateDashboard;
+    server->resource["^/v1/dashboard/([0-9]+)$"]["DELETE"] = handleDeleteDashboard;
 
     server->on_error = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code & ec) {
         if (ec != SimpleWeb::errc::operation_canceled) {
