@@ -35,7 +35,7 @@ void record_system_t::deleteSystem(int id) {
 
 record_system_t record_system_t::getActiveSystem() {
     // Get ID for active system, or -1 if active system is unset
-    int activeSystemId = SM::getConfig()->getInt("activeSystem", -1);
+    int activeSystemId = SM::getPersistedConfig()->getInt("activeSystem", -1);
 
     // Look up the active system.
     if (activeSystemId > 0) {
@@ -64,19 +64,19 @@ record_system_t record_system_t::getActiveSystem() {
 
 record_system_t record_system_t::setActiveSystem(int id) {
     record_system_t system = SM::getDatabase()->getSystem(id);
-    SM::getConfig()->setInt("activeSystem", id);
+    SM::getPersistedConfig()->setInt("activeSystem", id);
     SM::getLogger()->info(fmt::format("Set a new active system: [id={}, name={}]", system.id, system.name));
     return system;
 }
 
 void record_system_t::startSystem() {
-    SM::getConfig()->setBool("systemEnabled",true);
+    SM::getPersistedConfig()->setBool("systemEnabled",true);
 }
 
 void record_system_t::stopSystem() {
-    SM::getConfig()->setBool("systemEnabled",false);
+    SM::getPersistedConfig()->setBool("systemEnabled",false);
 }
 
 bool record_system_t::isSystemRunning() {
-    SM::getConfig()->getBool("systemEnabled",true);
+    SM::getPersistedConfig()->getBool("systemEnabled",true);
 }

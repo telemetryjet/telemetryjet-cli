@@ -67,6 +67,7 @@ void ServiceManager::init() {
 
 void ServiceManager::destroy() {
     delete config;
+    delete persistedConfig;
     delete logger;
     delete database;
     delete restApiServer;

@@ -1,6 +1,7 @@
 #include <services/service_manager.h>
 #include <utility/time_utils.h>
 #include <fmt/format.h>
+#include <model/records.h>
 
 /**
  * Main Program Entry Point
@@ -24,10 +25,9 @@ int main() {
     ServiceManager::init();
 
     // Get the active system, and write some basic data about the setup stats.
-    record_system_t activeSystem = SM::getSystemRecordManager()->getActiveSystem();
+    record_system_t activeSystem = record_system_t::getActiveSystem();
     SM::getLogger()->info(fmt::format("Active System: [id={},name={}]", activeSystem.id, activeSystem.name));
-
-    SM::getConfig()->setString("systemEnabled","true");
+    record_system_t::startSystem();
 
     long long elapsedInitTime = getCurrentMillis() - startInit;
 
