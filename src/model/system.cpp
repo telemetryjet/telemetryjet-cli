@@ -1,41 +1,39 @@
-#include "system_record_manager.h"
+#include "system.h"
 #include "services/service_manager.h"
 #include <fmt/format.h>
+#include <utility>
 
 // Creates a default system record.
-record_system_t SystemRecordManager::createDefaultSystem() {
+record_system_t createDefaultSystem() {
     SM::getLogger()->info("Creating a default system...");
-    return createSystem("Default System");
+    return record_system_t::createSystem("Default System");
 }
 
-record_system_t SystemRecordManager::createSystem(std::string name) {
-    return SM::getDatabase()->createSystem({
-        -1,
-        name
-    });
+record_system_t record_system_t::createSystem(std::string name) {
+    return SM::getDatabase()->createSystem({-1, std::move(name)});
 }
 
-record_system_t SystemRecordManager::getSystem(int id) {
+record_system_t record_system_t::getSystem(int id) {
     return SM::getDatabase()->getSystem(id);
 }
 
-std::vector<record_system_t> SystemRecordManager::getSystems() {
+std::vector<record_system_t> record_system_t::getSystems() {
     return SM::getDatabase()->getSystems();
 }
 
-void SystemRecordManager::updateSystem(record_system_t recordToUpdate) {
-    SM::getDatabase()->updateSystem(recordToUpdate);
+void record_system_t::updateSystem(record_system_t recordToUpdate) {
+    SM::getDatabase()->updateSystem(std::move(recordToUpdate));
 }
 
-void SystemRecordManager::deleteSystem(const record_system_t& recordToDelete) {
+void record_system_t::deleteSystem(const record_system_t& recordToDelete) {
     deleteSystem(recordToDelete.id);
 }
 
-void SystemRecordManager::deleteSystem(int id) {
+void record_system_t::deleteSystem(int id) {
     SM::getDatabase()->deleteById("systems",id);
 }
 
-record_system_t SystemRecordManager::getActiveSystem() {
+record_system_t record_system_t::getActiveSystem() {
     // Get ID for active system, or -1 if active system is unset
     int activeSystemId = SM::getConfig()->getInt("activeSystem", -1);
 
@@ -64,21 +62,21 @@ record_system_t SystemRecordManager::getActiveSystem() {
     }
 }
 
-record_system_t SystemRecordManager::setActiveSystem(int id) {
+record_system_t record_system_t::setActiveSystem(int id) {
     record_system_t system = SM::getDatabase()->getSystem(id);
     SM::getConfig()->setInt("activeSystem", id);
     SM::getLogger()->info(fmt::format("Set a new active system: [id={}, name={}]", system.id, system.name));
     return system;
 }
 
-void SystemRecordManager::startSystem() {
+void record_system_t::startSystem() {
     SM::getConfig()->setBool("systemEnabled",true);
 }
 
-void SystemRecordManager::stopSystem() {
+void record_system_t::stopSystem() {
     SM::getConfig()->setBool("systemEnabled",false);
 }
 
-bool SystemRecordManager::isSystemRunning() {
+bool record_system_t::isSystemRunning() {
     SM::getConfig()->getBool("systemEnabled",true);
 }

@@ -1,10 +1,10 @@
 #ifndef TELEMETRYSERVER_SQLITE_DATABASE_H
 #define TELEMETRYSERVER_SQLITE_DATABASE_H
 
+#include <mutex>
 #include <vector>
 #include <SQLiteCpp/Database.h>
 #include "services/database/database.h"
-#include <mutex>
 
 class SqliteDatabase : public Database {
 private:

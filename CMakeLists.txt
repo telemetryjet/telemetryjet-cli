@@ -21,6 +21,13 @@ endif()
 
 set(SOURCES
         src/main.cpp
+        src/model/config_item.cpp
+        src/model/dashboard.cpp
+        src/model/data_frame.cpp
+        src/model/data_point.cpp
+        src/model/device.cpp
+        src/model/log.cpp
+        src/model/system.cpp
         src/services/config/json_env_config.cpp
         src/services/config/persisted_config.cpp
         src/services/service_manager.cpp
@@ -34,17 +41,18 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_data_frames.cpp
         src/services/database/sqlite/sqlite_database_data_points.cpp
         src/services/api/rest/rest_api_server.cpp
-        src/services/model/system_record_manager.cpp
-        src/services/model/log_record_manager.cpp
-        src/services/model/device_record_manager.cpp
-        src/services/model/dashboard_record_manager.cpp
-        src/services/model/data_point_record_manager.cpp
-        src/services/model/data_frame_record_manager.cpp
         src/utility/simple_timer.cpp
 )
 
 set(HEADERS_PRIVATE
         src/constants.h
+        src/model/config_item.h
+        src/model/dashboard.h
+        src/model/data_frame.h
+        src/model/data_point.h
+        src/model/device.h
+        src/model/log.h
+        src/model/system.h
         src/services/service_manager.h
         src/services/config/config.h
         src/services/config/json_env_config.h
@@ -53,18 +61,11 @@ set(HEADERS_PRIVATE
         src/services/logger/console_logger.h
         src/services/database/database.h
         src/services/database/sqlite/sqlite_database.h
-        src/services/model/system_record_manager.h
-        src/services/model/log_record_manager.h
-        src/services/model/device_record_manager.h
-        src/services/model/dashboard_record_manager.h
-        src/services/model/data_point_record_manager.h
-        src/services/model/data_frame_record_manager.h
         src/services/api/rest/rest_api_server.h
         src/utility/time_utils.h
         src/utility/path_utils.h
         src/utility/json_utils.h
         src/utility/simple_timer.h
-        src/model/records.h
 )
 
 #------------------- BUILD TARGETS ------------------------

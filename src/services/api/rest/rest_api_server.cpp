@@ -1,4 +1,5 @@
 #include "rest_api_server.h"
+#include <model/records.h>
 #include <services/service_manager.h>
 #include <fmt/format.h>
 #include <boost/property_tree/ptree.hpp>
@@ -45,7 +46,7 @@ void handleStatus(REQUEST_RESPONSE_PARAMS) {
 }
 
 void handleSystemState(REQUEST_RESPONSE_PARAMS) {
-    if (SM::getSystemRecordManager()->isSystemRunning()) {
+    if (record_system_t::isSystemRunning()) {
         sendSuccessResponse(response, "{\"enabled\" : true }");
     } else {
         sendSuccessResponse(response, "{\"enabled\" : false }");
@@ -57,9 +58,9 @@ void handleSystemStateChange(REQUEST_RESPONSE_PARAMS) {
 
     bool enabled = pt.get<bool>("enabled");
     if (enabled) {
-        SM::getSystemRecordManager()->startSystem();
+        record_system_t::startSystem();
     } else {
-        SM::getSystemRecordManager()->stopSystem();
+        record_system_t::stopSystem();
     }
     handleSystemState(response, request);
 }
@@ -69,7 +70,7 @@ void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         int id = pt.get<int>("id");
-        SM::getSystemRecordManager()->setActiveSystem(id);
+        record_system_t::setActiveSystem(id);
         sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", id));
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
@@ -77,7 +78,7 @@ void handleSetActiveSystem(REQUEST_RESPONSE_PARAMS) {
 }
 
 void handleGetActiveSystem(REQUEST_RESPONSE_PARAMS) {
-    record_system_t activeSystem = SM::getSystemRecordManager()->getActiveSystem();
+    record_system_t activeSystem = record_system_t::getActiveSystem();
     sendSuccessResponse(response, fmt::format("{{\"id\" : {} }}", activeSystem.id));
 }
 
@@ -86,14 +87,14 @@ void handleGetSystems(REQUEST_RESPONSE_PARAMS) {
         boost::property_tree::ptree pt;
         boost::property_tree::ptree list;
 
-        const std::vector<record_system_t> &systems = SM::getSystemRecordManager()->getSystems();
+        const std::vector<record_system_t> &systems = record_system_t::getSystems();
         if (systems.empty()) {
             sendSuccessResponse(response, "{\"systems\" : []}");
             return;
         }
 
         for (const record_system_t &system : systems) {
-            list.push_back(std::make_pair("", record_system_t::toPropertyTree(system)));
+            list.push_back(std::make_pair("", system.toPropertyTree()));
         }
         pt.add_child("systems",list);
         sendSuccessResponse(response, propertyTreeToString(pt));
@@ -105,8 +106,8 @@ void handleGetSystems(REQUEST_RESPONSE_PARAMS) {
 void handleGetSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
-        record_system_t system = SM::getSystemRecordManager()->getSystem(id);
-        std::string jsonString = propertyTreeToString(record_system_t::toPropertyTree(system));
+        record_system_t system = record_system_t::getSystem(id);
+        std::string jsonString = propertyTreeToString(system.toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());
@@ -117,8 +118,8 @@ void handleCreateSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         SM::getLogger()->info(fmt::format("Creating system from json [{}]",request->content.string()));
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_system_t record = SM::getSystemRecordManager()->createSystem(pt.get<std::string>("name"));
-        std::string jsonString = propertyTreeToString(record_system_t::toPropertyTree(record));
+        record_system_t record = record_system_t::createSystem(pt.get<std::string>("name"));
+        std::string jsonString = propertyTreeToString(record.toPropertyTree());
         sendSuccessResponse(response, jsonString);
     } catch (std::exception &error){
         SM::getLogger()->error(error.what());
@@ -130,7 +131,7 @@ void handleUpdateSystem(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        SM::getSystemRecordManager()->updateSystem({
+        record_system_t::updateSystem({
             id,
             pt.get<std::string>("name")
         });
@@ -150,7 +151,7 @@ void genericOptionsResponse(REQUEST_RESPONSE_PARAMS) {
 
 void handleDeleteSystem(REQUEST_RESPONSE_PARAMS) {
     try {
-        SM::getSystemRecordManager()->deleteSystem(getIntPathParam(request, 1));
+        record_system_t::deleteSystem(getIntPathParam(request, 1));
         response->write(StatusCode::success_no_content);
     } catch (std::exception &error){
         response->write(StatusCode::client_error_bad_request, error.what());

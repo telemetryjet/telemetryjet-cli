@@ -12,7 +12,6 @@ Config *ServiceManager::persistedConfig;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
-SystemRecordManager *ServiceManager::systemRecordManager;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
@@ -61,9 +60,6 @@ void ServiceManager::init() {
 
     // Set up persisted configuration, which pulls from the database
     persistedConfig = new PersistedConfig();
-
-    // Setup record managers for interacting with model
-    systemRecordManager = new SystemRecordManager();
 
     // Set up REST API server
     restApiServer = new RestApiServer();
