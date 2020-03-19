@@ -36,6 +36,18 @@ SqliteDatabase::~SqliteDatabase() {
     delete db;
 }
 
+void SqliteDatabase::deleteBySystemId(std::string table, int system_id) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
+    try {
+        SQLite::Statement deleteStatement(*db, fmt::format("delete from {} where system_id=?",table));
+        deleteStatement.bind(1, system_id);
+        deleteStatement.exec();
+    } catch (std::exception &e) {
+        throwError(fmt::format("Error in deleteBySystemId: {}", e.what()));
+    }
+}
+
 void SqliteDatabase::deleteById(std::string table, int id) {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 
@@ -57,4 +69,12 @@ void SqliteDatabase::deleteAll(std::string table) {
     } catch (std::exception &e) {
         throwError(fmt::format("Error in deleteAll: {}", e.what()));
     }
+}
+
+void SqliteDatabase::deleteAllForSystem(int system_id) {
+    deleteBySystemId("logs", system_id);
+    deleteBySystemId("devices", system_id);
+    deleteBySystemId("dashboards", system_id);
+    deleteBySystemId("data_points", system_id);
+    deleteBySystemId("data_frames", system_id);
 }

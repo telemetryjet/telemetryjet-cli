@@ -24,7 +24,7 @@ std::vector<record_system_t> record_system_t::getSystems() {
 }
 
 record_system_t record_system_t::updateSystem(record_system_t recordToUpdate) {
-    SM::getDatabase()->updateSystem(std::move(recordToUpdate));
+    SM::getDatabase()->updateSystem(recordToUpdate);
     return recordToUpdate;
 }
 
@@ -33,7 +33,14 @@ void record_system_t::deleteSystem(const record_system_t& recordToDelete) {
 }
 
 void record_system_t::deleteSystem(int id) {
+    // Delete the system object
     SM::getDatabase()->deleteById("systems",id);
+
+    // Delete all related items for system
+    SM::getDatabase()->deleteAllForSystem(id);
+
+    // Update the active system to make sure it no longer references the non-existent system
+    getActiveSystem();
 }
 
 record_system_t record_system_t::getActiveSystem() {

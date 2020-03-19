@@ -15,6 +15,8 @@ public:
     // General purpose
     virtual void deleteById(std::string table, int id) = 0;
     virtual void deleteAll(std::string table) = 0;
+    virtual void deleteBySystemId(std::string table, int system_id) = 0;
+    virtual void deleteAllForSystem(int system_id) = 0;
 
     // Config Items
     virtual std::vector<record_config_item_t> getConfigItems() = 0;

@@ -19,6 +19,8 @@ public:
     // General purpose
     void deleteById(std::string table, int id) override;
     void deleteAll(std::string table) override;
+    void deleteBySystemId(std::string table, int system_id) override;
+    void deleteAllForSystem(int system_id) override;
 
     // Config Items
     std::vector<record_config_item_t> getConfigItems() override;
