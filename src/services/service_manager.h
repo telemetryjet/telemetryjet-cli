@@ -5,6 +5,7 @@
 #include <services/config/config.h>
 #include <services/database/database.h>
 #include <services/api/rest/rest_api_server.h>
+#include <devices/device_manager.h>
 
 /**
  * ServiceManager
@@ -19,6 +20,7 @@ private:
     static Logger *logger;
     static Database *database;
     static RestApiServer *restApiServer;
+    static DeviceManager *deviceManager;
 public:
     static void init();
     static void destroy();
@@ -27,6 +29,7 @@ public:
     static Logger* getLogger() { return logger; }
     static Database* getDatabase() { return database; }
     static RestApiServer* getRestApiServer() { return restApiServer; }
+    static DeviceManager* getDeviceManager() { return deviceManager; }
 };
 
 

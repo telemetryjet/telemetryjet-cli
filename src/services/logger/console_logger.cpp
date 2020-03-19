@@ -66,6 +66,12 @@ void ConsoleLogger::error   (std::string message) {
     }
 }
 
+void ConsoleLogger::alert(std::string message) {
+    if (level <= LoggerLevel::LEVEL_ALERT) {
+        logColor(ansi_color_code::green, message, "ALERT");
+    }
+}
+
 ConsoleLogger::ConsoleLogger() = default;
 
 ConsoleLogger::~ConsoleLogger() {

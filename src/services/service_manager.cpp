@@ -12,6 +12,7 @@ Config *ServiceManager::persistedConfig;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
+DeviceManager *ServiceManager::deviceManager;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
@@ -63,9 +64,13 @@ void ServiceManager::init() {
 
     // Set up REST API server
     restApiServer = new RestApiServer();
+
+    // Setup Device Manager
+    deviceManager = new DeviceManager();
 }
 
 void ServiceManager::destroy() {
+    delete deviceManager;
     delete config;
     delete persistedConfig;
     delete logger;

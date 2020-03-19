@@ -73,18 +73,32 @@ record_system_t record_system_t::getActiveSystem() {
 }
 
 record_system_t record_system_t::setActiveSystem(int id) {
+    bool wasRunning = isSystemRunning();
+
+    // Stop the system before we switch over
+    stopSystem();
+
     record_system_t system = SM::getDatabase()->getSystem(id);
     SM::getPersistedConfig()->setInt("activeSystem", id);
     SM::getLogger()->info(fmt::format("Set a new active system: [id={}, name={}]", system.id, system.name));
+
+    if (wasRunning) {
+        // Restart the system if it was previously running
+        // TODO: Decide if this is actually a good idea
+        // startSystem();
+    }
+
     return system;
 }
 
 void record_system_t::startSystem() {
     SM::getPersistedConfig()->setBool("systemEnabled",true);
     record_log_t::createLog("Started system!");
+    SM::getDeviceManager()->start();
 }
 
 void record_system_t::stopSystem() {
+    SM::getDeviceManager()->stop();
     SM::getPersistedConfig()->setBool("systemEnabled",false);
     record_log_t::createLog("Stopped system!");
 }

@@ -29,13 +29,23 @@ int main() {
     SM::getLogger()->info(fmt::format("Active System: [id={},name={}]", activeSystem.id, activeSystem.name));
     record_system_t::startSystem();
 
+    // Start the device manager if the system is set to be running.
+    if (record_system_t::isSystemRunning()) {
+        SM::getDeviceManager()->start();
+    }
+
     long long elapsedInitTime = getCurrentMillis() - startInit;
 
     ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));
 
     // Run the server loop
+    // TODO: Implement throttling, for now this is handled in the services
     while (running) {
+        SM::getDeviceManager()->update();
     }
+
+    // Stop the device manager, clearing up connections to serial devices.
+    SM::getDeviceManager()->stop();
 
     ServiceManager::getLogger()->info("Stopping Telemetry Server...");
 

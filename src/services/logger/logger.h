@@ -12,7 +12,8 @@
      LEVEL_INFO = 3,
      LEVEL_WARNING = 4,
      LEVEL_ERROR = 5,
-     LEVEL_NONE = 6
+     LEVEL_ALERT = 6,
+     LEVEL_NONE = 7
  };
 
 /**
@@ -28,6 +29,7 @@ public:
     virtual void info(std::string message) = 0;
     virtual void warning(std::string message) = 0;
     virtual void error(std::string message) = 0;
+    virtual void alert(std::string message) = 0;
     virtual void setLevel(LoggerLevel level) = 0;
     virtual void setLevel(std::string level) = 0;
     virtual LoggerLevel getLevel() = 0;

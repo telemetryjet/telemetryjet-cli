@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSERVER_DEVICE_H
-#define TELEMETRYSERVER_DEVICE_H
+#ifndef TELEMETRYSERVER_DEVICERECORD_H
+#define TELEMETRYSERVER_DEVICERECORD_H
 
 #include <string>
 #include <boost/property_tree/ptree.hpp>
@@ -32,4 +32,4 @@ struct record_device_t {
     static                        void  deleteDevice(int id);
 };
 
-#endif //TELEMETRYSERVER_DEVICE_H
+#endif //TELEMETRYSERVER_DEVICERECORD_H

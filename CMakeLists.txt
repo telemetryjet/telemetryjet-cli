@@ -21,6 +21,7 @@ endif()
 
 set(SOURCES
         src/main.cpp
+        src/devices/device_manager.cpp
         src/model/config_item.cpp
         src/model/dashboard.cpp
         src/model/data_frame.cpp
@@ -41,11 +42,15 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_data_frames.cpp
         src/services/database/sqlite/sqlite_database_data_points.cpp
         src/services/api/rest/rest_api_server.cpp
+        src/services/api/streaming/websocket_server.cpp
         src/utility/simple_timer.cpp
+        src/utility/serial_wrapper.cpp
 )
 
 set(HEADERS_PRIVATE
         src/constants.h
+        src/devices/device_manager.h
+        src/devices/device.h
         src/model/config_item.h
         src/model/dashboard.h
         src/model/data_frame.h
@@ -62,10 +67,13 @@ set(HEADERS_PRIVATE
         src/services/database/database.h
         src/services/database/sqlite/sqlite_database.h
         src/services/api/rest/rest_api_server.h
+        src/services/api/streaming/streaming_server.h
+        src/services/api/streaming/websocket_server.h
         src/utility/time_utils.h
         src/utility/path_utils.h
         src/utility/json_utils.h
         src/utility/simple_timer.h
+        src/utility/serial_wrapper.h
 )
 
 #------------------- BUILD TARGETS ------------------------
