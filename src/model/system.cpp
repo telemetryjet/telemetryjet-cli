@@ -93,14 +93,12 @@ record_system_t record_system_t::setActiveSystem(int id) {
 
 void record_system_t::startSystem() {
     SM::getPersistedConfig()->setBool("systemEnabled",true);
-    record_log_t::createLog("Started system!");
     SM::getDeviceManager()->start();
 }
 
 void record_system_t::stopSystem() {
     SM::getDeviceManager()->stop();
     SM::getPersistedConfig()->setBool("systemEnabled",false);
-    record_log_t::createLog("Stopped system!");
 }
 
 bool record_system_t::isSystemRunning() {

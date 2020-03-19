@@ -22,6 +22,7 @@ endif()
 set(SOURCES
         src/main.cpp
         src/devices/device_manager.cpp
+        src/devices/protocols/nmea_0183/nmea_0183_device.cpp
         src/model/config_item.cpp
         src/model/dashboard.cpp
         src/model/data_frame.cpp
@@ -50,6 +51,7 @@ set(SOURCES
 set(HEADERS_PRIVATE
         src/constants.h
         src/devices/device_manager.h
+        src/devices/protocols/nmea_0183/nmea_0183_device.h
         src/devices/device.h
         src/model/config_item.h
         src/model/dashboard.h
@@ -117,6 +119,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Simple-WebSocket-Server)
 
+FetchContent_Declare(
+        NemaTode
+        GIT_REPOSITORY https://github.com/ckgt/NemaTode
+)
+FetchContent_MakeAvailable(NemaTode)
+
 add_subdirectory(lib)
 
 link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
@@ -127,6 +135,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
+target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------

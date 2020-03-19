@@ -15,3 +15,8 @@ bool SimpleTimer::check() {
         return false;
     }
 }
+
+void SimpleTimer::reset() {
+    // Reset the last time value so the next check will be true
+    m_lastTime = 0;
+}

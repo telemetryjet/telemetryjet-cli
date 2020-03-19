@@ -10,6 +10,7 @@ class SimpleTimer {
 public:
     SimpleTimer(uint64_t interval);
     bool check();
+    void reset();
 
 private:
     uint64_t m_lastTime;

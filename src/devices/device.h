@@ -5,6 +5,7 @@
 
 class Device {
 public:
+    virtual ~Device() = default;
     virtual void open(std::string address) = 0;
     virtual void update() = 0;
     virtual void close() = 0;
