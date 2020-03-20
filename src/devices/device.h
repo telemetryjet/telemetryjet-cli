@@ -9,6 +9,7 @@ public:
     virtual void open(std::string address) = 0;
     virtual void update() = 0;
     virtual void close() = 0;
+    virtual std::string getAddress() = 0;
 };
 
 #endif //TELEMETRYSERVER_DEVICE_H

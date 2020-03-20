@@ -5,6 +5,7 @@
 #include <services/config/config.h>
 #include <services/database/database.h>
 #include <services/api/rest/rest_api_server.h>
+#include <services/data_cache/cache.h>
 #include <devices/device_manager.h>
 
 /**
@@ -21,6 +22,7 @@ private:
     static Database *database;
     static RestApiServer *restApiServer;
     static DeviceManager *deviceManager;
+    static Cache *dataCache;
 public:
     static void init();
     static void destroy();
@@ -30,8 +32,8 @@ public:
     static Database* getDatabase() { return database; }
     static RestApiServer* getRestApiServer() { return restApiServer; }
     static DeviceManager* getDeviceManager() { return deviceManager; }
+    static Cache* getDataCache() { return dataCache; }
 };
-
 
 // Alias ServiceManager to SM for shorter code
 typedef ServiceManager SM;

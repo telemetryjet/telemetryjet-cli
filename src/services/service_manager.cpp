@@ -2,6 +2,7 @@
 #include <services/config/json_env_config.h>
 #include <services/config/persisted_config.h>
 #include <services/database/sqlite/sqlite_database.h>
+#include <services/data_cache/in_memory_cache.h>
 #include <fmt/format.h>
 #include <constants.h>
 #include <services/api/rest/rest_api_server.h>
@@ -13,6 +14,7 @@ Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
 DeviceManager *ServiceManager::deviceManager;
+Cache *ServiceManager::dataCache;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
@@ -59,6 +61,9 @@ void ServiceManager::init() {
     // Setup SQLite database
     database = new SqliteDatabase();
 
+    // Set up in-memory data cache
+    dataCache = new InMemoryCache();
+
     // Set up persisted configuration, which pulls from the database
     persistedConfig = new PersistedConfig();
 
@@ -74,6 +79,7 @@ void ServiceManager::destroy() {
     delete config;
     delete persistedConfig;
     delete logger;
+    delete dataCache;
     delete database;
     delete restApiServer;
 }

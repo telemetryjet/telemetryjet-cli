@@ -26,7 +26,7 @@ SqliteDatabase::SqliteDatabase() {
     db->exec("create table if not exists data_points (id integer primary key, system_id integer, data_frame_id integer)");
     db->exec("create table if not exists data_frames (id integer primary key, system_id integer)");
 
-    ServiceManager::getLogger()->info("Initialized SQLite database");
+    ServiceManager::getLogger()->info("Started SQLite database.");
     initialized = true;
 }
 
@@ -34,6 +34,7 @@ SqliteDatabase::~SqliteDatabase() {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 
     delete db;
+    ServiceManager::getLogger()->info("Stopped SQLite database.");
 }
 
 void SqliteDatabase::deleteBySystemId(std::string table, int system_id) {

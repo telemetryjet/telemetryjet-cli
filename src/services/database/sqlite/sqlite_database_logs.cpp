@@ -1,6 +1,27 @@
 #include <fmt/format.h>
 #include "sqlite_database.h"
 
+std::vector<record_log_t> SqliteDatabase::getRecentLogs(int system_id, int limit) {
+    const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
+
+    std::vector<record_log_t> logs;
+    try {
+        SQLite::Statement query(*db, fmt::format("select * from logs where system_id={} order by timestamp desc limit {}", system_id, limit));
+        while (query.executeStep()) {
+            logs.push_back({
+                                   query.getColumn(0),
+                                   query.getColumn(1),
+                                   query.getColumn(2),
+                                   query.getColumn(3),
+                                   query.getColumn(4)
+                           });
+        }
+    } catch (std::exception& e) {
+        throwError(fmt::format("Error in getLogs: {}", e.what()));
+    }
+    return logs;
+}
+
 std::vector<record_log_t> SqliteDatabase::getLogs(int system_id) {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 

@@ -17,11 +17,11 @@ private:
     // NMEA parsing
     NMEAParser parser;
     GPSService *gps;
-    void parseNmeaLine(std::string line);
 public:
     void open(std::string address) override;
     void update() override;
     void close() override;
+    std::string getAddress() override;
 };
 
 
