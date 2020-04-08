@@ -59,7 +59,7 @@ void SqliteDatabase::updateDashboard(record_dashboard_t dashboard) {
     const std::lock_guard<std::mutex> lock(databaseMutex); // Acquire database lock for this scope
 
     try {
-        SQLite::Statement updateStatement(*db, "update dashboards set system_id=?, name=?, jsonDefinition=? where id=?");
+        SQLite::Statement updateStatement(*db, "update dashboards set system_id=?, name=?, json_definition=? where id=?");
         updateStatement.bind(1, dashboard.system_id);
         updateStatement.bind(2, dashboard.name);
         updateStatement.bind(3, dashboard.jsonDefinition);

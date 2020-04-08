@@ -26,9 +26,9 @@ record_dashboard_t record_dashboard_t::updateDashboard(record_dashboard_t record
 }
 
 void record_dashboard_t::deleteDashboard(const record_dashboard_t& recordToDelete) {
-    SM::getDatabase()->deleteById("dashboards",recordToDelete.id);
+    deleteDashboard(recordToDelete.id);
 }
 
 void record_dashboard_t::deleteDashboard(int id) {
-    SM::getDatabase()->deleteAll("logs");
+    SM::getDatabase()->deleteById("dashboards",id);
 }
