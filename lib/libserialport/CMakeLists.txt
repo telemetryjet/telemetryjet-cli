@@ -17,7 +17,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-ignored-attributes")
 
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c99 -Wall -Wextra -pedantic -Wmissing-prototypes -Wshadow")
-    set(CMAKE_EXE_LINKER_FLAGS --enable-auto-import)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --enable-auto-import")
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS}")
