@@ -13,6 +13,7 @@ Config *ServiceManager::persistedConfig;
 Logger *ServiceManager::logger;
 Database *ServiceManager::database;
 RestApiServer *ServiceManager::restApiServer;
+StreamingServer *ServiceManager::streamingServer;
 DeviceManager *ServiceManager::deviceManager;
 Cache *ServiceManager::dataCache;
 
@@ -70,6 +71,9 @@ void ServiceManager::init() {
     // Set up REST API server
     restApiServer = new RestApiServer();
 
+    // Setup streaming server
+    streamingServer = new StreamingServer();
+
     // Setup Device Manager
     deviceManager = new DeviceManager();
 }
@@ -78,8 +82,9 @@ void ServiceManager::destroy() {
     delete deviceManager;
     delete config;
     delete persistedConfig;
-    delete logger;
     delete dataCache;
     delete database;
     delete restApiServer;
+    delete streamingServer;
+    delete logger;
 }

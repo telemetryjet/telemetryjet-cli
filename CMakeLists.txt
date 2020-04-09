@@ -44,7 +44,7 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_data_points.cpp
         src/services/data_cache/in_memory_cache.cpp
         src/services/api/rest/rest_api_server.cpp
-        src/services/api/streaming/websocket_server.cpp
+        src/services/api/streaming/streaming_server.cpp
         src/utility/simple_timer.cpp
         src/utility/serial_wrapper.cpp
 )
@@ -73,7 +73,6 @@ set(HEADERS_PRIVATE
         src/services/data_cache/in_memory_cache.h
         src/services/api/rest/rest_api_server.h
         src/services/api/streaming/streaming_server.h
-        src/services/api/streaming/websocket_server.h
         src/utility/time_utils.h
         src/utility/path_utils.h
         src/utility/json_utils.h
