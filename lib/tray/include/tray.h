@@ -89,8 +89,10 @@ static void tray_update(struct tray *tray) {
 static void tray_exit() { loop_result = -1; }
 
 #elif defined(TRAY_APPKIT)
+#import <objc/objc.h>
 #include <objc/objc-runtime.h>
-#include <limits.h>
+#include <climits>
+#import <cstring>
 
 static id app;
 static id pool;
@@ -115,7 +117,7 @@ static id _tray_menu(struct tray_menu *m) {
                   sel_registerName("menuCallback:"),
                   ((id(*)(id, SEL, char *))objc_msgSend)((id)objc_getClass("NSString"), sel_registerName("stringWithUTF8String:"), ""));
 
-        ((void(*)(id, SEL, bool))objc_msgSend)(menuItem, sel_registerName("setEnabled:"), (m->disabled ? false : true));
+        ((void(*)(id, SEL, bool))objc_msgSend)(menuItem, sel_registerName("setEnabled:"), m->disabled == 0);
           ((void(*)(id, SEL, int))objc_msgSend)(menuItem, sel_registerName("setState:"), (m->checked ? 1 : 0));
           ((void(*)(id, SEL, id))objc_msgSend)(menuItem, sel_registerName("setRepresentedObject:"),
             ((id(*)(id, SEL, struct tray_menu*))objc_msgSend)((id)objc_getClass("NSValue"), sel_registerName("valueWithPointer:"), m));

@@ -20,9 +20,20 @@ void quit_cb(struct tray_menu *item) {
     running = false;
 }
 
+void StartSystemCallback(struct tray_menu *item) {
+    SM::getDeviceManager()->start();
+}
+
+void StopSystemCallback(struct tray_menu *item) {
+    SM::getDeviceManager()->stop();
+}
+
 struct tray tray = {
-        .icon = "icon.png",
-        .menu = (struct tray_menu[]){{"Test", 0, 0, NULL, NULL},
+        .icon = "icon2.png",
+        .menu = (struct tray_menu[]){{"TelemetryJet Server v0.1.0", 1, 0, NULL, NULL},
+                                     {"-", 0, 0, NULL, NULL},
+                                     {"Start System", 0, 0, StartSystemCallback, NULL},
+                                     {"Stop System", 0, 0, StopSystemCallback, NULL},
                                      {"-", 0, 0, NULL, NULL},
                                      {"Quit", 0, 0, quit_cb, NULL},
                                      {NULL, 0, 0, NULL, NULL}},
@@ -39,6 +50,7 @@ int main() {
 
     // Initialize tray icon
     tray_init(&tray);
+    tray_update(&tray);
 
     // Get the active system, and write some basic data about the setup stats.
     record_system_t activeSystem = record_system_t::getActiveSystem();
