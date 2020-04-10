@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
-class InMemoryCache: public Cache {
+class InMemoryCache: public DataCache {
 private:
     std::unordered_map<std::string, float> cache;
     std::vector<std::string> keys;

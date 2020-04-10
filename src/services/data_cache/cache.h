@@ -5,14 +5,14 @@
 #include <vector>
 
 /**
- * Cache
+ * DataCache
  * Interface for a data cache
  * Stores raw data values
  * Used for all getting/setting raw data points
  */
-class Cache {
+class DataCache {
 public:
-    virtual ~Cache() = default;
+    virtual ~DataCache() = default;
     virtual float getFloat(const std::string& key) = 0;
     virtual float setFloat(const std::string& key, float value) = 0;
     virtual std::vector<std::string> getKeys() = 0;

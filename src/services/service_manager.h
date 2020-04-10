@@ -24,7 +24,7 @@ private:
     static RestApiServer *restApiServer;
     static StreamingServer *streamingServer;
     static DeviceManager *deviceManager;
-    static Cache *dataCache;
+    static DataCache *dataCache;
 public:
     static void init();
     static void destroy();
@@ -35,7 +35,7 @@ public:
     static RestApiServer* getRestApiServer() { return restApiServer; }
     static StreamingServer* getStreamingServer() { return streamingServer; }
     static DeviceManager* getDeviceManager() { return deviceManager; }
-    static Cache* getDataCache() { return dataCache; }
+    static DataCache* getDataCache() { return dataCache; }
 };
 
 // Alias ServiceManager to SM for shorter code
