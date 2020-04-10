@@ -28,10 +28,9 @@ record_device_t record_device_t::updateDevice(record_device_t recordToUpdate) {
 }
 
 void record_device_t::deleteDevice(const record_device_t& recordToDelete) {
-    SM::getDatabase()->deleteById("devices",recordToDelete.id);
-
+    deleteDevice(recordToDelete.id);
 }
 
 void record_device_t::deleteDevice(int id) {
-    SM::getDatabase()->deleteAll("devices");
+    SM::getDatabase()->deleteById("devices", id);
 }
