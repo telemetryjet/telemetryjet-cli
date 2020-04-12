@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 
 project(TelemetryServer VERSION 0.0.1
                         DESCRIPTION "Telemetry Server"
@@ -92,7 +92,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
 
 include(FetchContent)
 
-SET(Boost_USE_STATIC_LIBS ON)
+set(Boost_DEBUG 1)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_ARCHITECTURE -x32)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
 
 FetchContent_Declare(

@@ -11,3 +11,6 @@ To run the built binary, use `./devops/run.sh`.
 
 Project Organization
 https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs
+
+Building Boost on Windows:
+http://informilabs.com/building-boost-32-bit-and-64-bit-libraries-on-windows/
