@@ -10,19 +10,23 @@ using namespace nmea;
 
 class Nmea0183Device : public Device {
 private:
-    SerialWrapper *port;
+    SerialWrapper* port;
     std::list<uint8_t> stringBuffer;
-    SimpleTimer *timer;
+    SimpleTimer* timer;
 
     // NMEA parsing
     NMEAParser parser;
-    GPSService *gps;
+    GPSService* gps;
+
 public:
     void open(std::string address) override;
     void update() override;
     void close() override;
     std::string getAddress() override;
+
+    static std::string name() {
+        return "NMEA 0183";
+    }
 };
 
-
-#endif //TELEMETRYSERVER_NMEA_0183_DEVICE_H
+#endif  // TELEMETRYSERVER_NMEA_0183_DEVICE_H
