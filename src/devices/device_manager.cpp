@@ -1,8 +1,8 @@
 #include "device_manager.h"
-#include "services/service_manager.h"
+#include "fmt/format.h"
 #include "model/records.h"
 #include "protocols/nmea_0183/nmea_0183_device.h"
-#include "fmt/format.h"
+#include "services/service_manager.h"
 
 DeviceManager::DeviceManager() {
     timer = new SimpleTimer(100);
@@ -20,10 +20,23 @@ void DeviceManager::start() {
         // Load the device list and initialize instances
         std::vector<record_device_t> deviceDefinitions = record_device_t::getDevices();
         SM::getLogger()->alert("=== CONFIGURING DEVICES ===");
-        for (auto &deviceDefinition : deviceDefinitions) {
-            SM::getLogger()->alert(fmt::format("- Device definition: [name={}]", deviceDefinition.name));
-            record_log_t::createLog(fmt::format("Started device (address={})", deviceDefinition.name));
-            Device* newDevice = new Nmea0183Device();
+        for (auto& deviceDefinition : deviceDefinitions) {
+            SM::getLogger()->alert(
+                fmt::format("- Device definition: [name={}]", deviceDefinition.name));
+            record_log_t::createLog(
+                fmt::format("Started device (address={})", deviceDefinition.name));
+
+            Device* newDevice;
+            switch (deviceDefinition.protocol) {
+            case TEST_PROTOCOL:
+            case NMEA_0183:
+                newDevice = new Nmea0183Device();
+                break;
+            default:
+                throw std::runtime_error(fmt::format("Device {} has unknown protocol {}.",
+                                                     deviceDefinition.name,
+                                                     deviceDefinition.protocol));
+            }
             newDevice->open(deviceDefinition.name);
             deviceList.emplace_back(newDevice);
         }
@@ -34,7 +47,7 @@ void DeviceManager::start() {
 
 void DeviceManager::update() {
     if (timer->check()) {
-        for (auto &device : deviceList) {
+        for (auto& device : deviceList) {
             device->update();
         }
     }
@@ -42,8 +55,9 @@ void DeviceManager::update() {
 
 void DeviceManager::stop() {
     if (isRunning) {
-        for (auto &device : deviceList) {
-            record_log_t::createLog(fmt::format("Stopped device (address={})", device->getAddress()));
+        for (auto& device : deviceList) {
+            record_log_t::createLog(
+                fmt::format("Stopped device (address={})", device->getAddress()));
             device->close();
             delete device;
         }
@@ -53,4 +67,11 @@ void DeviceManager::stop() {
         record_log_t::createLog(fmt::format("Stopped devices."));
         isRunning = false;
     }
+}
+
+std::map<int, std::string> DeviceManager::getProtocolMap() {
+    std::map<int, std::string> map;
+    map[NMEA_0183] = Nmea0183Device::name();
+    map[TEST_PROTOCOL] = "Some Protocol";
+    return map;
 }
