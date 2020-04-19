@@ -1,7 +1,6 @@
 #include "nmea_0183_device.h"
-#include "services/service_manager.h"
 #include "fmt/format.h"
-#include <cstdint>
+#include "services/service_manager.h"
 #include <utility>
 
 std::string Nmea0183Device::getAddress() {
@@ -19,7 +18,7 @@ void Nmea0183Device::open(std::string address) {
     SM::getLogger()->info(fmt::format("Started NMEA 0183 device at port = {}", address));
 }
 
-void Nmea0183Device::update()  {
+void Nmea0183Device::update() {
     port->poll();
 
     while (!port->getBuffer().empty()) {
@@ -29,21 +28,21 @@ void Nmea0183Device::update()  {
 
     // At polling interval, save the data points to the cache
     if (timer->check()) {
-        SM::getDataCache()->setFloat("gps.fix.status", gps->fix.status);
-        SM::getDataCache()->setFloat("gps.fix.type", gps->fix.type);
-        SM::getDataCache()->setFloat("gps.fix.quality", gps->fix.quality);
-        SM::getDataCache()->setFloat("gps.fix.altitude", gps->fix.altitude);
-        SM::getDataCache()->setFloat("gps.fix.latitude", gps->fix.latitude);
-        SM::getDataCache()->setFloat("gps.fix.longitude", gps->fix.longitude);
-        SM::getDataCache()->setFloat("gps.fix.speed", gps->fix.speed);
-        SM::getDataCache()->setFloat("gps.fix.travelAngle", gps->fix.travelAngle);
-        SM::getDataCache()->setFloat("gps.fix.trackingSatellites", gps->fix.trackingSatellites);
-        SM::getDataCache()->setFloat("gps.fix.visibleSatellites", gps->fix.visibleSatellites);
-        SM::getDataCache()->setFloat("gps.fix.timestamp.rawTime", gps->fix.timestamp.rawTime);
+        SM::getDataCache()->set<float>("gps.fix.status", gps->fix.status);
+        SM::getDataCache()->set<float>("gps.fix.type", gps->fix.type);
+        SM::getDataCache()->set<float>("gps.fix.quality", gps->fix.quality);
+        SM::getDataCache()->set<float>("gps.fix.altitude", gps->fix.altitude);
+        SM::getDataCache()->set<float>("gps.fix.latitude", gps->fix.latitude);
+        SM::getDataCache()->set<float>("gps.fix.longitude", gps->fix.longitude);
+        SM::getDataCache()->set<float>("gps.fix.speed", gps->fix.speed);
+        SM::getDataCache()->set<float>("gps.fix.travelAngle", gps->fix.travelAngle);
+        SM::getDataCache()->set<float>("gps.fix.trackingSatellites", gps->fix.trackingSatellites);
+        SM::getDataCache()->set<float>("gps.fix.visibleSatellites", gps->fix.visibleSatellites);
+        SM::getDataCache()->set<float>("gps.fix.timestamp.rawTime", gps->fix.timestamp.rawTime);
     }
 }
 
-void Nmea0183Device::close()  {
+void Nmea0183Device::close() {
     delete port;
     delete gps;
     delete timer;
