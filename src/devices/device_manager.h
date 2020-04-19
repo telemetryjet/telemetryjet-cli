@@ -14,11 +14,7 @@ private:
     bool isRunning = false;
     SimpleTimer* timer;
 
-    enum protocolTypes {
-        NMEA_0183,
-        TEST_PROTOCOL,
-        NUM_PROTOCOLS
-    };
+    enum protocolTypes { NMEA_0183, SYSTEM_USAGE, NUM_PROTOCOLS };
 
 public:
     DeviceManager();

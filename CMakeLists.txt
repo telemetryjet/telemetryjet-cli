@@ -23,6 +23,8 @@ set(SOURCES
         src/main.cpp
         src/devices/device_manager.cpp
         src/devices/protocols/nmea_0183/nmea_0183_device.cpp
+        src/devices/protocols/system_usage/system_usage_statistics.cpp
+        src/devices/protocols/system_usage/system_usage_device.cpp
         src/model/config_item.cpp
         src/model/dashboard.cpp
         src/model/data_frame.cpp
@@ -42,7 +44,7 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_dashboards.cpp
         src/services/database/sqlite/sqlite_database_data_frames.cpp
         src/services/database/sqlite/sqlite_database_data_points.cpp
-        src/services/data_cache/in_memory_cache.cpp
+        src/services/data_cache/cache.cpp
         src/services/api/rest/rest_api_server.cpp
         src/services/api/streaming/streaming_server.cpp
         src/utility/simple_timer.cpp
@@ -53,6 +55,8 @@ set(HEADERS_PRIVATE
         src/constants.h
         src/devices/device_manager.h
         src/devices/protocols/nmea_0183/nmea_0183_device.h
+        src/devices/protocols/system_usage/system_usage_statistics.h
+        src/devices/protocols/system_usage/system_usage_device.h
         src/devices/device.h
         src/model/config_item.h
         src/model/dashboard.h
@@ -70,7 +74,6 @@ set(HEADERS_PRIVATE
         src/services/database/database.h
         src/services/database/sqlite/sqlite_database.h
         src/services/data_cache/cache.h
-        src/services/data_cache/in_memory_cache.h
         src/services/api/rest/rest_api_server.h
         src/services/api/streaming/streaming_server.h
         src/utility/time_utils.h

@@ -1,4 +1,5 @@
 #include "device_manager.h"
+#include "devices/protocols/system_usage/system_usage_device.h"
 #include "fmt/format.h"
 #include "model/records.h"
 #include "protocols/nmea_0183/nmea_0183_device.h"
@@ -28,9 +29,11 @@ void DeviceManager::start() {
 
             Device* newDevice;
             switch (deviceDefinition.protocol) {
-            case TEST_PROTOCOL:
             case NMEA_0183:
                 newDevice = new Nmea0183Device();
+                break;
+            case SYSTEM_USAGE:
+                newDevice = new SystemUsageDevice();
                 break;
             default:
                 throw std::runtime_error(fmt::format("Device {} has unknown protocol {}.",
@@ -72,6 +75,6 @@ void DeviceManager::stop() {
 std::map<int, std::string> DeviceManager::getProtocolMap() {
     std::map<int, std::string> map;
     map[NMEA_0183] = Nmea0183Device::name();
-    map[TEST_PROTOCOL] = "Some Protocol";
+    map[SYSTEM_USAGE] = SystemUsageDevice::name();
     return map;
 }
