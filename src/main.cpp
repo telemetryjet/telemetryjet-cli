@@ -2,7 +2,7 @@
 #include <utility/time_utils.h>
 #include <fmt/format.h>
 #include <model/records.h>
-#include <tray.h>
+#include <ui/tray/tray_ui.h>
 
 /**
  * Main Program Entry Point
@@ -16,28 +16,6 @@ void signalHandler(int signum) {
     running = false;
 }
 
-void quit_cb(struct tray_menu *item) {
-    running = false;
-}
-
-void StartSystemCallback(struct tray_menu *item) {
-    SM::getDeviceManager()->start();
-}
-
-void StopSystemCallback(struct tray_menu *item) {
-    SM::getDeviceManager()->stop();
-}
-
-struct tray tray = {
-        .icon = "icon2.png",
-        .menu = (struct tray_menu[]){{"TelemetryJet Server v0.1.0", 1, 0, NULL, NULL},
-                                     {"-", 0, 0, NULL, NULL},
-                                     {"Start System", 0, 0, StartSystemCallback, NULL},
-                                     {"Stop System", 0, 0, StopSystemCallback, NULL},
-                                     {"-", 0, 0, NULL, NULL},
-                                     {"Quit", 0, 0, quit_cb, NULL},
-                                     {NULL, 0, 0, NULL, NULL}},
-};
 
 int main() {
     long long startInit = getCurrentMillis();
@@ -48,9 +26,8 @@ int main() {
     // Initialize the common services.
     ServiceManager::init();
 
-    // Initialize tray icon
-    tray_init(&tray);
-    tray_update(&tray);
+    // Initialize tray UI
+    TrayUI::init();
 
     // Get the active system, and write some basic data about the setup stats.
     record_system_t activeSystem = record_system_t::getActiveSystem();
@@ -71,7 +48,11 @@ int main() {
     while (running) {
         SM::getDeviceManager()->update();
 
-        tray_loop(0);
+        // Update tray UI
+        TrayUI::update();
+        if (TrayUI::shouldQuit) {
+            running = false;
+        }
     }
 
     // Stop the device manager, clearing up connections to serial devices.
@@ -82,8 +63,8 @@ int main() {
     // Shutdown the common services
     ServiceManager::destroy();
 
-    // Remove tray icon.
-    tray_exit();
+    // Remove tray UI
+    TrayUI::destroy();
 
     // Exit main program
     return exitCode;

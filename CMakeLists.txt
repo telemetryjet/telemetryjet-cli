@@ -47,6 +47,7 @@ set(SOURCES
         src/services/api/streaming/streaming_server.cpp
         src/utility/simple_timer.cpp
         src/utility/serial_wrapper.cpp
+        src/ui/tray/tray_ui.cpp
 )
 
 set(HEADERS_PRIVATE
@@ -78,6 +79,7 @@ set(HEADERS_PRIVATE
         src/utility/json_utils.h
         src/utility/simple_timer.h
         src/utility/serial_wrapper.h
+        src/ui/tray/tray_ui.h
 )
 
 #------------------- BUILD TARGETS ------------------------

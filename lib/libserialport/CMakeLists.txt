@@ -12,8 +12,8 @@ FetchContent_Declare(
 )
 FetchContent_Populate(libserialport)
 
+add_compile_options(-fdeclspec)
 if (_MSC_VER)
-    add_compile_options(-fdeclspec)
     add_compile_options(-fwindows)
 else()
 endif()

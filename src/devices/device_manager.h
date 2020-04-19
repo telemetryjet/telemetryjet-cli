@@ -11,9 +11,9 @@ class DeviceManager {
 private:
     std::vector<Device*> deviceList;
     std::vector<std::string> portList;
-    bool isRunning = false;
     SimpleTimer *timer;
 public:
+    bool isRunning = false;
     DeviceManager();
     ~DeviceManager();
     void start();
