@@ -8,8 +8,6 @@
 
 class SystemUsageDevice : public Device {
 private:
-    SerialWrapper* port;
-    std::list<uint8_t> stringBuffer;
     SimpleTimer* timer;
     SystemUsageStatistics* stats;
 
