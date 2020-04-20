@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 
 project(TelemetryServer VERSION 0.0.1
                         DESCRIPTION "Telemetry Server"
@@ -51,6 +51,27 @@ set(SOURCES
         src/utility/serial_wrapper.cpp
 )
 
+# Platform-specific sources
+if (WIN32)
+    set(SOURCES
+            ${SOURCES}
+            src/ui/tray/tray_ui_winapi.cpp
+    )
+endif()
+if (APPLE)
+    set(SOURCES
+            ${SOURCES}
+            src/ui/tray/tray_ui_appkit.cpp
+    )
+else()
+    if (UNIX)
+        set(SOURCES
+                ${SOURCES}
+                src/ui/tray/tray_ui_gtk.cpp
+        )
+    endif()
+endif()
+
 set(HEADERS_PRIVATE
         src/constants.h
         src/devices/device_manager.h
@@ -81,6 +102,7 @@ set(HEADERS_PRIVATE
         src/utility/json_utils.h
         src/utility/simple_timer.h
         src/utility/serial_wrapper.h
+        src/ui/tray/tray_ui.h
 )
 
 #------------------- BUILD TARGETS ------------------------
@@ -91,11 +113,31 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
 
+# Dependencies for tray UI
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
+endif()
+if (APPLE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPKIT=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Foundation")
+else()
+    if (UNIX)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPINDICATOR=1)
+        # Todo: Add link to appindicator library
+        # TRAY_CFLAGS := -DTRAY_APPINDICATOR=1 $(shell pkg-config --cflags appindicator3-0.1)
+        # TRAY_LDFLAGS := $(shell pkg-config --libs appindicator3-0.1)
+    endif()
+endif()
+
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
 include(FetchContent)
 
-SET(Boost_USE_STATIC_LIBS ON)
+set(Boost_DEBUG 1)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_ARCHITECTURE -x32)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
 
 FetchContent_Declare(

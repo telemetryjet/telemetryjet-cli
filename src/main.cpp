@@ -2,6 +2,7 @@
 #include <utility/time_utils.h>
 #include <fmt/format.h>
 #include <model/records.h>
+#include <ui/tray/tray_ui.h>
 
 /**
  * Main Program Entry Point
@@ -15,6 +16,7 @@ void signalHandler(int signum) {
     running = false;
 }
 
+
 int main() {
     long long startInit = getCurrentMillis();
 
@@ -23,6 +25,9 @@ int main() {
 
     // Initialize the common services.
     ServiceManager::init();
+
+    // Initialize tray UI
+    TrayUI::init();
 
     // Get the active system, and write some basic data about the setup stats.
     record_system_t activeSystem = record_system_t::getActiveSystem();
@@ -42,6 +47,12 @@ int main() {
     // TODO: Implement throttling, for now this is handled in the services
     while (running) {
         SM::getDeviceManager()->update();
+
+        // Update tray UI
+        TrayUI::update();
+        if (TrayUI::shouldQuit) {
+            running = false;
+        }
     }
 
     // Stop the device manager, clearing up connections to serial devices.
@@ -51,6 +62,9 @@ int main() {
 
     // Shutdown the common services
     ServiceManager::destroy();
+
+    // Remove tray UI
+    TrayUI::destroy();
 
     // Exit main program
     return exitCode;

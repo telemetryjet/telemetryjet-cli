@@ -15,7 +15,7 @@ Database* ServiceManager::database;
 RestApiServer* ServiceManager::restApiServer;
 StreamingServer* ServiceManager::streamingServer;
 DeviceManager* ServiceManager::deviceManager;
-Cache* ServiceManager::dataCache;
+DataCache* ServiceManager::dataCache;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();

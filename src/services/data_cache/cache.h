@@ -8,19 +8,19 @@
 #include <vector>
 
 /**
- * Cache
+ * DataCache
  * Interface for a data cache
  * Stores raw data values
  * Used for all getting/setting raw data points
  */
-class Cache {
+class DataCache {
 private:
     std::unordered_map<std::string, boost::any> cache;
     std::vector<std::string> keys;
 
 public:
-    Cache();
-    ~Cache();
+    DataCache();
+    ~DataCache();
 
     template <class T>
     void set(const std::string& key, T value) {

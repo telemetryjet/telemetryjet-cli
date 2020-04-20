@@ -17,6 +17,7 @@ private:
     enum protocolTypes { NMEA_0183, SYSTEM_USAGE, NUM_PROTOCOLS };
 
 public:
+    bool isRunning = false;
     DeviceManager();
     ~DeviceManager();
     void start();

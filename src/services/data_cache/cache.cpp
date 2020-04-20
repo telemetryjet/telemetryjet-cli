@@ -1,9 +1,9 @@
 #include "cache.h"
 #include "services/service_manager.h"
 
-Cache::Cache() {
+DataCache::DataCache() {
     SM::getLogger()->info("Started In-Memory Data Cache.");
 }
-Cache::~Cache() {
+DataCache::~DataCache() {
     SM::getLogger()->info("Stopped In-Memory Data Cache.");
 }

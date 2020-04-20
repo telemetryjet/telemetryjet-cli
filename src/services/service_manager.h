@@ -1,13 +1,13 @@
 #ifndef TELEMETRYSERVER_SERVICE_MANAGER_H
 #define TELEMETRYSERVER_SERVICE_MANAGER_H
 
-#include <services/logger/logger.h>
-#include <services/config/config.h>
-#include <services/database/database.h>
+#include <devices/device_manager.h>
 #include <services/api/rest/rest_api_server.h>
 #include <services/api/streaming/streaming_server.h>
+#include <services/config/config.h>
 #include <services/data_cache/cache.h>
-#include <devices/device_manager.h>
+#include <services/database/database.h>
+#include <services/logger/logger.h>
 
 /**
  * ServiceManager
@@ -17,28 +17,45 @@
  */
 class ServiceManager {
 private:
-    static Config *config;
-    static Config *persistedConfig;
-    static Logger *logger;
-    static Database *database;
-    static RestApiServer *restApiServer;
-    static StreamingServer *streamingServer;
-    static DeviceManager *deviceManager;
-    static Cache *dataCache;
+    static Config* config;
+    static Config* persistedConfig;
+    static Logger* logger;
+    static Database* database;
+    static RestApiServer* restApiServer;
+    static StreamingServer* streamingServer;
+    static DeviceManager* deviceManager;
+    static DataCache* dataCache;
+
 public:
     static void init();
     static void destroy();
-    static Config* getConfig() { return config; }
-    static Config* getPersistedConfig() { return persistedConfig; }
-    static Logger* getLogger() { return logger; }
-    static Database* getDatabase() { return database; }
-    static RestApiServer* getRestApiServer() { return restApiServer; }
-    static StreamingServer* getStreamingServer() { return streamingServer; }
-    static DeviceManager* getDeviceManager() { return deviceManager; }
-    static Cache* getDataCache() { return dataCache; }
+    static Config* getConfig() {
+        return config;
+    }
+    static Config* getPersistedConfig() {
+        return persistedConfig;
+    }
+    static Logger* getLogger() {
+        return logger;
+    }
+    static Database* getDatabase() {
+        return database;
+    }
+    static RestApiServer* getRestApiServer() {
+        return restApiServer;
+    }
+    static StreamingServer* getStreamingServer() {
+        return streamingServer;
+    }
+    static DeviceManager* getDeviceManager() {
+        return deviceManager;
+    }
+    static DataCache* getDataCache() {
+        return dataCache;
+    }
 };
 
 // Alias ServiceManager to SM for shorter code
 typedef ServiceManager SM;
 
-#endif //TELEMETRYSERVER_SERVICE_MANAGER_H
+#endif  // TELEMETRYSERVER_SERVICE_MANAGER_H
