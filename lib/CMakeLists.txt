@@ -1,2 +1,1 @@
 add_subdirectory(libserialport)
-add_subdirectory(tray)

@@ -47,8 +47,28 @@ set(SOURCES
         src/services/api/streaming/streaming_server.cpp
         src/utility/simple_timer.cpp
         src/utility/serial_wrapper.cpp
-        src/ui/tray/tray_ui.cpp
 )
+
+# Platform-specific sources
+if (WIN32)
+    set(SOURCES
+            ${SOURCES}
+            src/ui/tray/tray_ui_winapi.cpp
+    )
+endif()
+if (APPLE)
+    set(SOURCES
+            ${SOURCES}
+            src/ui/tray/tray_ui_appkit.cpp
+    )
+else()
+    if (UNIX)
+        set(SOURCES
+                ${SOURCES}
+                src/ui/tray/tray_ui_gtk.cpp
+        )
+    endif()
+endif()
 
 set(HEADERS_PRIVATE
         src/constants.h
@@ -89,6 +109,22 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
+
+# Dependencies for tray UI
+if (WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
+endif()
+if (APPLE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPKIT=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
+else()
+    if (UNIX)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPINDICATOR=1)
+        # Todo: Add link to appindicator library
+        # TRAY_CFLAGS := -DTRAY_APPINDICATOR=1 $(shell pkg-config --cflags appindicator3-0.1)
+        # TRAY_LDFLAGS := $(shell pkg-config --libs appindicator3-0.1)
+    endif()
+endif()
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
@@ -140,7 +176,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE libserialport-static)
-target_link_libraries(${PROJECT_NAME} PRIVATE tray)
 target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
