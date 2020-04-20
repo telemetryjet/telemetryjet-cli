@@ -1,7 +1,10 @@
 #ifndef TELEMETRYSERVER_CACHE_H
 #define TELEMETRYSERVER_CACHE_H
 
+#include <boost/any.hpp>
+#include <fmt/format.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 /**
@@ -11,11 +14,34 @@
  * Used for all getting/setting raw data points
  */
 class DataCache {
+private:
+    std::unordered_map<std::string, boost::any> cache;
+    std::vector<std::string> keys;
+
 public:
-    virtual ~DataCache() = default;
-    virtual float getFloat(const std::string& key) = 0;
-    virtual float setFloat(const std::string& key, float value) = 0;
-    virtual std::vector<std::string> getKeys() = 0;
+    DataCache();
+    ~DataCache();
+
+    template <class T>
+    void set(const std::string& key, T value) {
+        if (cache.find(key) == cache.end()) {
+            keys.push_back(key);
+        }
+        cache[key] = value;
+    }
+
+    template <class T>
+    T get(const std::string& key) {
+        if (cache.find(key) == cache.end()) {
+            return 0;
+        } else {
+            return boost::any_cast<T>(cache[key]);
+        }
+    }
+
+    std::vector<std::string> getKeys() {
+        return keys;
+    }
 };
 
-#endif //TELEMETRYSERVER_CACHE_H
+#endif  // TELEMETRYSERVER_CACHE_H

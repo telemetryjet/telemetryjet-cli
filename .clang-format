@@ -10,8 +10,8 @@ AlignEscapedNewlinesLeft: false
 AlignOperands: false
 # Purdy
 AlignTrailingComments: true
-AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
 # Yuck:
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
