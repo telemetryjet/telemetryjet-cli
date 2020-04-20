@@ -33,4 +33,3 @@ To use XCode with this project, run `./devops/xcode_init.sh`. This will prompt C
 The organization of the project roughly follows the Pitchfork Layout: "a convention for laying out source, build, and resource files in a filesystem to aide in uniformity, tooling, understandability, and compartmentalization."
 For more details and an explanation of the project layout, see:
 https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs
-
