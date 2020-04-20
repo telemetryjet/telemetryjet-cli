@@ -8,14 +8,14 @@
 #include <services/database/sqlite/sqlite_database.h>
 #include <services/logger/console_logger.h>
 
-Config *ServiceManager::config;
-Config *ServiceManager::persistedConfig;
-Logger *ServiceManager::logger;
-Database *ServiceManager::database;
-RestApiServer *ServiceManager::restApiServer;
-StreamingServer *ServiceManager::streamingServer;
-DeviceManager *ServiceManager::deviceManager;
-DataCache *ServiceManager::dataCache;
+Config* ServiceManager::config;
+Config* ServiceManager::persistedConfig;
+Logger* ServiceManager::logger;
+Database* ServiceManager::database;
+RestApiServer* ServiceManager::restApiServer;
+StreamingServer* ServiceManager::streamingServer;
+DeviceManager* ServiceManager::deviceManager;
+DataCache* ServiceManager::dataCache;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
