@@ -11,7 +11,6 @@ class DeviceManager {
 private:
     std::vector<Device*> deviceList;
     std::vector<std::string> portList;
-    bool isRunning = false;
     SimpleTimer* timer;
 
     enum protocolTypes { NMEA_0183, SYSTEM_USAGE, NUM_PROTOCOLS };

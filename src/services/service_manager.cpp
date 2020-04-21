@@ -67,7 +67,7 @@ void ServiceManager::init() {
     database = new SqliteDatabase();
 
     // Set up in-memory data cache
-    dataCache = new Cache();
+    dataCache = new DataCache();
 
     // Set up persisted configuration, which pulls from the database
     persistedConfig = new PersistedConfig();
