@@ -27,7 +27,7 @@ int main() {
     ServiceManager::init();
 
     // Initialize tray UI
-    TrayUI::init();
+    //TrayUI::init();
 
     // Get the active system, and write some basic data about the setup stats.
     record_system_t activeSystem = record_system_t::getActiveSystem();
@@ -49,10 +49,10 @@ int main() {
         SM::getDeviceManager()->update();
 
         // Update tray UI
-        TrayUI::update();
-        if (TrayUI::shouldQuit) {
-            running = false;
-        }
+        //TrayUI::update();
+        //if (TrayUI::shouldQuit) {
+        //    running = false;
+        //}
     }
 
     // Stop the device manager, clearing up connections to serial devices.
@@ -64,7 +64,7 @@ int main() {
     ServiceManager::destroy();
 
     // Remove tray UI
-    TrayUI::destroy();
+    //TrayUI::destroy();
 
     // Exit main program
     return exitCode;
