@@ -4,12 +4,8 @@
 #include <utility>
 
 record_dashboard_t record_dashboard_t::createDashboard(std::string name) {
-    return SM::getDatabase()->createDashboard({
-        -1,
-        record_system_t::getActiveSystem().id,
-        std::move(name),
-        "{}"
-    });
+    return SM::getDatabase()->createDashboard(
+        {-1, record_system_t::getActiveSystem().id, std::move(name), "{}"});
 }
 
 record_dashboard_t record_dashboard_t::getDashboard(int id) {
@@ -21,7 +17,7 @@ std::vector<record_dashboard_t> record_dashboard_t::getDashboards() {
 }
 
 record_dashboard_t record_dashboard_t::updateDashboard(record_dashboard_t recordToUpdate) {
-    SM::getDatabase()->updateDashboard(std::move(recordToUpdate));
+    SM::getDatabase()->updateDashboard(recordToUpdate);
     return recordToUpdate;
 }
 
@@ -30,5 +26,5 @@ void record_dashboard_t::deleteDashboard(const record_dashboard_t& recordToDelet
 }
 
 void record_dashboard_t::deleteDashboard(int id) {
-    SM::getDatabase()->deleteById("dashboards",id);
+    SM::getDatabase()->deleteById("dashboards", id);
 }

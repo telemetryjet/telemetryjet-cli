@@ -16,7 +16,7 @@ std::vector<record_device_t> record_device_t::getDevices() {
 }
 
 record_device_t record_device_t::updateDevice(record_device_t recordToUpdate) {
-    SM::getDatabase()->updateDevice(std::move(recordToUpdate));
+    SM::getDatabase()->updateDevice(recordToUpdate);
     return recordToUpdate;
 }
 

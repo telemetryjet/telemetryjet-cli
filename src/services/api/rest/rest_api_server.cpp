@@ -139,8 +139,10 @@ void handleCreateSystem(REQUEST_RESPONSE_PARAMS) {
             fmt::format("Creating system from json [{}]", request->content.string()));
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         record_system_t record = record_system_t::createSystem(pt.get<std::string>("name"));
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newSystem = record.toPropertyTree();
+        SM::getStreamingServer()->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_SYSTEM,
+                                                   newSystem);
+        sendSuccessResponse(response, propertyTreeToString(newSystem));
     } catch (std::exception& error) {
         SM::getLogger()->error(error.what());
         sendFailureResponse(response, error.what());
@@ -152,8 +154,10 @@ void handleUpdateSystem(REQUEST_RESPONSE_PARAMS) {
         int id = getIntPathParam(request, 1);
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         record_system_t record = record_system_t::updateSystem({id, pt.get<std::string>("name")});
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newSystem = record.toPropertyTree();
+        SM::getStreamingServer()
+            ->sendMessageToAll(StreamingServer::OutgoingMessageType::UPDATE_SYSTEM, newSystem);
+        sendSuccessResponse(response, propertyTreeToString(newSystem));
     } catch (std::exception& error) {
         sendFailureResponse(response, error.what());
     }
@@ -196,8 +200,10 @@ void handleCreateDevice(REQUEST_RESPONSE_PARAMS) {
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         record_device_t record
             = record_device_t::createDevice(pt.get<std::string>("name"), pt.get<int>("protocol"));
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newDevice = record.toPropertyTree();
+        SM::getStreamingServer()->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_DEVICE,
+                                                   newDevice);
+        sendSuccessResponse(response, propertyTreeToString(newDevice));
     } catch (std::exception& error) {
         SM::getLogger()->error(error.what());
         sendFailureResponse(response, error.what());
@@ -218,14 +224,13 @@ void handleGetDevice(REQUEST_RESPONSE_PARAMS) {
 void handleUpdateDevice(REQUEST_RESPONSE_PARAMS) {
     try {
         int id = getIntPathParam(request, 1);
-
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-
         record_device_t record = record_device_t::updateDevice(
             {id, pt.get<int>("system_id"), pt.get<std::string>("name"), pt.get<int>("protocol")});
-
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newDevice = record.toPropertyTree();
+        SM::getStreamingServer()
+            ->sendMessageToAll(StreamingServer::OutgoingMessageType::UPDATE_DEVICE, newDevice);
+        sendSuccessResponse(response, propertyTreeToString(newDevice));
     } catch (std::exception& error) {
         sendFailureResponse(response, error.what());
     }
@@ -336,8 +341,10 @@ void handleCreateDashboard(REQUEST_RESPONSE_PARAMS) {
         boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
         record_dashboard_t record
             = record_dashboard_t::createDashboard(pt.get<std::string>("name"));
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newDashboard = record.toPropertyTree();
+        SM::getStreamingServer()
+            ->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_DASHBOARD, newDashboard);
+        sendSuccessResponse(response, propertyTreeToString(newDashboard));
     } catch (std::exception& error) {
         SM::getLogger()->error(error.what());
         sendFailureResponse(response, error.what());
@@ -364,8 +371,11 @@ void handleUpdateDashboard(REQUEST_RESPONSE_PARAMS) {
                                                    pt.get<int>("system_id"),
                                                    pt.get<std::string>("name"),
                                                    pt.get<std::string>("jsonDefinition")});
-        std::string jsonString = propertyTreeToString(record.toPropertyTree());
-        sendSuccessResponse(response, jsonString);
+        boost::property_tree::ptree newDashboard = record.toPropertyTree();
+        SM::getStreamingServer()
+            ->sendMessageToAll(StreamingServer::OutgoingMessageType::UPDATE_DASHBOARD,
+                               newDashboard);
+        sendSuccessResponse(response, propertyTreeToString(newDashboard));
     } catch (std::exception& error) {
         sendFailureResponse(response, error.what());
     }

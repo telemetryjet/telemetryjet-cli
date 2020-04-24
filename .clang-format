@@ -42,7 +42,7 @@ ConstructorInitializerIndentWidth: 4
 # No, there's a One True Way to align these things
 DerivePointerAlignment: false
 # No need
-IndentCaseLabels: false
+IndentCaseLabels: true
 # Gross
 IndentWrappedFunctionNames: false
 IndentFunctionDeclarationAfterType: false
