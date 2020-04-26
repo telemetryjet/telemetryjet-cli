@@ -1,4 +1,5 @@
 #include "device_manager.h"
+#include "constants.h"
 #include "devices/protocols/system_usage/system_usage_device.h"
 #include "fmt/format.h"
 #include "model/records.h"
@@ -16,7 +17,7 @@ DeviceManager::~DeviceManager() {
 void DeviceManager::start() {
     if (!isRunning) {
         SM::getLogger()->alert("Started device manager!");
-        record_log_t::createLog(fmt::format("Started devices."));
+        record_log_t::createLog(fmt::format("Started devices."), LOG_LEVEL_ALERT);
 
         // Load the device list and initialize instances
         std::vector<record_device_t> deviceDefinitions = record_device_t::getDevices();
@@ -24,21 +25,20 @@ void DeviceManager::start() {
         for (auto& deviceDefinition : deviceDefinitions) {
             SM::getLogger()->alert(
                 fmt::format("- Device definition: [name={}]", deviceDefinition.name));
-            record_log_t::createLog(
-                fmt::format("Started device (address={})", deviceDefinition.name));
+            record_log_t::createLog(fmt::format("Started device (address={})", deviceDefinition.name), LOG_LEVEL_ALERT);
 
             Device* newDevice;
             switch (deviceDefinition.protocol) {
-            case NMEA_0183:
-                newDevice = new Nmea0183Device();
-                break;
-            case SYSTEM_USAGE:
-                newDevice = new SystemUsageDevice();
-                break;
-            default:
-                throw std::runtime_error(fmt::format("Device {} has unknown protocol {}.",
-                                                     deviceDefinition.name,
-                                                     deviceDefinition.protocol));
+                case NMEA_0183:
+                    newDevice = new Nmea0183Device();
+                    break;
+                case SYSTEM_USAGE:
+                    newDevice = new SystemUsageDevice();
+                    break;
+                default:
+                    throw std::runtime_error(fmt::format("Device {} has unknown protocol {}.",
+                                                         deviceDefinition.name,
+                                                         deviceDefinition.protocol));
             }
             newDevice->open(deviceDefinition.name);
             deviceList.emplace_back(newDevice);
@@ -59,15 +59,14 @@ void DeviceManager::update() {
 void DeviceManager::stop() {
     if (isRunning) {
         for (auto& device : deviceList) {
-            record_log_t::createLog(
-                fmt::format("Stopped device (address={})", device->getAddress()));
+            record_log_t::createLog(fmt::format("Stopped device (address={})", device->getAddress()), LOG_LEVEL_INFO);
             device->close();
             delete device;
         }
         deviceList.clear();
         portList.clear();
         SM::getLogger()->alert("Stopped device manager!");
-        record_log_t::createLog(fmt::format("Stopped devices."));
+        record_log_t::createLog(fmt::format("Stopped devices."), LOG_LEVEL_ALERT);
         isRunning = false;
     }
 }

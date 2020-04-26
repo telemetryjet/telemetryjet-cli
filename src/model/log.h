@@ -1,10 +1,11 @@
 #ifndef TELEMETRYSERVER_LOG_H
 #define TELEMETRYSERVER_LOG_H
 
-#include <string>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include "constants.h"
 #include <boost/property_tree/exceptions.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <string>
 #include <utility/json_utils.h>
 
 /**
@@ -28,13 +29,13 @@ struct record_log_t {
     }
 
     // Basic Create, Read, Update, Delete functions
-    static             record_log_t  createLog(std::string message);
-    static             record_log_t  getLog(int id);
+    static record_log_t createLog(std::string message, std::string level = LOG_LEVEL_INFO);
+    static record_log_t getLog(int id);
     static std::vector<record_log_t> getLogs();
-    static             record_log_t  updateLog(record_log_t recordToUpdate);
-    static                     void  deleteLog(const record_log_t& recordToDelete);
-    static                     void  deleteLog(int id);
-    static                     void  clearLogs();
+    static record_log_t updateLog(record_log_t recordToUpdate);
+    static void deleteLog(const record_log_t& recordToDelete);
+    static void deleteLog(int id);
+    static void clearLogs();
 };
 
-#endif //TELEMETRYSERVER_LOG_H
+#endif  // TELEMETRYSERVER_LOG_H
