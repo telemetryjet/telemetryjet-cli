@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 #include <model/records.h>
 #include <ui/tray/tray_ui.h>
+#include <utility/simple_timer.h>
 
 /**
  * Main Program Entry Point
@@ -39,8 +40,11 @@ int main() {
         SM::getDeviceManager()->start();
     }
 
-    long long elapsedInitTime = getCurrentMillis() - startInit;
+    // Initialize timer for periodic saving of data cache to database.
+    int databaseSaveInterval = SM::getPersistedConfig()->getInt("dbSaveInterval", 1000);
+    SimpleTimer timer(databaseSaveInterval);
 
+    long long elapsedInitTime = getCurrentMillis() - startInit;
     ServiceManager::getLogger()->info(fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));
 
     // Run the server loop
@@ -53,6 +57,14 @@ int main() {
         //if (TrayUI::shouldQuit) {
         //    running = false;
         //}
+
+        // Save from data cache to database at the configured interval
+        // Data points are connected with each other through a "data frame".
+        if (timer.check()) {
+            // TODO: Create data frame
+            // TODO: Create data point entries for data frame
+            // TODO: Send updated data points over websockets to telemetry system
+        }
     }
 
     // Stop the device manager, clearing up connections to serial devices.
