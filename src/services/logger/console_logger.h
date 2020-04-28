@@ -13,12 +13,12 @@ private:
 public:
     ConsoleLogger();
     ~ConsoleLogger() override;
-    void header(std::string message) override;
-    void debug(std::string message) override;
-    void info(std::string message) override;
-    void warning(std::string message) override;
-    void error(std::string message) override;
-    void alert(std::string message) override;
+    void header(std::string message, bool createLogRecord = false) override;
+    void debug(std::string message, bool createLogRecord = false) override;
+    void info(std::string message, bool createLogRecord = false) override;
+    void warning(std::string message, bool createLogRecord = false) override;
+    void error(std::string message, bool createLogRecord = false) override;
+    void alert(std::string message, bool createLogRecord = false) override;
     void setLevel(LoggerLevel newLevel) override;
     void setLevel(std::string newLevel) override;
     LoggerLevel getLevel() override;

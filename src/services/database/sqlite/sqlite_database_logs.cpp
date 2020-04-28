@@ -6,7 +6,7 @@ std::vector<record_log_t> SqliteDatabase::getRecentLogs(int system_id, int limit
 
     std::vector<record_log_t> logs;
     try {
-        SQLite::Statement query(*db, fmt::format("select * from logs where system_id={} order by timestamp desc limit {}", system_id, limit));
+        SQLite::Statement query(*db, fmt::format("select * from logs where system_id={} order by timestamp asc limit {}", system_id, limit));
         while (query.executeStep()) {
             logs.push_back({
                                    query.getColumn(0),
