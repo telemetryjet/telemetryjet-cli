@@ -12,9 +12,11 @@ record_log_t record_log_t::createLog(std::string message, std::string level) {
                       timestamp,
                       std::move(level),
                       std::move(message)});
+
+    record_log_t newLog = SM::getDatabase()->createLog(log);  // contains generated id
     SM::getStreamingServer()->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_LOG,
-                                               log.toPropertyTree());
-    return SM::getDatabase()->createLog(log);
+                                               newLog.toPropertyTree());
+    return newLog;
 }
 
 record_log_t record_log_t::getLog(int id) {
