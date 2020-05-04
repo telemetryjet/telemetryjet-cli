@@ -23,8 +23,8 @@ record_log_t record_log_t::getLog(int id) {
     return SM::getDatabase()->getLog(id);
 }
 
-std::vector<record_log_t> record_log_t::getLogs() {
-    return SM::getDatabase()->getRecentLogs(record_system_t::getActiveSystem().id, 100);
+std::vector<record_log_t> record_log_t::getLogs(int limit, int beforeId) {
+    return SM::getDatabase()->getRecentLogs(record_system_t::getActiveSystem().id, limit, beforeId);
 }
 
 record_log_t record_log_t::updateLog(record_log_t recordToUpdate) {

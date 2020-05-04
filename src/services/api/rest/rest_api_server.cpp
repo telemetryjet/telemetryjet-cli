@@ -5,6 +5,7 @@
 #include <functional>
 #include <model/records.h>
 #include <services/service_manager.h>
+#include "constants.h"
 
 #define REQUEST_RESPONSE_PARAMS                                                                    \
     const std::shared_ptr<HttpServer::Response>&response,                                          \
@@ -269,7 +270,18 @@ void handleGetLogs(REQUEST_RESPONSE_PARAMS) {
         boost::property_tree::ptree pt;
         boost::property_tree::ptree list;
 
-        const std::vector<record_log_t>& logs = record_log_t::getLogs();
+        int limit = 100;
+        int beforeId = -1;
+        auto query_fields = request->parse_query_string();
+        for(auto &field : query_fields) {
+            if(field.first == LIMIT_QUERY_PARAM) {
+                limit = std::stoi(field.second);
+            } else if(field.first == BEFORE_ID_QUERY_PARAM) {
+                beforeId = std::stoi(field.second);
+            }
+        }
+
+        const std::vector<record_log_t>& logs = record_log_t::getLogs(limit, beforeId);
         if (logs.empty()) {
             sendSuccessResponse(response, "{\"logs\" : []}");
             return;

@@ -31,7 +31,7 @@ struct record_log_t {
     // Basic Create, Read, Update, Delete functions
     static record_log_t createLog(std::string message, std::string level = LOG_LEVEL_INFO);
     static record_log_t getLog(int id);
-    static std::vector<record_log_t> getLogs();
+    static std::vector<record_log_t> getLogs(int limit, int beforeId);
     static record_log_t updateLog(record_log_t recordToUpdate);
     static void deleteLog(const record_log_t& recordToDelete);
     static void deleteLog(int id);
