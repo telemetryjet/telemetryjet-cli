@@ -36,7 +36,7 @@ public:
 
     // Logs
     std::vector<record_log_t> getLogs(int system_id) override;
-    std::vector<record_log_t> getRecentLogs(int system_id, int limit) override;
+    std::vector<record_log_t> getRecentLogs(int system_id, int limit, int beforeId) override;
                 record_log_t  getLog(int id) override;
                 record_log_t  createLog(record_log_t log) override;
                         void  updateLog(record_log_t log) override;
