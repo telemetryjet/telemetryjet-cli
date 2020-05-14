@@ -16,17 +16,12 @@ DeviceManager::~DeviceManager() {
 
 void DeviceManager::start() {
     if (!isRunning) {
-        SM::getLogger()->alert("Started device manager!");
-        record_log_t::createLog(fmt::format("Started devices."), LOG_LEVEL_ALERT);
+        SM::getLogger()->alert("Started device manager!", true);
 
         // Load the device list and initialize instances
         std::vector<record_device_t> deviceDefinitions = record_device_t::getDevices();
         SM::getLogger()->alert("=== CONFIGURING DEVICES ===");
         for (auto& deviceDefinition : deviceDefinitions) {
-            SM::getLogger()->alert(
-                fmt::format("- Device definition: [name={}]", deviceDefinition.name));
-            record_log_t::createLog(fmt::format("Started device (address={})", deviceDefinition.name), LOG_LEVEL_ALERT);
-
             Device* newDevice;
             switch (deviceDefinition.protocol) {
                 case NMEA_0183:
@@ -42,6 +37,9 @@ void DeviceManager::start() {
             }
             newDevice->open(deviceDefinition.name);
             deviceList.emplace_back(newDevice);
+
+            SM::getLogger()->alert(fmt::format("Started device [name={}]", deviceDefinition.name),
+                                   true);
         }
 
         isRunning = true;
@@ -59,14 +57,12 @@ void DeviceManager::update() {
 void DeviceManager::stop() {
     if (isRunning) {
         for (auto& device : deviceList) {
-            record_log_t::createLog(fmt::format("Stopped device (address={})", device->getAddress()), LOG_LEVEL_INFO);
             device->close();
             delete device;
         }
         deviceList.clear();
         portList.clear();
-        SM::getLogger()->alert("Stopped device manager!");
-        record_log_t::createLog(fmt::format("Stopped devices."), LOG_LEVEL_ALERT);
+        SM::getLogger()->alert("Stopped device manager!", true);
         isRunning = false;
     }
 }

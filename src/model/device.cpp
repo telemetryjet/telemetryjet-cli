@@ -3,8 +3,11 @@
 #include <utility>
 
 record_device_t record_device_t::createDevice(std::string name, int protocol) {
-    return SM::getDatabase()->createDevice(
+    auto device = SM::getDatabase()->createDevice(
         {-1, record_system_t::getActiveSystem().id, std::move(name), protocol});
+    SM::getLogger()
+        ->info(fmt::format("Created new device: [id={}, name={}]", device.id, device.name), true);
+    return device;
 }
 
 record_device_t record_device_t::getDevice(int id) {
@@ -17,6 +20,10 @@ std::vector<record_device_t> record_device_t::getDevices() {
 
 record_device_t record_device_t::updateDevice(record_device_t recordToUpdate) {
     SM::getDatabase()->updateDevice(recordToUpdate);
+    SM::getLogger()->info(fmt::format("Updated device: [id={}, name={}]",
+                                      recordToUpdate.id,
+                                      recordToUpdate.name),
+                          true);
     return recordToUpdate;
 }
 
@@ -26,4 +33,5 @@ void record_device_t::deleteDevice(const record_device_t& recordToDelete) {
 
 void record_device_t::deleteDevice(int id) {
     SM::getDatabase()->deleteById("devices", id);
+    SM::getLogger()->info(fmt::format("Deleted device: [id={}]", id), true);
 }

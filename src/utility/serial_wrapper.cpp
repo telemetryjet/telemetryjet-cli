@@ -16,7 +16,7 @@ SerialWrapper::SerialWrapper(const std::string& portName, int baudRate) {
     }
     serialPortNumBytes = 0;
     if (!serialPortOpen) {
-        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
+        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate), true);
     } else {
         SM::getLogger()->debug(fmt::format("Initialized serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
     }

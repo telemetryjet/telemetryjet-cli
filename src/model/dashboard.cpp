@@ -4,8 +4,13 @@
 #include <utility>
 
 record_dashboard_t record_dashboard_t::createDashboard(std::string name) {
-    return SM::getDatabase()->createDashboard(
+    auto dashboard = SM::getDatabase()->createDashboard(
         {-1, record_system_t::getActiveSystem().id, std::move(name), "{}"});
+    SM::getLogger()->info(fmt::format("Created new dashboard: [id={}, name={}]",
+                                      dashboard.id,
+                                      dashboard.name),
+                          true);
+    return dashboard;
 }
 
 record_dashboard_t record_dashboard_t::getDashboard(int id) {
@@ -18,6 +23,10 @@ std::vector<record_dashboard_t> record_dashboard_t::getDashboards() {
 
 record_dashboard_t record_dashboard_t::updateDashboard(record_dashboard_t recordToUpdate) {
     SM::getDatabase()->updateDashboard(recordToUpdate);
+    SM::getLogger()->info(fmt::format("Updated dashboard: [id={}, name={}]",
+                                      recordToUpdate.id,
+                                      recordToUpdate.name),
+                          true);
     return recordToUpdate;
 }
 
@@ -27,4 +36,5 @@ void record_dashboard_t::deleteDashboard(const record_dashboard_t& recordToDelet
 
 void record_dashboard_t::deleteDashboard(int id) {
     SM::getDatabase()->deleteById("dashboards", id);
+    SM::getLogger()->info(fmt::format("Deleted dashboard: [id={}]", id), true);
 }

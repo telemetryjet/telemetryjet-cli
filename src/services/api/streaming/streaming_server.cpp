@@ -112,8 +112,7 @@ void StreamingServer::handleIncomingMessage(
 
     switch (static_cast<IncomingMessageType>(type)) {
         case IncomingMessageType::TEST_MESSAGE:
-            SM::getLogger()->info(fmt::format("Received message with type {}", type));
-            record_log_t::createLog("test", LOG_LEVEL_DEBUG);
+            SM::getLogger()->debug("Received test message.", true);
             break;
         default:
             SM::getLogger()->error(

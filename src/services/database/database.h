@@ -32,7 +32,7 @@ public:
 
     // Logs
     virtual std::vector<record_log_t> getLogs(int system_id) = 0;
-    virtual std::vector<record_log_t> getRecentLogs(int system_id, int limit) = 0;
+    virtual std::vector<record_log_t> getRecentLogs(int system_id, int limit, int beforeId) = 0;
     virtual             record_log_t  getLog(int id) = 0;
     virtual             record_log_t  createLog(record_log_t log) = 0;
     virtual                     void  updateLog(record_log_t log) = 0;
