@@ -62,7 +62,7 @@ int main() {
         // Data points are connected with each other through a "data frame".
         if (timer.check()) {
             // TODO: Create data frame
-            // TODO: Create data point entries for data frame
+            // TODO: Create individual data points
             // TODO: Send updated data points over websockets to telemetry system
         }
     }
