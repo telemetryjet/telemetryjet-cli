@@ -1,7 +1,7 @@
 #ifndef TELEMETRYSERVER_CACHE_H
 #define TELEMETRYSERVER_CACHE_H
 
-#include <boost/any.hpp>
+#include <boost/variant.hpp>
 #include <fmt/format.h>
 #include <string>
 #include <unordered_map>
@@ -15,7 +15,7 @@
  */
 class DataCache {
 private:
-    std::unordered_map<std::string, boost::any> cache;
+    std::unordered_map<std::string, boost::variant<float, uint64_t>> cache;
     std::vector<std::string> keys;
 
 public:
@@ -35,7 +35,7 @@ public:
         if (cache.find(key) == cache.end()) {
             return 0;
         } else {
-            return boost::any_cast<T>(cache[key]);
+            return boost::get<T>(cache[key]);
         }
     }
 
