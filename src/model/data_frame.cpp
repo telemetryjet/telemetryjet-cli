@@ -5,11 +5,15 @@
 #include <boost/property_tree/ptree.hpp>
 
 record_data_frame_t record_data_frame_t::createDataFrame() {
-    return SM::getDatabase()->createDataFrame(
+    auto dataFrame = SM::getDatabase()->createDataFrame(
         {-1,
          record_system_t::getActiveSystem().id,
          getCurrentMillis(),
          propertyTreeToString(SM::getDataCache()->toPropertyTree())});
+
+    SM::getStreamingServer()->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_DATA_FRAME,
+                                               dataFrame.toPropertyTree());
+    return dataFrame;
 }
 
 void record_data_frame_t::createDataPointsFromFrame(const record_data_frame_t& dataFrame) {

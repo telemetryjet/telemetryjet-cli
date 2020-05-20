@@ -31,7 +31,8 @@ public:
         UPDATE_DEVICE = 3,
         NEW_LOG = 4,
         NEW_DASHBOARD = 5,
-        UPDATE_DASHBOARD = 6
+        UPDATE_DASHBOARD = 6,
+        NEW_DATA_FRAME = 7
     };
 
     StreamingServer();
