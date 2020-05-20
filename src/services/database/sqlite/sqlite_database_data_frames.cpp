@@ -64,3 +64,7 @@ void SqliteDatabase::updateDataFrame(record_data_frame_t dataFrame) {
         throwError(fmt::format("Error in updateDataFrame: {}", e.what()));
     }
 }
+
+void SqliteDatabase::deleteAllDataFramesForCurrentSystem() {
+    deleteBySystemId("data_frames", record_system_t::getActiveSystem().id);
+}

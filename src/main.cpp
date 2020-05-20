@@ -62,7 +62,8 @@ int main() {
         // Save from data cache to database at the configured interval
         // Data points are connected with each other through a "data frame".
         if (timer.check()) {
-            record_data_frame_t::createDataFrame();
+            auto dataFrame = record_data_frame_t::createDataFrame();
+            record_data_frame_t::createDataPointsFromFrame(dataFrame);
             // TODO: Send updated data points over websockets to telemetry system
         }
     }

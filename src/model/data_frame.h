@@ -1,10 +1,10 @@
 #ifndef TELEMETRYSERVER_DATA_FRAME_H
 #define TELEMETRYSERVER_DATA_FRAME_H
 
-#include <string>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <string>
 #include <utility/json_utils.h>
 
 /**
@@ -25,8 +25,10 @@ struct record_data_frame_t {
         return pt;
     }
 
+    static void createDataPointsFromFrame(const record_data_frame_t& dataFrame);
+
     // Basic Create, Read, Update, Delete functions
     static record_data_frame_t createDataFrame();
 };
 
-#endif //TELEMETRYSERVER_DATA_FRAME_H
+#endif  // TELEMETRYSERVER_DATA_FRAME_H

@@ -24,6 +24,8 @@ struct record_data_point_t {
         pt.add("data", data);
         return pt;
     }
+
+    static record_data_point_t createDataPoint(int dataFrameId, std::string data);
 };
 
 #endif  // TELEMETRYSERVER_DATA_POINT_H
