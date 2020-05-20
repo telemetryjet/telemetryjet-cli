@@ -1,6 +1,7 @@
 #ifndef TELEMETRYSERVER_CACHE_H
 #define TELEMETRYSERVER_CACHE_H
 
+#include <boost/property_tree/ptree.hpp>
 #include <boost/variant.hpp>
 #include <fmt/format.h>
 #include <string>
@@ -41,6 +42,22 @@ public:
 
     std::vector<std::string> getKeys() {
         return keys;
+    }
+
+    boost::property_tree::ptree toPropertyTree() {
+        boost::property_tree::ptree pt;
+        for (const std::string& key : keys) {
+            auto var = cache[key];
+            if (var.type() == typeid(float)) {
+                pt.add(key, get<float>(key));
+            } else if (var.type() == typeid(uint64_t)) {
+                pt.add(key, get<uint64_t>(key));
+            } else {
+                throw std::runtime_error(
+                    "Cache variant type not implemented in DataCache::toPropertyTree()");
+            }
+        }
+        return pt;
     }
 };
 
