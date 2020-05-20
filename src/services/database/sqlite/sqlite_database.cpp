@@ -34,7 +34,7 @@ SqliteDatabase::SqliteDatabase() {
         "text not null, json_definition text not null)");
     db->exec(
         "create table if not exists data_points (id integer primary key, system_id integer, "
-        "data_frame_id integer, data text not null)");
+        "data_frame_id integer, timestamp text not null, data text not null)");
     db->exec(
         "create table if not exists data_frames (id integer primary key, system_id integer, "
         "timestamp text not null, data text not null)");

@@ -14,6 +14,7 @@ struct record_data_point_t {
     int id;
     int system_id;
     int data_frame_id;
+    long long timestamp;
     std::string data;
 
     [[nodiscard]] boost::property_tree::ptree toPropertyTree() const {
@@ -21,6 +22,7 @@ struct record_data_point_t {
         pt.add("id", id);
         pt.add("system_id", system_id);
         pt.add("data_frame_id", data_frame_id);
+        pt.add("timestamp", timestamp);
         pt.add("data", data);
         return pt;
     }
