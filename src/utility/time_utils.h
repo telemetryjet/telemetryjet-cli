@@ -12,7 +12,7 @@ namespace ch = std::chrono;
  * Gets a timestamp as milliseconds since epoch.
  */
 inline long long getCurrentMillis() {
-    return duration_cast<ch::milliseconds>(ch::system_clock::now().time_since_epoch()).count();
+    return ch::system_clock::now().time_since_epoch() / ch::milliseconds(1);
 }
 
 inline std::string getTimestamp() {
