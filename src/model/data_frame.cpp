@@ -17,6 +17,8 @@ void record_data_frame_t::createDataPointsFromFrame(const record_data_frame_t& d
     for (boost::property_tree::ptree::const_iterator it = cache.begin(); it != cache.end(); it++) {
         boost::property_tree::ptree dataPoint;
         dataPoint.add(it->first, it->second.data());
-        record_data_point_t::createDataPoint(dataFrame.id, propertyTreeToString(dataPoint));
+        record_data_point_t::createDataPoint(dataFrame.id,
+                                             std::stoi(it->first),
+                                             propertyTreeToString(dataPoint));
     }
 }

@@ -14,7 +14,8 @@ std::vector<record_data_point_t> SqliteDatabase::getDataPoints(int system_id) {
                                   query.getColumn(1),
                                   query.getColumn(2),
                                   query.getColumn(3),
-                                  query.getColumn(4)});
+                                  query.getColumn(4),
+                                  query.getColumn(5)});
         }
     } catch (std::exception& e) {
         throwError(fmt::format("Error in getDataPoints: {}", e.what()));
@@ -33,7 +34,8 @@ record_data_point_t SqliteDatabase::getDataPoint(int id) {
                 query.getColumn(1),
                 query.getColumn(2),
                 query.getColumn(3),
-                query.getColumn(4)};
+                query.getColumn(4),
+                query.getColumn(5)};
     } else {
         throwError(fmt::format("Error in getDataPoint: Data Point with id = {} not found.", id));
     }
@@ -43,11 +45,12 @@ record_data_point_t SqliteDatabase::createDataPoint(record_data_point_t dataPoin
     const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
 
     try {
-        SQLite::Statement insertStatement(*db, "insert into data_points values (null,?,?,?,?)");
+        SQLite::Statement insertStatement(*db, "insert into data_points values (null,?,?,?,?,?)");
         insertStatement.bind(1, dataPoint.system_id);
         insertStatement.bind(2, dataPoint.data_frame_id);
         insertStatement.bind(3, dataPoint.timestamp);
-        insertStatement.bind(4, dataPoint.data);
+        insertStatement.bind(4, dataPoint.data_type);
+        insertStatement.bind(5, dataPoint.data);
         insertStatement.exec();
         dataPoint.id = db->getLastInsertRowid();
         return dataPoint;
@@ -60,14 +63,15 @@ void SqliteDatabase::updateDataPoint(record_data_point_t dataPoint) {
     const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
 
     try {
-        SQLite::Statement updateStatement(
-            *db,
-            "update data_points set system_id=?, data_frame_id=?, timestamp=?, data=? where id=?");
+        SQLite::Statement updateStatement(*db,
+                                          "update data_points set system_id=?, data_frame_id=?, "
+                                          "timestamp=?, data_type=?, data=? where id=?");
         updateStatement.bind(1, dataPoint.system_id);
         updateStatement.bind(2, dataPoint.data_frame_id);
         updateStatement.bind(3, dataPoint.timestamp);
-        updateStatement.bind(4, dataPoint.data);
-        updateStatement.bind(5, dataPoint.id);
+        updateStatement.bind(4, dataPoint.data_type);
+        updateStatement.bind(5, dataPoint.data);
+        updateStatement.bind(6, dataPoint.id);
         updateStatement.exec();
     } catch (std::exception& e) {
         throwError(fmt::format("Error in updateDataPoint: {}", e.what()));
