@@ -29,6 +29,7 @@ struct record_data_frame_t {
 
     // Basic Create, Read, Update, Delete functions
     static record_data_frame_t createDataFrame();
+    static std::vector<record_data_frame_t> getDataFrames(long long before, long long after);
 };
 
 #endif  // TELEMETRYSERVER_DATA_FRAME_H

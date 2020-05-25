@@ -50,14 +50,18 @@ public:
     virtual void updateDashboard(record_dashboard_t dashboard) = 0;
 
     // Data Points
-    virtual std::vector<record_data_point_t> getDataPoints(int system_id) = 0;
+    virtual std::vector<record_data_point_t> getAllDataPoints(int system_id) = 0;
+    virtual std::vector<record_data_point_t>
+    getDataPoints(int system_id, int key, long long before, long long after) = 0;
     virtual record_data_point_t getDataPoint(int id) = 0;
     virtual record_data_point_t createDataPoint(record_data_point_t dataPoint) = 0;
     virtual void updateDataPoint(record_data_point_t dataPoint) = 0;
     virtual void deleteAllDataPointsForCurrentSystem() = 0;
 
     // Data Frames
-    virtual std::vector<record_data_frame_t> getDataFrames(int system_id) = 0;
+    virtual std::vector<record_data_frame_t> getAllDataFrames(int system_id) = 0;
+    virtual std::vector<record_data_frame_t>
+    getDataFrames(int system_id, long long before, long long after) = 0;
     virtual record_data_frame_t getDataFrame(int id) = 0;
     virtual record_data_frame_t createDataFrame(record_data_frame_t dataFrame) = 0;
     virtual void updateDataFrame(record_data_frame_t dataFrame) = 0;

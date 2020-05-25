@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <utility/json_utils.h>
+#include <utility/time_utils.h>
 
 /**
  * A Data Point
@@ -29,7 +30,13 @@ struct record_data_point_t {
         return pt;
     }
 
-    static record_data_point_t createDataPoint(int dataFrameId, int dataType, std::string data);
+    // Basic Create, Read, Update, Delete functions
+    static record_data_point_t createDataPoint(int dataFrameId,
+                                               int dataType,
+                                               const std::string& data,
+                                               long long timestamp = getCurrentMillis());
+    static std::vector<record_data_point_t>
+    getDataPoints(int key, long long before, long long after);
 };
 
 #endif  // TELEMETRYSERVER_DATA_POINT_H
