@@ -1,11 +1,11 @@
 #include "rest_api_server.h"
+#include "constants.h"
 #include "utility/json_utils.h"
 #include <boost/property_tree/exceptions.hpp>
 #include <fmt/format.h>
 #include <functional>
 #include <model/records.h>
 #include <services/service_manager.h>
-#include "constants.h"
 
 #define REQUEST_RESPONSE_PARAMS                                                                    \
     const std::shared_ptr<HttpServer::Response>&response,                                          \
@@ -273,10 +273,10 @@ void handleGetLogs(REQUEST_RESPONSE_PARAMS) {
         int limit = 100;
         int beforeId = -1;
         auto query_fields = request->parse_query_string();
-        for(auto &field : query_fields) {
-            if(field.first == LIMIT_QUERY_PARAM) {
+        for (auto& field : query_fields) {
+            if (field.first == LIMIT_QUERY_PARAM) {
                 limit = std::stoi(field.second);
-            } else if(field.first == BEFORE_ID_QUERY_PARAM) {
+            } else if (field.first == BEFORE_ID_QUERY_PARAM) {
                 beforeId = std::stoi(field.second);
             }
         }
@@ -402,6 +402,75 @@ void handleDeleteDashboard(REQUEST_RESPONSE_PARAMS) {
     }
 }
 
+void handleGetDataPoints(REQUEST_RESPONSE_PARAMS) {
+    try {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ptree list;
+
+        long long before = -1;
+        long long after = -1;
+        int key = -1;
+        auto query_fields = request->parse_query_string();
+        for (auto& field : query_fields) {
+            if (field.first == KEY_QUERY_PARAM) {
+                key = std::stoi(field.second);
+            } else if (field.first == BEFORE_QUERY_PARAM) {
+                before = std::stoll(field.second);
+            } else if (field.first == AFTER_QUERY_PARAM) {
+                after = std::stoll(field.second);
+            }
+        }
+
+        const std::vector<record_data_point_t>& dps
+            = record_data_point_t::getDataPoints(key, before, after);
+        if (dps.empty()) {
+            sendSuccessResponse(response, "{\"data_points\" : []}");
+            return;
+        }
+
+        for (const record_data_point_t& dp : dps) {
+            list.push_back(std::make_pair("", dp.toPropertyTree()));
+        }
+        pt.add_child("data_points", list);
+        sendSuccessResponse(response, propertyTreeToString(pt));
+    } catch (std::exception& error) {
+        sendFailureResponse(response, error.what());
+    }
+}
+
+void handleGetDataFrames(REQUEST_RESPONSE_PARAMS) {
+    try {
+        boost::property_tree::ptree pt;
+        boost::property_tree::ptree list;
+
+        long long before = -1;
+        long long after = -1;
+        auto query_fields = request->parse_query_string();
+        for (auto& field : query_fields) {
+            if (field.first == BEFORE_QUERY_PARAM) {
+                before = std::stoll(field.second);
+            } else if (field.first == AFTER_QUERY_PARAM) {
+                after = std::stoll(field.second);
+            }
+        }
+
+        const std::vector<record_data_frame_t>& frames
+            = record_data_frame_t::getDataFrames(before, after);
+        if (frames.empty()) {
+            sendSuccessResponse(response, "{\"data_frames\" : []}");
+            return;
+        }
+
+        for (const record_data_frame_t& frame : frames) {
+            list.push_back(std::make_pair("", frame.toPropertyTree()));
+        }
+        pt.add_child("data_frames", list);
+        sendSuccessResponse(response, propertyTreeToString(pt));
+    } catch (std::exception& error) {
+        sendFailureResponse(response, error.what());
+    }
+}
+
 RestApiServer::RestApiServer() {
     // Configure server options
     server = new HttpServer();
@@ -457,6 +526,12 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/dashboard/([0-9]+)$"]["PUT"] = handleUpdateDashboard;
     server->resource["^/v1/dashboard/([0-9]+)$"]["DELETE"] = handleDeleteDashboard;
     server->resource["^/v1/dashboard/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
+
+    // Data Points
+    server->resource["^/v1/datapoints$"]["GET"] = handleGetDataPoints;
+
+    // Data Frames
+    server->resource["^/v1/dataframes$"]["GET"] = handleGetDataFrames;
 
     server->on_error
         = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code& ec) {

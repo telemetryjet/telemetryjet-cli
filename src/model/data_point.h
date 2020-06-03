@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <utility/json_utils.h>
+#include <utility/time_utils.h>
 
 /**
  * A Data Point
@@ -15,6 +16,7 @@ struct record_data_point_t {
     int system_id;
     int data_frame_id;
     long long timestamp;
+    int data_type;
     std::string data;
 
     [[nodiscard]] boost::property_tree::ptree toPropertyTree() const {
@@ -23,11 +25,18 @@ struct record_data_point_t {
         pt.add("system_id", system_id);
         pt.add("data_frame_id", data_frame_id);
         pt.add("timestamp", timestamp);
+        pt.add("data_type", data_type);
         pt.add("data", data);
         return pt;
     }
 
-    static record_data_point_t createDataPoint(int dataFrameId, std::string data);
+    // Basic Create, Read, Update, Delete functions
+    static record_data_point_t createDataPoint(int dataFrameId,
+                                               int dataType,
+                                               const std::string& data,
+                                               long long timestamp = getCurrentMillis());
+    static std::vector<record_data_point_t>
+    getDataPoints(int key, long long before, long long after);
 };
 
 #endif  // TELEMETRYSERVER_DATA_POINT_H

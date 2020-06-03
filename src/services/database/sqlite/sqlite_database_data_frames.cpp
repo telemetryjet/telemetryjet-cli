@@ -1,7 +1,7 @@
 #include "sqlite_database.h"
 #include <fmt/format.h>
 
-std::vector<record_data_frame_t> SqliteDatabase::getDataFrames(int system_id) {
+std::vector<record_data_frame_t> SqliteDatabase::getAllDataFrames(int system_id) {
     const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
 
     std::vector<record_data_frame_t> dataFrames;
@@ -9,6 +9,31 @@ std::vector<record_data_frame_t> SqliteDatabase::getDataFrames(int system_id) {
         SQLite::Statement query(*db,
                                 fmt::format("select * from data_frames where system_id={}",
                                             system_id));
+        while (query.executeStep()) {
+            dataFrames.push_back(
+                {query.getColumn(0), query.getColumn(1), query.getColumn(2), query.getColumn(3)});
+        }
+    } catch (std::exception& e) {
+        throwError(fmt::format("Error in getDataFrames: {}", e.what()));
+    }
+    return dataFrames;
+}
+
+std::vector<record_data_frame_t>
+SqliteDatabase::getDataFrames(int system_id, long long before, long long after) {
+    const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
+
+    std::vector<record_data_frame_t> dataFrames;
+    try {
+        std::string whereConditions = fmt::format("system_id={}", system_id);
+        if (before != -1) {
+            whereConditions += fmt::format(" and timestamp < {}", before);
+        }
+        if (after != -1) {
+            whereConditions += fmt::format(" and timestamp > {}", after);
+        }
+        SQLite::Statement query(*db,
+                                fmt::format("select * from data_frames where {}", whereConditions));
         while (query.executeStep()) {
             dataFrames.push_back(
                 {query.getColumn(0), query.getColumn(1), query.getColumn(2), query.getColumn(3)});

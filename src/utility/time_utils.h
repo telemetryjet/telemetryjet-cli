@@ -5,14 +5,11 @@
 #include <cstdint>
 #include <iostream>
 
-namespace pt = boost::posix_time;
-namespace ch = std::chrono;
-
 /*
  * Gets a timestamp as milliseconds since epoch.
  */
 inline long long getCurrentMillis() {
-    return ch::system_clock::now().time_since_epoch() / ch::milliseconds(1);
+    return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
 }
 
 inline std::string getTimestamp() {

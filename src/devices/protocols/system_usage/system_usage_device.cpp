@@ -19,14 +19,14 @@ void SystemUsageDevice::update() {
     if (timer->check()) {
         stats->calculate();
 
-        SM::getDataCache()->set<uint64_t>("sys.disk.avail", stats->mDiskAvailable);
-        SM::getDataCache()->set<uint64_t>("sys.disk.used", stats->mDiskUsage);
-        SM::getDataCache()->set<uint64_t>("sys.mem.avail", stats->mPhysicalMemoryAvailable);
-        SM::getDataCache()->set<uint64_t>("sys.mem.used", stats->mPhysicalMemoryUsed);
-        SM::getDataCache()->set<float>("sys.cpu.used", stats->mCpuUsage);
-        SM::getDataCache()->set<float>("sys.cpu.temp", stats->mCpuTemperature);
-        SM::getDataCache()->set<float>("sys.gpu.used", stats->mGpuUsage);
-        SM::getDataCache()->set<float>("sys.gpu.temp", stats->mGpuTemperature);
+        SM::getDataCache()->set<uint64_t>(DataCache::Key::SYS_DISK_AVAIL, stats->mDiskAvailable);
+        SM::getDataCache()->set<uint64_t>(DataCache::Key::SYS_DISK_USED, stats->mDiskUsage);
+        SM::getDataCache()->set<uint64_t>(DataCache::Key::SYS_MEM_AVAIL, stats->mPhysicalMemoryAvailable);
+        SM::getDataCache()->set<uint64_t>(DataCache::Key::SYS_MEM_USED, stats->mPhysicalMemoryUsed);
+        SM::getDataCache()->set<float>(DataCache::Key::SYS_CPU_USED, stats->mCpuUsage);
+        SM::getDataCache()->set<float>(DataCache::Key::SYS_CPU_TEMP, stats->mCpuTemperature);
+        SM::getDataCache()->set<float>(DataCache::Key::SYS_GPU_USED, stats->mGpuUsage);
+        SM::getDataCache()->set<float>(DataCache::Key::SYS_GPU_TEMP, stats->mGpuTemperature);
     }
 }
 
