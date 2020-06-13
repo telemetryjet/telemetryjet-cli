@@ -9,9 +9,11 @@ The TelemetryJet Server is a lightweight, fast realtime telemetry server which h
 
 The server is designed to be lightweight, lightning-fast, and cross-platform. TelemetryJet can be run on a desktop computer or single-board computer such as a Raspberry Pi.
 
-## Getting Started
+## External Dependencies
 
-TelemetryJet is built in modern C++. This project requires [Boost 1.66.0](https://www.boost.org/users/history/version_1_66_0.html) or greater to be installed on the development computer.
+Some dependencies must be built/installed separately:
+- [Boost 1.66.0](https://www.boost.org/users/history/version_1_66_0.html) or greater
+- [libserialport](https://sigrok.org/wiki/Libserialport)
 
 ## Build & Run
 
@@ -31,5 +33,6 @@ To use XCode with this project, run `./devops/xcode_init.sh`. This will prompt C
 
 ## Project Organization
 The organization of the project roughly follows the Pitchfork Layout: "a convention for laying out source, build, and resource files in a filesystem to aide in uniformity, tooling, understandability, and compartmentalization."
+
 For more details and an explanation of the project layout, see:
-https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs
+[The Pitchfork Layout](https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs)
