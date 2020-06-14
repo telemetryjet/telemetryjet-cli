@@ -23,7 +23,6 @@ set(SOURCES
         src/main.cpp
         src/devices/device_manager.cpp
         src/devices/protocols/nmea_0183/nmea_0183_device.cpp
-        src/devices/protocols/system_usage/system_usage_statistics.cpp
         src/devices/protocols/system_usage/system_usage_device.cpp
         src/model/config_item.cpp
         src/model/dashboard.cpp
@@ -56,18 +55,21 @@ if (WIN32)
     set(SOURCES
             ${SOURCES}
             src/ui/tray/tray_ui_winapi.cpp
+            src/devices/protocols/system_usage/system_usage_statistics_win32.cpp
     )
 endif()
 if (APPLE)
     set(SOURCES
             ${SOURCES}
             src/ui/tray/tray_ui_appkit.cpp
+            src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
     )
 else()
     if (UNIX)
         set(SOURCES
                 ${SOURCES}
                 src/ui/tray/tray_ui_gtk.cpp
+                src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
         )
     endif()
 endif()
