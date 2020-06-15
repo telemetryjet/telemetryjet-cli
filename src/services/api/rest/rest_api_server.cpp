@@ -409,11 +409,11 @@ void handleGetDataPoints(REQUEST_RESPONSE_PARAMS) {
 
         long long before = -1;
         long long after = -1;
-        int key = -1;
+        std::string key = "";
         auto query_fields = request->parse_query_string();
         for (auto& field : query_fields) {
             if (field.first == KEY_QUERY_PARAM) {
-                key = std::stoi(field.second);
+                key = field.second;
             } else if (field.first == BEFORE_QUERY_PARAM) {
                 before = std::stoll(field.second);
             } else if (field.first == AFTER_QUERY_PARAM) {

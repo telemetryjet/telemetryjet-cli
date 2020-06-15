@@ -24,14 +24,14 @@ std::vector<record_data_point_t> SqliteDatabase::getAllDataPoints(int system_id)
 }
 
 std::vector<record_data_point_t>
-SqliteDatabase::getDataPoints(int system_id, int key, long long before, long long after) {
+SqliteDatabase::getDataPoints(int system_id, const std::string& key, long long before, long long after) {
     const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
 
     std::vector<record_data_point_t> dataPoints;
     try {
         std::string whereConditions = fmt::format("system_id={}", system_id);
-        if (key != -1) {
-            whereConditions += fmt::format(" and data_type = {}", key);
+        if (!key.empty()) {
+            whereConditions += fmt::format(" and data_type like '{}%'", key);
         }
         if (before != -1) {
             whereConditions += fmt::format(" and timestamp < {}", before);
@@ -50,7 +50,7 @@ SqliteDatabase::getDataPoints(int system_id, int key, long long before, long lon
                                   query.getColumn(5)});
         }
     } catch (std::exception& e) {
-        throwError(fmt::format("Error in getAllDataPoints: {}", e.what()));
+        throwError(fmt::format("Error in getDataPoints: {}", e.what()));
     }
     return dataPoints;
 }

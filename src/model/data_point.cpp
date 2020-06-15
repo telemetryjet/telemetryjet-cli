@@ -2,7 +2,7 @@
 #include "services/service_manager.h"
 
 record_data_point_t record_data_point_t::createDataPoint(int dataFrameId,
-                                                         int dataType,
+                                                         const std::string& dataType,
                                                          const std::string& data,
                                                          long long timestamp) {
     return SM::getDatabase()->createDataPoint(
@@ -10,7 +10,7 @@ record_data_point_t record_data_point_t::createDataPoint(int dataFrameId,
 }
 
 std::vector<record_data_point_t>
-record_data_point_t::getDataPoints(int key, long long int before, long long int after) {
+record_data_point_t::getDataPoints(const std::string& key, long long int before, long long int after) {
     return SM::getDatabase()->getDataPoints(record_system_t::getActiveSystem().id,
                                             key,
                                             before,

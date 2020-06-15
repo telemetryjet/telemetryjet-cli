@@ -28,17 +28,17 @@ void Nmea0183Device::update() {
 
     // At polling interval, save the data points to the cache
     if (timer->check()) {
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_STATUS, gps->fix.status);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_TYPE, gps->fix.type);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_QUALITY, gps->fix.quality);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_ALTITUDE, gps->fix.altitude);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_LATITUDE, gps->fix.latitude);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_LONGITUDE, gps->fix.longitude);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_SPEED, gps->fix.speed);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_TRAVELANGLE, gps->fix.travelAngle);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_TRACKINGSATELLITES, gps->fix.trackingSatellites);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_VISIBLESATELLITES, gps->fix.visibleSatellites);
-        SM::getDataCache()->set<float>(DataCache::Key::GPS_FIX_TIMESTAMP_RAWTIME, gps->fix.timestamp.rawTime);
+        SM::getDataCache()->set<float>("gps_fix_status", gps->fix.status);
+        SM::getDataCache()->set<float>("gps_fix_type", gps->fix.type);
+        SM::getDataCache()->set<float>("gps_fix_quality", gps->fix.quality);
+        SM::getDataCache()->set<float>("gps_fix_altitude", gps->fix.altitude);
+        SM::getDataCache()->set<float>("gps_fix_latitude", gps->fix.latitude);
+        SM::getDataCache()->set<float>("gps_fix_longitude", gps->fix.longitude);
+        SM::getDataCache()->set<float>("gps_fix_speed", gps->fix.speed);
+        SM::getDataCache()->set<float>("gps_fix_travelAngle", gps->fix.travelAngle);
+        SM::getDataCache()->set<float>("gps_fix_trackingSatellites", gps->fix.trackingSatellites);
+        SM::getDataCache()->set<float>("gps_fix_visibleSatellites", gps->fix.visibleSatellites);
+        SM::getDataCache()->set<float>("gps_fix_timestamp_rawTime", gps->fix.timestamp.rawTime);
     }
 }
 

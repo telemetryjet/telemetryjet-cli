@@ -57,7 +57,7 @@ public:
     // Data Points
     std::vector<record_data_point_t> getAllDataPoints(int system_id) override;
     std::vector<record_data_point_t>
-    getDataPoints(int system_id, int key, long long before, long long after) override;
+    getDataPoints(int system_id, const std::string& key, long long before, long long after) override;
     record_data_point_t getDataPoint(int id) override;
     record_data_point_t createDataPoint(record_data_point_t dataPoint) override;
     void updateDataPoint(record_data_point_t dataPoint) override;
