@@ -113,6 +113,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
 target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
 
 # Dependencies for tray UI
@@ -177,6 +178,9 @@ FetchContent_MakeAvailable(NemaTode)
 add_subdirectory(lib)
 
 link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
+
+find_library(SERIALPORT_LIBRARY libserialport.a HINTS /usr/local/lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SERIALPORT_LIBRARY})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
