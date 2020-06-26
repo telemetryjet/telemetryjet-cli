@@ -10,7 +10,7 @@ void record_data_frame_t::createDataPointsFromFrame(const record_data_frame_t& d
         boost::property_tree::ptree dataPoint;
         dataPoint.add(it->first, it->second.data());
         record_data_point_t::createDataPoint(dataFrame.id,
-                                             std::stoi(it->first),
+                                             it->first,
                                              propertyTreeToString(dataPoint),
                                              dataFrame.timestamp);
     }

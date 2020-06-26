@@ -16,7 +16,7 @@ struct record_data_point_t {
     int system_id;
     int data_frame_id;
     long long timestamp;
-    int data_type;
+    std::string data_type;
     std::string data;
 
     [[nodiscard]] boost::property_tree::ptree toPropertyTree() const {
@@ -32,11 +32,11 @@ struct record_data_point_t {
 
     // Basic Create, Read, Update, Delete functions
     static record_data_point_t createDataPoint(int dataFrameId,
-                                               int dataType,
+                                               const std::string& dataType,
                                                const std::string& data,
                                                long long timestamp = getCurrentMillis());
     static std::vector<record_data_point_t>
-    getDataPoints(int key, long long before, long long after);
+    getDataPoints(const std::string& key, long long before, long long after);
 };
 
 #endif  // TELEMETRYSERVER_DATA_POINT_H

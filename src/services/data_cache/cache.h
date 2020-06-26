@@ -19,32 +19,8 @@ public:
     DataCache();
     ~DataCache();
 
-    enum Key : int {
-        // system usage
-        SYS_DISK_AVAIL = 0,
-        SYS_DISK_USED = 1,
-        SYS_MEM_AVAIL = 2,
-        SYS_MEM_USED = 3,
-        SYS_CPU_USED = 4,
-        SYS_CPU_TEMP = 5,
-        SYS_GPU_USED = 6,
-        SYS_GPU_TEMP = 7,
-        // nmea 0183
-        GPS_FIX_STATUS = 8,
-        GPS_FIX_TYPE = 9,
-        GPS_FIX_QUALITY = 10,
-        GPS_FIX_ALTITUDE = 11,
-        GPS_FIX_LATITUDE = 12,
-        GPS_FIX_LONGITUDE = 13,
-        GPS_FIX_SPEED = 14,
-        GPS_FIX_TRAVELANGLE = 15,
-        GPS_FIX_TRACKINGSATELLITES = 16,
-        GPS_FIX_VISIBLESATELLITES = 17,
-        GPS_FIX_TIMESTAMP_RAWTIME = 18
-    };
-
     template <class T>
-    void set(const int key, T value) {
+    void set(const std::string& key, T value) {
         if (cache.find(key) == cache.end()) {
             keys.push_back(key);
         }
@@ -52,7 +28,7 @@ public:
     }
 
     template <class T>
-    T get(const int key) {
+    T get(const std::string& key) {
         if (cache.find(key) == cache.end()) {
             return 0;
         } else {
@@ -60,18 +36,18 @@ public:
         }
     }
 
-    std::vector<int> getKeys() {
+    std::vector<std::string> getKeys() {
         return keys;
     }
 
     boost::property_tree::ptree toPropertyTree() {
         boost::property_tree::ptree pt;
-        for (const int key : keys) {
+        for (const std::string& key : keys) {
             auto var = cache[key];
             if (var.type() == typeid(float)) {
-                pt.add(std::to_string(key), get<float>(key));
+                pt.add(key, get<float>(key));
             } else if (var.type() == typeid(uint64_t)) {
-                pt.add(std::to_string(key), get<uint64_t>(key));
+                pt.add(key, get<uint64_t>(key));
             } else {
                 throw std::runtime_error(
                     "Cache variant type not implemented in DataCache::toPropertyTree()");
@@ -81,8 +57,8 @@ public:
     }
 
 private:
-    std::unordered_map<int, boost::variant<float, uint64_t>> cache;
-    std::vector<int> keys;
+    std::unordered_map<std::string, boost::variant<float, uint64_t>> cache;
+    std::vector<std::string> keys;
 };
 
 #endif  // TELEMETRYSERVER_CACHE_H

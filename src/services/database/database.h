@@ -52,7 +52,7 @@ public:
     // Data Points
     virtual std::vector<record_data_point_t> getAllDataPoints(int system_id) = 0;
     virtual std::vector<record_data_point_t>
-    getDataPoints(int system_id, int key, long long before, long long after) = 0;
+    getDataPoints(int system_id, const std::string& key, long long before, long long after) = 0;
     virtual record_data_point_t getDataPoint(int id) = 0;
     virtual record_data_point_t createDataPoint(record_data_point_t dataPoint) = 0;
     virtual void updateDataPoint(record_data_point_t dataPoint) = 0;
