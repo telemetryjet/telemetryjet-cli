@@ -40,6 +40,12 @@ void record_system_t::deleteSystem(const record_system_t& recordToDelete) {
 }
 
 void record_system_t::deleteSystem(int id) {
+    // If the system is the active system, stop it before deleting
+    int activeSystemId = SM::getPersistedConfig()->getInt("activeSystem", -1);
+    if (id == activeSystemId) {
+        stopSystem();
+    }
+
     // Delete the system object
     SM::getDatabase()->deleteById("systems", id);
 
@@ -83,9 +89,12 @@ record_system_t record_system_t::getActiveSystem() {
 
 record_system_t record_system_t::setActiveSystem(int id) {
     bool wasRunning = isSystemRunning();
+    int activeSystemId = SM::getPersistedConfig()->getInt("activeSystem", -1);
 
-    // Stop the system before we switch over
-    stopSystem();
+    // Stop the system (if it exists) before we switch over
+    if (activeSystemId > 0) {
+        stopSystem();
+    }
 
     record_system_t system = SM::getDatabase()->getSystem(id);
     SM::getPersistedConfig()->setInt("activeSystem", id);
