@@ -1,9 +1,9 @@
 #include "device_manager.h"
-#include "constants.h"
-#include "devices/protocols/system_usage/system_usage_device.h"
 #include "fmt/format.h"
 #include "model/records.h"
+#include "protocols/mock/mock_device.h"
 #include "protocols/nmea_0183/nmea_0183_device.h"
+#include "protocols/system_usage/system_usage_device.h"
 #include "services/service_manager.h"
 
 DeviceManager::DeviceManager() {
@@ -29,6 +29,9 @@ void DeviceManager::start() {
                     break;
                 case SYSTEM_USAGE:
                     newDevice = new SystemUsageDevice();
+                    break;
+                case MOCK_DEVICE:
+                    newDevice = new MockDevice();
                     break;
                 default:
                     throw std::runtime_error(fmt::format("Device {} has unknown protocol {}.",

@@ -22,6 +22,7 @@ endif()
 set(SOURCES
         src/main.cpp
         src/devices/device_manager.cpp
+        src/devices/protocols/mock/mock_device.cpp
         src/devices/protocols/nmea_0183/nmea_0183_device.cpp
         src/devices/protocols/system_usage/system_usage_device.cpp
         src/model/config_item.cpp
@@ -77,6 +78,7 @@ endif()
 set(HEADERS_PRIVATE
         src/constants.h
         src/devices/device_manager.h
+        src/devices/protocols/mock/mock_device.h
         src/devices/protocols/nmea_0183/nmea_0183_device.h
         src/devices/protocols/system_usage/system_usage_statistics.h
         src/devices/protocols/system_usage/system_usage_device.h

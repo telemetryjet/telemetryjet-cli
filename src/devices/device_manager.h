@@ -13,7 +13,7 @@ private:
     std::vector<std::string> portList;
     SimpleTimer* timer;
 
-    enum protocolTypes { NMEA_0183, SYSTEM_USAGE, NUM_PROTOCOLS };
+    enum protocolTypes { NMEA_0183, SYSTEM_USAGE, MOCK_DEVICE, NUM_PROTOCOLS };
 
 public:
     bool isRunning = false;
