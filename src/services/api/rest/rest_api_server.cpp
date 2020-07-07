@@ -528,10 +528,10 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/dashboard/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     // Data Points
-    server->resource["^/v1/datapoints$"]["GET"] = handleGetDataPoints;
+    server->resource["^/v1/data_points$"]["GET"] = handleGetDataPoints;
 
     // Data Frames
-    server->resource["^/v1/dataframes$"]["GET"] = handleGetDataFrames;
+    server->resource["^/v1/data_frames$"]["GET"] = handleGetDataFrames;
 
     server->on_error
         = [](const std::shared_ptr<HttpServer::Request>& request, const SimpleWeb::error_code& ec) {
