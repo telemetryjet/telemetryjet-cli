@@ -22,8 +22,10 @@ void ServiceManager::init() {
 
     // Set log enabled from configuration variable as soon as possible
     char* loggingEnv = getenv("TELEMETRYJET_LOGGING");
+    bool setLogDisabledViaEnv = false;
     if (loggingEnv != nullptr && strcmp(loggingEnv, "false") == 0) {
         logger->setLevel(LoggerLevel::LEVEL_NONE);
+        setLogDisabledViaEnv = true;
     }
 
     // Set log level from configuration variable as soon as possible.
@@ -45,40 +47,49 @@ void ServiceManager::init() {
 
     config = new JsonEnvConfig();
 
-    // Set log enabled for logger once full config is loaded
+    // Set log enabled and log level for logger once full config is loaded
     bool logEnabled = config->getBool("logging", true);
-    if (!logEnabled) {
+    std::string logLevel = config->getString("log_level", "header");
+
+    if (!setLogDisabledViaEnv && !logEnabled) {
         logger->warning(
-            "Disabled logging via JSON configuration. \nTo filter startup messages, please specify "
-            "this config option with environment variable TELEMETRYJET_LOGGING=false.");
+            "Disabling logging via JSON configuration applies after startup. \nTo disable startup messages, please specify "
+            "this config option with environment variable TELEMETRYJET_LOGGING=true/false.");
         logger->setLevel(LoggerLevel::LEVEL_NONE);
     }
 
     if (!setLogLevelViaEnv && logEnabled) {
-        std::string logLevel = config->getString("log_level", "header");
         logger->info(fmt::format("Setting log level to {}", logLevel));
-        logger->warning(
-            "Set log level via JSON configuration. \nTo filter startup messages, please specify "
-            "this config option with environment variable TELEMETRYJET_LOG_LEVEL=...");
         logger->setLevel(logLevel);
+        if (logLevel != "header") {
+            logger->warning(
+                    "Setting log level via JSON configuration applies after startup. \nTo filter startup messages, please specify "
+                    "this config option with environment variable TELEMETRYJET_LOG_LEVEL=...");
+        }
     }
 
     // Setup SQLite database
+    logger->debug("ServiceManager: Initializing SQLite Database");
     database = new SqliteDatabase();
 
     // Set up in-memory data cache
+    logger->debug("ServiceManager: Initializing Data Cache");
     dataCache = new DataCache();
 
     // Set up persisted configuration, which pulls from the database
+    logger->debug("ServiceManager: Initializing Persisted Configuration");
     persistedConfig = new PersistedConfig();
 
     // Set up REST API server
+    logger->debug("ServiceManager: Initializing REST API Server");
     restApiServer = new RestApiServer();
 
     // Setup streaming server
+    logger->debug("ServiceManager: Initializing Streaming API Server");
     streamingServer = new StreamingServer();
 
     // Setup Device Manager
+    logger->debug("ServiceManager: Initializing Device Manager");
     deviceManager = new DeviceManager();
 }
 

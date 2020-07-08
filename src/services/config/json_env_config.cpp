@@ -9,7 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #include <utility/path_utils.h>
 
 namespace pt = boost::property_tree;
@@ -114,7 +114,7 @@ void JsonEnvConfig::loadConfig(const std::string& userConfig, const std::string 
         pt::read_json(userConfig, propertyTreeUser);
         hasUserConfig = true;
     } catch (pt::ptree_error &e) {
-        ServiceManager::getLogger()->error(fmt::format("Failed to load user config ({})", e.what()));
+        ServiceManager::getLogger()->warning(fmt::format("Failed to load user config ({})", e.what()));
     }
 
     // Read configuration for local
@@ -123,7 +123,7 @@ void JsonEnvConfig::loadConfig(const std::string& userConfig, const std::string 
         pt::read_json(localConfig, propertyTreeLocal);
         hasLocalConfig = true;
     } catch (pt::ptree_error &e) {
-        ServiceManager::getLogger()->error(fmt::format("Failed to load local config ({})", e.what()));
+        ServiceManager::getLogger()->warning(fmt::format("Failed to load local config ({})", e.what()));
     }
 
     if (!hasUserConfig && !hasLocalConfig) {
@@ -200,19 +200,34 @@ void JsonEnvConfig::loadConfig(const std::string& userConfig, const std::string 
 
 JsonEnvConfig::JsonEnvConfig() {
     ServiceManager::getLogger()->info("--------- Initializing Configuration ---------");
-    char pathBuffer[1024];
-    getcwd(pathBuffer,1024);
 
-    std::string userConfigFilename = fmt::format("{}/{}",getenv("HOME"), TELEMETRYJET_CONFIG_FILENAME);
-    std::string localConfigFilename = fmt::format("{}/{}",pathBuffer,TELEMETRYJET_CONFIG_FILENAME);
+    std::string currentPath = boost::filesystem::current_path().generic_string();
+
+    #ifdef PLATFORM_WIN32
+    char* userProfileEnv = getenv("USERPROFILE");
+    char* userHomeDrive = getenv("HOMEDRIVE");
+    char* userHomePath = getenv("HOMEPATH");
+    std::string homeDir;
+    if (userProfileEnv == nullptr) {
+        homeDir = fmt::format("{}{}", userHomeDrive, userHomePath);
+    } else {
+        homeDir = std::string(userProfileEnv);
+    }
+    #else
+    std::string homeDir(getenv("HOME"));
+    #endif
+
+    std::string userConfigFilename = boost::filesystem::weakly_canonical(fmt::format("{}/{}",homeDir, TELEMETRYJET_CONFIG_FILENAME)).generic_string();
+    std::string localConfigFilename = boost::filesystem::weakly_canonical(fmt::format("{}/{}",currentPath,TELEMETRYJET_CONFIG_FILENAME)).generic_string();
 
     loadConfig(userConfigFilename, localConfigFilename);
 
     // Create the TelemetryJet data directory if it does not already exist
     // Resolve user home and relative paths if relevant.
-    stringValues["data_dir"] = resolveUserHome(getString("data_dir","~/telemetryjet"));
+    std::string defaultDataDir = fmt::format("{}/telemetryjet",homeDir);
+    stringValues["data_dir"] = resolveRelativePathHome(homeDir, getString("data_dir",defaultDataDir));
     boost::filesystem::create_directory(stringValues["data_dir"]);
-    stringValues["data_dir"] = boost::filesystem::canonical(stringValues["data_dir"]).generic_string();
+    stringValues["data_dir"] = boost::filesystem::weakly_canonical(stringValues["data_dir"]).generic_string();
 
     ServiceManager::getLogger()->info(fmt::format("Created TelemetryJet data directory: {}", stringValues["data_dir"]));
 

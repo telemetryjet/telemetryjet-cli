@@ -3,3 +3,4 @@ xcode
 .vscode
 .idea
 cmake-build-debug
+.vs/

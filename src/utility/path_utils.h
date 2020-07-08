@@ -7,12 +7,11 @@
 #include <boost/filesystem/path.hpp>
 
 /**
- * resolveUserHome
+ * resolveRelativePathHome
  * Replaces a relative path to a user's home with the absolute path.
  * eg ~/test -> /Users/chris/test
  */
-inline std::string resolveUserHome(std::string directory) {
-    std::string homeDir = getenv("HOME");
+inline std::string resolveRelativePathHome(std::string homeDir, std::string directory) {
     if (directory.length() == 0){
         return directory;
     }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 
 project(TelemetryServer VERSION 0.0.1
                         DESCRIPTION "Telemetry Server"
@@ -13,7 +13,10 @@ endif()
 # Configuration if this is the main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_EXTENSIONS OFF)
-    set (CMAKE_CXX_FLAGS "-Wall -Wno-ignored-attributes")
+    if (WIN32)
+    else()
+        set (CMAKE_CXX_FLAGS "-Wall -Wno-ignored-attributes")
+    endif()
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
@@ -53,27 +56,34 @@ set(SOURCES
 
 # Platform-specific sources
 if (WIN32)
+    message(STATUS "Adding Windows-specific sources")
     set(SOURCES
             ${SOURCES}
             src/ui/tray/tray_ui_winapi.cpp
             src/devices/protocols/system_usage/system_usage_statistics_win32.cpp
     )
-endif()
-if (APPLE)
-    set(SOURCES
-            ${SOURCES}
-            src/ui/tray/tray_ui_appkit.cpp
-            src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
-    )
 else()
-    if (UNIX)
+    if (APPLE)
+        message(STATUS "Adding Mac-specific sources")
         set(SOURCES
                 ${SOURCES}
-                src/ui/tray/tray_ui_gtk.cpp
-                src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
-        )
+                src/ui/tray/tray_ui_appkit.cpp
+                src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
+                )
+    else()
+        if (UNIX)
+            message(STATUS "Adding Linux-specific sources")
+            set(SOURCES
+                    ${SOURCES}
+                    src/ui/tray/tray_ui_gtk.cpp
+                    src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
+                    )
+        else()
+            message(FATAL_ERROR "Unknown platform!")
+        endif()
     endif()
 endif()
+
 
 set(HEADERS_PRIVATE
         src/constants.h
@@ -115,26 +125,6 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
-target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/include)
-
-# Dependencies for tray UI
-if (WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
-endif()
-if (APPLE)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPKIT=1)
-    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
-    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
-    target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Foundation")
-else()
-    if (UNIX)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPINDICATOR=1)
-        # Todo: Add link to appindicator library
-        # TRAY_CFLAGS := -DTRAY_APPINDICATOR=1 $(shell pkg-config --cflags appindicator3-0.1)
-        # TRAY_LDFLAGS := $(shell pkg-config --libs appindicator3-0.1)
-    endif()
-endif()
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
@@ -142,26 +132,27 @@ include(FetchContent)
 
 set(Boost_DEBUG 1)
 set(Boost_USE_STATIC_LIBS ON)
-set(Boost_ARCHITECTURE -x32)
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
 
 FetchContent_Declare(
   fmtlib
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG        5.3.0
+  GIT_TAG 5.3.0
 )
 FetchContent_MakeAvailable(fmtlib)
 
 FetchContent_Declare(
         SQLiteCpp
         GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-        GIT_TAG        3.0.0
+        GIT_TAG 3.0.0
 )
 FetchContent_MakeAvailable(SQLiteCpp)
 
 FetchContent_Declare(
         Simple-Web-Server
         GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
+        GIT_TAG v3.1
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 
@@ -177,21 +168,48 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(NemaTode)
 
-add_subdirectory(lib)
-
-link_directories(${PROJECT_NAME} PUBLIC /usr/local/opt/sqlite/lib)
-
-find_library(SERIALPORT_LIBRARY libserialport.a HINTS /usr/local/lib)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SERIALPORT_LIBRARY})
-
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
-target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 
-#--------------- EXTERNAL DEPENDENCIES --------------------
+#--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
+
+# Dependencies and build flags for individual platforms
+if (WIN32)
+    message(STATUS "Adding Windows-specific libraries")
+    add_definitions(-DPLATFORM_WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ssp)
+else()
+    if (APPLE)
+        message(STATUS "Adding Apple-specific libraries")
+        add_definitions(-DPLATFORM_APPLE)
+
+        # General-purpose header location for mac installed libraries
+        target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
+
+        # Libraries for tray UI
+        target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPKIT=1)
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Foundation")
+    else()
+        if (UNIX)
+            message(STATUS "Adding Linux-specific libraries")
+            add_definitions(-DPLATFORM_LINUX)
+
+            # General-purpose header location for linux installed libraries
+            target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
+
+        else()
+            message(FATAL_ERROR "Unknown platform!")
+        endif()
+    endif()
+endif()
+
+#--------------- VARIOUS PROJECT ORGANIZATION --------------------
 # IDEs should put the headers in a nice place
-#source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HEADERS})
+source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HEADERS})

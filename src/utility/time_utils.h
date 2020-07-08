@@ -1,9 +1,9 @@
 #ifndef TIME_UTILS_H
 #define TIME_UTILS_H
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <chrono>
-#include <cstdint>
+#include <ctime>
 #include <iostream>
+#include <chrono>
+#include <locale>
 
 /*
  * Gets a timestamp as milliseconds since epoch.
@@ -13,14 +13,14 @@ inline long long getCurrentMillis() {
 }
 
 inline std::string getTimestamp() {
-    time_t rawtime;
+    std::time_t rawtime;
     struct tm* timeinfo;
     char buffer[80];
 
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
+    std::time(&rawtime);
+    timeinfo = std::localtime(&rawtime);
 
-    strftime(buffer, sizeof(buffer), "%D %T", timeinfo);
+    std::strftime(buffer, sizeof(buffer), "%m/%d/%y %H:%M:%S", timeinfo);
     std::string str(buffer);
     return str;
 }

@@ -13,7 +13,9 @@ The server is designed to be lightweight, lightning-fast, and cross-platform. Te
 
 Some dependencies must be built/installed separately:
 - [Boost 1.66.0](https://www.boost.org/users/history/version_1_66_0.html) or greater
-- [libserialport](https://sigrok.org/wiki/Libserialport)
+
+Notes: This project is developed on windows with the MinGW compiler. Instructions to set up Boost for 64-bit MinGW are available here:
+https://gist.github.com/zrsmithson/0b72e0cb58d0cb946fc48b5c88511da8
 
 ## Build & Run
 
