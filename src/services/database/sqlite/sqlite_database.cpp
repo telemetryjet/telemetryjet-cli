@@ -11,11 +11,12 @@ SqliteDatabase::SqliteDatabase() {
     const std::lock_guard<std::mutex> lock(databaseMutex);  // Acquire database lock for this scope
 
     std::string databasePath
-        = fmt::format("{}/database.db", ServiceManager::getConfig()->getString("data_dir", "."));
+        = fmt::format("file:{}/database.db", ServiceManager::getConfig()->getString("data_dir", "."));
     ServiceManager::getLogger()->info(fmt::format("SQLite database path: {}", databasePath));
 
     db = new SQLite::Database(databasePath,
-                              SQLite::OPEN_READWRITE
+                              SQLite::OPEN_URI
+                                  | SQLite::OPEN_READWRITE
                                   | SQLite::OPEN_CREATE);  // NOLINT(hicpp-signed-bitwise)
 
     ServiceManager::getLogger()->info("Checking migrations...");

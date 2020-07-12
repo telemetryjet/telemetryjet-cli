@@ -8,8 +8,9 @@
 /*
  * Gets a timestamp as milliseconds since epoch.
  */
-inline long long getCurrentMillis() {
-    return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+inline uint64_t getCurrentMillis() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>
+            (std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 inline std::string getTimestamp() {

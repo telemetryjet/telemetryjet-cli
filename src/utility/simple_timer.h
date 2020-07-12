@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include "time_utils.h"
 using namespace std::chrono;
 
 class SimpleTimer {

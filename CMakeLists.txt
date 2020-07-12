@@ -142,10 +142,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmtlib)
 
+option(SQLITECPP_USE_STACK_PROTECTION "USE Stack Protection hardening." OFF)
 FetchContent_Declare(
         SQLiteCpp
         GIT_REPOSITORY https://github.com/SRombauts/SQLiteCpp.git
-        GIT_TAG 3.0.0
 )
 FetchContent_MakeAvailable(SQLiteCpp)
 
@@ -182,7 +182,6 @@ if (WIN32)
     message(STATUS "Adding Windows-specific libraries")
     add_definitions(-DPLATFORM_WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ssp)
 else()
     if (APPLE)
         message(STATUS "Adding Apple-specific libraries")

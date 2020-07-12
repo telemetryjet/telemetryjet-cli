@@ -36,9 +36,11 @@ void logColor(ansi_color_code colorCode, const std::string& message, const std::
                getTimestamp(),
                level,
                message);
+    fflush(stdout);
 }
 void logHeader(ansi_color_code colorCode, const std::string& message) {
     fmt::print("\033[1;{}m{}\033[0m\n", static_cast<int>(colorCode), message);
+    fflush(stdout);
 }
 
 void ConsoleLogger::header(std::string message, bool createLogRecord) {
