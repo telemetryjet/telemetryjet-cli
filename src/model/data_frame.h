@@ -5,6 +5,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <string>
+#include <sstream>
 #include <utility/json_utils.h>
 
 /**
@@ -21,7 +22,12 @@ struct record_data_frame_t {
         pt.add("id", id);
         pt.add("system_id", system_id);
         pt.add("timestamp", timestamp);
-        pt.add("data", data);
+        // Convert the string data back into a JSON object.
+        std::stringstream dataStream;
+        dataStream << data;
+        boost::property_tree::ptree dataPt;
+        boost::property_tree::read_json(dataStream, dataPt);
+        pt.add_child("data", dataPt);
         return pt;
     }
 

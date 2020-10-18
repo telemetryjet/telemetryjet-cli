@@ -18,7 +18,7 @@ void MockDevice::open(std::string address) {
 
 void MockDevice::update() {
     if (timer->check()) {
-        float y = 100 * sin(2 * PI * x / 10.0);
+        float y = 100 * sin(2 * PI * (x / 100.0));
         float noise = (rand() % 1001 - 500) / 100.0;
         x = (x + 1) % 10;
         SM::getDataCache()->set<float>("test_value", y + noise);

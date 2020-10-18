@@ -41,7 +41,7 @@ int main() {
     }
 
     // Initialize timer for periodic saving of data cache to database.
-    int databaseSaveInterval = SM::getPersistedConfig()->getInt("db_save_interval", 1000);
+    int databaseSaveInterval = SM::getPersistedConfig()->getInt("db_save_interval", 100);
     SimpleTimer timer(databaseSaveInterval);
 
     long long elapsedInitTime = getCurrentMillis() - startInit;
@@ -61,12 +61,13 @@ int main() {
 
         // Save from data cache to database at the configured interval
         // Data points are connected with each other through a "data frame".
-        if (timer.check()) {
+        /*
+        if (timer.check() && record_system_t::isSystemRunning()) {
             ServiceManager::getLogger()->info("Saving data frame");
             auto dataFrame = record_data_frame_t::createDataFrame();
             record_data_frame_t::createDataPointsFromFrame(dataFrame);
             // TODO: Send updated data points over websockets to telemetry system
-        }
+        }*/
     }
 
     // Stop the device manager, clearing up connections to serial devices.
