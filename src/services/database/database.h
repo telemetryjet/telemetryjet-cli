@@ -43,12 +43,6 @@ public:
     virtual record_device_t createDevice(record_device_t device) = 0;
     virtual void updateDevice(record_device_t device) = 0;
 
-    // Dashboards
-    virtual std::vector<record_dashboard_t> getDashboards(int system_id) = 0;
-    virtual record_dashboard_t getDashboard(int id) = 0;
-    virtual record_dashboard_t createDashboard(record_dashboard_t dashboard) = 0;
-    virtual void updateDashboard(record_dashboard_t dashboard) = 0;
-
     // Data Points
     virtual std::vector<record_data_point_t> getAllDataPoints(int system_id) = 0;
     virtual std::vector<record_data_point_t>

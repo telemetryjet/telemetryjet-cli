@@ -325,83 +325,6 @@ void handleDeleteLog(REQUEST_RESPONSE_PARAMS) {
     }
 }
 
-void handleGetDashboards(REQUEST_RESPONSE_PARAMS) {
-    try {
-        boost::property_tree::ptree pt;
-        boost::property_tree::ptree list;
-
-        const std::vector<record_dashboard_t>& dashboards = record_dashboard_t::getDashboards();
-        if (dashboards.empty()) {
-            sendSuccessResponse(response, "{\"dashboards\" : []}");
-            return;
-        }
-
-        for (const record_dashboard_t& dashboard : dashboards) {
-            list.push_back(std::make_pair("", dashboard.toPropertyTree()));
-        }
-        pt.add_child("dashboards", list);
-        sendSuccessResponse(response, propertyTreeToString(pt));
-    } catch (std::exception& error) {
-        sendFailureResponse(response, error.what());
-    }
-}
-
-void handleCreateDashboard(REQUEST_RESPONSE_PARAMS) {
-    try {
-        SM::getLogger()->info(
-            fmt::format("Creating dashboard from json [{}]", request->content.string()));
-        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_dashboard_t record
-            = record_dashboard_t::createDashboard(pt.get<std::string>("name"));
-        boost::property_tree::ptree newDashboard = record.toPropertyTree();
-        SM::getStreamingServer()
-            ->sendMessageToAll(StreamingServer::OutgoingMessageType::NEW_DASHBOARD, newDashboard);
-        sendSuccessResponse(response, propertyTreeToString(newDashboard));
-    } catch (std::exception& error) {
-        SM::getLogger()->error(error.what());
-        sendFailureResponse(response, error.what());
-    }
-}
-
-void handleGetDashboard(REQUEST_RESPONSE_PARAMS) {
-    try {
-        int id = getIntPathParam(request, 1);
-        std::string jsonString
-            = propertyTreeToString(record_dashboard_t::getDashboard(id).toPropertyTree());
-        sendSuccessResponse(response, jsonString);
-    } catch (std::exception& error) {
-        sendFailureResponse(response, error.what());
-    }
-}
-
-void handleUpdateDashboard(REQUEST_RESPONSE_PARAMS) {
-    try {
-        int id = getIntPathParam(request, 1);
-        boost::property_tree::ptree pt = stringToPropertyTree(request->content.string());
-        record_dashboard_t record
-            = record_dashboard_t::updateDashboard({id,
-                                                   pt.get<int>("system_id"),
-                                                   pt.get<std::string>("name"),
-                                                   pt.get<std::string>("jsonDefinition")});
-        boost::property_tree::ptree newDashboard = record.toPropertyTree();
-        SM::getStreamingServer()
-            ->sendMessageToAll(StreamingServer::OutgoingMessageType::UPDATE_DASHBOARD,
-                               newDashboard);
-        sendSuccessResponse(response, propertyTreeToString(newDashboard));
-    } catch (std::exception& error) {
-        sendFailureResponse(response, error.what());
-    }
-}
-
-void handleDeleteDashboard(REQUEST_RESPONSE_PARAMS) {
-    try {
-        record_dashboard_t::deleteDashboard(getIntPathParam(request, 1));
-        sendSuccessResponse(response, "");
-    } catch (std::exception& error) {
-        sendFailureResponse(response, error.what());
-    }
-}
-
 void handleGetDataPoints(REQUEST_RESPONSE_PARAMS) {
     try {
         boost::property_tree::ptree pt;
@@ -517,15 +440,6 @@ RestApiServer::RestApiServer() {
     server->resource["^/v1/log/([0-9]+)$"]["GET"] = handleGetLog;
     server->resource["^/v1/log/([0-9]+)$"]["DELETE"] = handleDeleteLog;
     server->resource["^/v1/log/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
-
-    // Dashboards
-    server->resource["^/v1/dashboards$"]["GET"] = handleGetDashboards;
-    server->resource["^/v1/dashboard$"]["POST"] = handleCreateDashboard;
-    server->resource["^/v1/dashboard$"]["OPTIONS"] = genericOptionsResponse;
-    server->resource["^/v1/dashboard/([0-9]+)$"]["GET"] = handleGetDashboard;
-    server->resource["^/v1/dashboard/([0-9]+)$"]["PUT"] = handleUpdateDashboard;
-    server->resource["^/v1/dashboard/([0-9]+)$"]["DELETE"] = handleDeleteDashboard;
-    server->resource["^/v1/dashboard/([0-9]+)$"]["OPTIONS"] = genericOptionsResponse;
 
     // Data Points
     server->resource["^/v1/data_points$"]["GET"] = handleGetDataPoints;

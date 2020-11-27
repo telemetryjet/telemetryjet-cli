@@ -48,12 +48,6 @@ public:
     record_device_t createDevice(record_device_t device) override;
     void updateDevice(record_device_t device) override;
 
-    // Dashboards
-    std::vector<record_dashboard_t> getDashboards(int system_id) override;
-    record_dashboard_t getDashboard(int id) override;
-    record_dashboard_t createDashboard(record_dashboard_t dashboard) override;
-    void updateDashboard(record_dashboard_t dashboard) override;
-
     // Data Points
     std::vector<record_data_point_t> getAllDataPoints(int system_id) override;
     std::vector<record_data_point_t>

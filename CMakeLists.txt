@@ -29,7 +29,6 @@ set(SOURCES
         src/devices/protocols/nmea_0183/nmea_0183_device.cpp
         src/devices/protocols/system_usage/system_usage_device.cpp
         src/model/config_item.cpp
-        src/model/dashboard.cpp
         src/model/data_frame.cpp
         src/model/data_point.cpp
         src/model/device.cpp
@@ -44,7 +43,6 @@ set(SOURCES
         src/services/database/sqlite/sqlite_database_devices.cpp
         src/services/database/sqlite/sqlite_database_logs.cpp
         src/services/database/sqlite/sqlite_database_config_items.cpp
-        src/services/database/sqlite/sqlite_database_dashboards.cpp
         src/services/database/sqlite/sqlite_database_data_frames.cpp
         src/services/database/sqlite/sqlite_database_data_points.cpp
         src/services/data_cache/cache.cpp
@@ -94,7 +92,6 @@ set(HEADERS_PRIVATE
         src/devices/protocols/system_usage/system_usage_device.h
         src/devices/device.h
         src/model/config_item.h
-        src/model/dashboard.h
         src/model/data_frame.h
         src/model/data_point.h
         src/model/device.h

@@ -2,7 +2,6 @@
 #define TELEMETRYSERVER_RECORDS_H
 
 #include "config_item.h"
-#include "dashboard.h"
 #include "data_frame.h"
 #include "data_point.h"
 #include "device.h"

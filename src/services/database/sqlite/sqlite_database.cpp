@@ -31,9 +31,6 @@ SqliteDatabase::SqliteDatabase() {
         "create table if not exists devices (id integer primary key, system_id integer, name text "
         "not null, protocol integer)");
     db->exec(
-        "create table if not exists dashboards (id integer primary key, system_id integer, name "
-        "text not null, json_definition text not null)");
-    db->exec(
         "create table if not exists data_points (id integer primary key, system_id integer, "
         "data_frame_id integer, timestamp text not null, data_type text not null, data text not null)");
     db->exec(
@@ -90,7 +87,6 @@ void SqliteDatabase::deleteAll(std::string table) {
 void SqliteDatabase::deleteAllForSystem(int system_id) {
     deleteBySystemId("logs", system_id);
     deleteBySystemId("devices", system_id);
-    deleteBySystemId("dashboards", system_id);
     deleteBySystemId("data_points", system_id);
     deleteBySystemId("data_frames", system_id);
 }
