@@ -20,33 +20,6 @@ public:
     // General purpose
     void deleteById(std::string table, int id) override;
     void deleteAll(std::string table) override;
-    void deleteBySystemId(std::string table, int system_id) override;
-    void deleteAllForSystem(int system_id) override;
-
-    // Config Items
-    std::vector<record_config_item_t> getConfigItems() override;
-    record_config_item_t getConfigItem(std::string key) override;
-    record_config_item_t createConfigItem(record_config_item_t configItem) override;
-    void updateConfigItem(record_config_item_t configItem) override;
-
-    // Systems
-    std::vector<record_system_t> getSystems() override;
-    record_system_t getSystem(int id) override;
-    record_system_t createSystem(record_system_t system) override;
-    void updateSystem(record_system_t system) override;
-
-    // Logs
-    std::vector<record_log_t> getLogs(int system_id) override;
-    std::vector<record_log_t> getRecentLogs(int system_id, int limit, int beforeId) override;
-    record_log_t getLog(int id) override;
-    record_log_t createLog(record_log_t log) override;
-    void updateLog(record_log_t log) override;
-
-    // Devices
-    std::vector<record_device_t> getDevices(int system_id) override;
-    record_device_t getDevice(int id) override;
-    record_device_t createDevice(record_device_t device) override;
-    void updateDevice(record_device_t device) override;
 
     // Data Points
     std::vector<record_data_point_t> getAllDataPoints(int system_id) override;
@@ -56,15 +29,6 @@ public:
     record_data_point_t createDataPoint(record_data_point_t dataPoint) override;
     void updateDataPoint(record_data_point_t dataPoint) override;
     void deleteAllDataPointsForCurrentSystem() override;
-
-    // Data Frames
-    std::vector<record_data_frame_t> getAllDataFrames(int system_id) override;
-    std::vector<record_data_frame_t>
-    getDataFrames(int system_id, long long before, long long after) override;
-    record_data_frame_t getDataFrame(int id) override;
-    record_data_frame_t createDataFrame(record_data_frame_t dataFrame) override;
-    void updateDataFrame(record_data_frame_t dataFrame) override;
-    void deleteAllDataFramesForCurrentSystem() override;
 };
 
 #endif  // TELEMETRYSERVER_SQLITE_DATABASE_H

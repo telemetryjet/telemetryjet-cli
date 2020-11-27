@@ -1,86 +1,39 @@
-#include <fmt/format.h>
-#include <model/records.h>
-#include <services/service_manager.h>
-#include <ui/tray/tray_ui.h>
-#include <utility/simple_timer.h>
-#include <utility/time_utils.h>
-
 /**
  * Main Program Entry Point
  * Starts and runs the server loop.
  */
+#include "CLI/App.hpp"
+#include "CLI/Formatter.hpp"
+#include "CLI/Config.hpp"
 
-int exitCode = 0;
-bool running = true;
+int main(int argc, char** argv) {
+    CLI::App app{"TelemetryJet CLI"};
 
-void signalHandler(int signum) {
-    running = false;
-}
+    app.set_help_flag(); // Remove help flag
+    app.set_help_all_flag("-h,--help", "Print this help message and exit");
 
-int main() {
-    long long startInit = getCurrentMillis();
+    auto versionCommand = app.add_subcommand("version", "Display the version and exit.")->group("Metadata");
+    auto updateCommand = app.add_subcommand("update", "Check for updates and install if available.")->group("Metadata");
+    auto serverCommand = app.add_subcommand("server", "Manage TelemetryJet server connections.")->group("Outputs");
+    auto serverListCommand = serverCommand->add_subcommand("list", "List the available server connections.")->group("Outputs");
+    auto serverClearCommand = serverCommand->add_subcommand("clear", "Clear all the server connections.")->group("Outputs");
+    auto serverAddCommand = serverCommand->add_subcommand("add", "Add a server connection.")->group("Outputs");
+    auto serverRemoveCommand = serverCommand->add_subcommand("remove", "Remove a server connection.")->group("Outputs");
 
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
+    auto streamCommand = app.add_subcommand("stream", "Connect to one or more devices.")->group("Streaming");
 
-    // Initialize the common services.
-    ServiceManager::init();
+    CLI11_PARSE(app, argc, argv);
 
-    // Initialize tray UI
-    // TrayUI::init();
-
-    // Get the active system, and write some basic data about the setup stats.
-    record_system_t activeSystem = record_system_t::getActiveSystem();
-    SM::getLogger()->info(
-        fmt::format("Active System: [id={},name={}]", activeSystem.id, activeSystem.name));
-    record_system_t::startSystem();
-
-    // Start the device manager if the system is set to be running.
-    if (record_system_t::isSystemRunning()) {
-        SM::getDeviceManager()->start();
+    if (versionCommand->parsed()) {
+        std::cout << "TelemetryJet CLI, Version 0.0.1";
+        return 0;
     }
 
-    // Initialize timer for periodic saving of data cache to database.
-    int databaseSaveInterval = SM::getPersistedConfig()->getInt("db_save_interval", 100);
-    SimpleTimer timer(databaseSaveInterval);
-
-    long long elapsedInitTime = getCurrentMillis() - startInit;
-    ServiceManager::getLogger()->info(
-        fmt::format("Started Telemetry Server in {} ms.", elapsedInitTime));
-
-    // Run the server loop
-    // TODO: Implement throttling, for now this is handled in the services
-    while (running) {
-        SM::getDeviceManager()->update();
-
-        // Update tray UI
-        // TrayUI::update();
-        // if (TrayUI::shouldQuit) {
-        //    running = false;
-        //}
-
-        // Save from data cache to database at the configured interval
-        // Data points are connected with each other through a "data frame".
-        /*
-        if (timer.check() && record_system_t::isSystemRunning()) {
-            ServiceManager::getLogger()->info("Saving data frame");
-            auto dataFrame = record_data_frame_t::createDataFrame();
-            record_data_frame_t::createDataPointsFromFrame(dataFrame);
-            // TODO: Send updated data points over websockets to telemetry system
-        }*/
+    if (updateCommand->parsed()) {
+        std::cout << "No updates available.";
+        return 0;
     }
 
-    // Stop the device manager, clearing up connections to serial devices.
-    SM::getDeviceManager()->stop();
 
-    ServiceManager::getLogger()->info("Stopping Telemetry Server...");
-
-    // Shutdown the common services
-    ServiceManager::destroy();
-
-    // Remove tray UI
-    // TrayUI::destroy();
-
-    // Exit main program
-    return exitCode;
+    return 0;
 }

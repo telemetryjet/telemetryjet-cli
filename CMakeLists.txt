@@ -24,58 +24,45 @@ endif()
 
 set(SOURCES
         src/main.cpp
-        src/devices/device_manager.cpp
-        src/devices/protocols/mock/mock_device.cpp
-        src/devices/protocols/nmea_0183/nmea_0183_device.cpp
-        src/devices/protocols/system_usage/system_usage_device.cpp
-        src/model/config_item.cpp
-        src/model/data_frame.cpp
-        src/model/data_point.cpp
-        src/model/device.cpp
-        src/model/log.cpp
-        src/model/system.cpp
-        src/services/config/json_env_config.cpp
-        src/services/config/persisted_config.cpp
-        src/services/service_manager.cpp
-        src/services/logger/console_logger.cpp
-        src/services/database/sqlite/sqlite_database.cpp
-        src/services/database/sqlite/sqlite_database_systems.cpp
-        src/services/database/sqlite/sqlite_database_devices.cpp
-        src/services/database/sqlite/sqlite_database_logs.cpp
-        src/services/database/sqlite/sqlite_database_config_items.cpp
-        src/services/database/sqlite/sqlite_database_data_frames.cpp
-        src/services/database/sqlite/sqlite_database_data_points.cpp
-        src/services/data_cache/cache.cpp
-        src/services/api/rest/rest_api_server.cpp
-        src/services/api/streaming/streaming_server.cpp
-        src/utility/simple_timer.cpp
-        src/utility/serial_wrapper.cpp
+        #src/devices/device_manager.cpp
+        #src/devices/protocols/mock/mock_device.cpp
+        #src/devices/protocols/nmea_0183/nmea_0183_device.cpp
+        #src/devices/protocols/system_usage/system_usage_device.cpp
+        #src/model/data_point.cpp
+        #src/services/config/json_env_config.cpp
+        #src/services/config/persisted_config.cpp
+        #src/services/service_manager.cpp
+        #src/services/logger/console_logger.cpp
+        #src/services/database/sqlite/sqlite_database.cpp
+        #src/services/database/sqlite/sqlite_database_data_points.cpp
+        #src/services/data_cache/cache.cpp
+        #src/services/api/rest/rest_api_server.cpp
+        #src/services/api/streaming/streaming_server.cpp
+        #src/utility/simple_timer.cpp
+        #src/utility/serial_wrapper.cpp
 )
 
 # Platform-specific sources
 if (WIN32)
     message(STATUS "Adding Windows-specific sources")
-    set(SOURCES
-            ${SOURCES}
-            src/ui/tray/tray_ui_winapi.cpp
-            src/devices/protocols/system_usage/system_usage_statistics_win32.cpp
-    )
+    #set(SOURCES
+    #        ${SOURCES}
+    #        src/devices/protocols/system_usage/system_usage_statistics_win32.cpp
+    #)
 else()
     if (APPLE)
         message(STATUS "Adding Mac-specific sources")
-        set(SOURCES
-                ${SOURCES}
-                src/ui/tray/tray_ui_appkit.cpp
-                src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
-                )
+        #set(SOURCES
+        #        ${SOURCES}
+        #        src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
+        #        )
     else()
         if (UNIX)
             message(STATUS "Adding Linux-specific sources")
-            set(SOURCES
-                    ${SOURCES}
-                    src/ui/tray/tray_ui_gtk.cpp
-                    src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
-                    )
+            #set(SOURCES
+            #        ${SOURCES}
+            #        src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
+            #        )
         else()
             message(FATAL_ERROR "Unknown platform!")
         endif()
@@ -84,41 +71,34 @@ endif()
 
 
 set(HEADERS_PRIVATE
-        src/constants.h
-        src/devices/device_manager.h
-        src/devices/protocols/mock/mock_device.h
-        src/devices/protocols/nmea_0183/nmea_0183_device.h
-        src/devices/protocols/system_usage/system_usage_statistics.h
-        src/devices/protocols/system_usage/system_usage_device.h
-        src/devices/device.h
-        src/model/config_item.h
-        src/model/data_frame.h
-        src/model/data_point.h
-        src/model/device.h
-        src/model/log.h
-        src/model/system.h
-        src/services/service_manager.h
-        src/services/config/config.h
-        src/services/config/json_env_config.h
-        src/services/config/persisted_config.h
-        src/services/logger/logger.h
-        src/services/logger/console_logger.h
-        src/services/database/database.h
-        src/services/database/sqlite/sqlite_database.h
-        src/services/data_cache/cache.h
-        src/services/api/rest/rest_api_server.h
-        src/services/api/streaming/streaming_server.h
-        src/utility/time_utils.h
-        src/utility/path_utils.h
-        src/utility/json_utils.h
-        src/utility/simple_timer.h
-        src/utility/serial_wrapper.h
-        src/ui/tray/tray_ui.h
+        #src/constants.h
+        #src/devices/device_manager.h
+        #src/devices/protocols/mock/mock_device.h
+        #src/devices/protocols/nmea_0183/nmea_0183_device.h
+        #src/devices/protocols/system_usage/system_usage_statistics.h
+        #src/devices/protocols/system_usage/system_usage_device.h
+        #src/devices/device.h
+        #src/model/data_point.h
+        #src/services/service_manager.h
+        #src/services/config/config.h
+        #src/services/config/json_env_config.h
+        #src/services/config/persisted_config.h
+        #src/services/logger/logger.h
+        #src/services/logger/console_logger.h
+        #src/services/database/database.h
+        #src/services/database/sqlite/sqlite_database.h
+        #src/services/data_cache/cache.h
+        #src/utility/time_utils.h
+        #src/utility/path_utils.h
+        #src/utility/simple_timer.h
+        #src/utility/serial_wrapper.h
+        #src/ui/tray/tray_ui.h
 )
 
 #------------------- BUILD TARGETS ------------------------
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
@@ -131,6 +111,12 @@ set(Boost_DEBUG 1)
 set(Boost_USE_STATIC_LIBS ON)
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
+
+FetchContent_Declare(
+        CLI11
+        GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+)
+FetchContent_MakeAvailable(CLI11)
 
 FetchContent_Declare(
   fmtlib
@@ -165,6 +151,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(NemaTode)
 
+target_link_libraries(${PROJECT_NAME} PRIVATE CLI11::CLI11)
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
@@ -178,7 +165,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost:
 if (WIN32)
     message(STATUS "Adding Windows-specific libraries")
     add_definitions(-DPLATFORM_WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_WINAPI=1)
 else()
     if (APPLE)
         message(STATUS "Adding Apple-specific libraries")
@@ -186,12 +172,6 @@ else()
 
         # General-purpose header location for mac installed libraries
         target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
-
-        # Libraries for tray UI
-        target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRAY_APPKIT=1)
-        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
-        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
-        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Foundation")
     else()
         if (UNIX)
             message(STATUS "Adding Linux-specific libraries")
