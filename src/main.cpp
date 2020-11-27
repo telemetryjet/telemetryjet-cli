@@ -9,9 +9,6 @@
 int main(int argc, char** argv) {
     CLI::App app{"TelemetryJet CLI"};
 
-    app.set_help_flag(); // Remove help flag
-    app.set_help_all_flag("-h,--help", "Print this help message and exit");
-
     auto versionCommand = app.add_subcommand("version", "Display the version and exit.")->group("Metadata");
     auto updateCommand = app.add_subcommand("update", "Check for updates and install if available.")->group("Metadata");
     auto serverCommand = app.add_subcommand("server", "Manage TelemetryJet server connections.")->group("Outputs");
@@ -33,7 +30,6 @@ int main(int argc, char** argv) {
         std::cout << "No updates available.";
         return 0;
     }
-
 
     return 0;
 }
