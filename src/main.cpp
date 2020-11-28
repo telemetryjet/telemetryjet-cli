@@ -5,6 +5,7 @@
 #include "CLI/App.hpp"
 #include "CLI/Formatter.hpp"
 #include "CLI/Config.hpp"
+#include "src/version.h"
 
 int main(int argc, char** argv) {
     CLI::App app{"TelemetryJet CLI"};
@@ -22,7 +23,7 @@ int main(int argc, char** argv) {
     CLI11_PARSE(app, argc, argv);
 
     if (versionCommand->parsed()) {
-        std::cout << "TelemetryJet CLI, Version 0.0.1";
+        std::cout << "TelemetryJet CLI (version " << CLI_VERSION_MAJOR << "." << CLI_VERSION_MINOR << "." << CLI_VERSION_PATCH << ", platform " << CLI_VERSION_SYSTEM << ", architecture " << CLI_VERSION_ARCH << ")\n";
         return 0;
     }
 
@@ -30,6 +31,9 @@ int main(int argc, char** argv) {
         std::cout << "No updates available.";
         return 0;
     }
+
+    std::cout << "TelemetryJet CLI (version " << CLI_VERSION_MAJOR << "." << CLI_VERSION_MINOR << "." << CLI_VERSION_PATCH << ", platform " << CLI_VERSION_SYSTEM << ", architecture " << CLI_VERSION_ARCH << ")\n";
+    std::cout << "No command was specified, exiting.\n";
 
     return 0;
 }

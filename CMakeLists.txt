@@ -95,6 +95,9 @@ set(HEADERS_PRIVATE
         #src/ui/tray/tray_ui.h
 )
 
+# Put version numbers into header
+configure_file(src/version.h.in src/version.h)
+
 #------------------- BUILD TARGETS ------------------------
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
@@ -102,6 +105,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+# Add the build directory to the search path so version header can be found
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
