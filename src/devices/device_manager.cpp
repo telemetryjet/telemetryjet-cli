@@ -6,7 +6,7 @@
 #include "protocols/system_usage/system_usage_device.h"
 #include "services/service_manager.h"
 
-DeviceManager::DeviceManager() {
+DeviceManager::DeviceManager(std::vector<record_device_t> deviceDefinitions) {
     timer = new SimpleTimer(100);
 }
 

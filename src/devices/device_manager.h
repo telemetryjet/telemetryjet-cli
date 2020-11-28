@@ -12,6 +12,7 @@ private:
     std::vector<Device*> deviceList;
     std::vector<std::string> portList;
     SimpleTimer* timer;
+    std::vector<record_device_t> deviceDefinitions;
 
     enum protocolTypes { NMEA_0183, SYSTEM_USAGE, MOCK_DEVICE, NUM_PROTOCOLS };
 
