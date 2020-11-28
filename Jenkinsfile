@@ -15,7 +15,6 @@ pipeline {
                     steps {
                         bat 'gcc --version'
                         bat 'cmake --version'
-                        bat 'iscc'
                         bat 'if not exist build mkdir build'
                         dir('build') {
                             bat 'cmake .. -G "MinGW Makefiles"'
