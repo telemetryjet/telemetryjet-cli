@@ -12,7 +12,7 @@ pipeline {
                     steps {
                         bat 'if not exist build mkdir build'
                         dir('build') {
-                            bat 'cmake .. -G \\"CodeBlocks - MinGW Makefiles\\"'
+                            bat 'cmake .. -G \"CodeBlocks - MinGW Makefiles\"'
                         }
                         bat "cmake --build build --target TelemetryJetCli"
                     }
