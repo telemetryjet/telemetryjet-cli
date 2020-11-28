@@ -1,3 +1,3 @@
 #!/bin/zsh
 
-cmake --build build
+cmake --build build --target TelemetryJetCli
