@@ -29,7 +29,7 @@ pipeline {
                             bat 'copy LICENSE.txt "TelemetryJet CLI"'
                             bat "if exist \"telemetryjet-cli-windows_${TAG_NAME}.zip\" del \"telemetryjet-cli-windows_${TAG_NAME}.zip\""
                             bat "7z a -tzip \"telemetryjet-cli-windows_${TAG_NAME}.zip\" \"TelemetryJet CLI\""
-                            stash includes "telemetryjet-cli-windows_${TAG_NAME}.zip", name: 'WINDOWS_BUILD_ARCHIVE'
+                            stash includes: "telemetryjet-cli-windows_${TAG_NAME}.zip", name: 'WINDOWS_BUILD_ARCHIVE'
                         }
                     }
                 }
