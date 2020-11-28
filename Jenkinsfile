@@ -18,7 +18,7 @@ pipeline {
                         bat 'iscc'
                         bat 'if not exist build mkdir build'
                         dir('build') {
-                            bat 'cmake .. -G \"MinGW Makefiles\"'
+                            bat 'cmake .. -G "MinGW Makefiles"'
                         }
                         bat 'cmake --build build --target TelemetryJetCli'
                         dir('build') {
@@ -28,7 +28,7 @@ pipeline {
                             bat 'copy README.txt "TelemetryJet CLI"'
                             bat 'copy LICENSE.txt "TelemetryJet CLI"'
                             bat "if exist \"telemetryjet-cli-windows_${TAG_NAME}.zip\" del \"telemetryjet-cli-windows_${TAG_NAME}.zip\""
-                            bat "7z a -tzip telemetryjet-cli-windows_${TAG_NAME}.zip \"TelemetryJet CLI\""
+                            bat "7z a -tzip \"telemetryjet-cli-windows_${TAG_NAME}.zip\" \"TelemetryJet CLI\""
                             stash includes "telemetryjet-cli-windows_${TAG_NAME}.zip", name: 'WINDOWS_BUILD_ARCHIVE'
                         }
                     }
