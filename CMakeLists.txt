@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(TelemetryServer VERSION 0.0.1
-                        DESCRIPTION "Telemetry Server"
+project(TelemetryJetCli VERSION 0.0.1
+                        DESCRIPTION "TelemetryJet CLI"
                         LANGUAGES CXX)
 
 ### Require out-of-source builds
