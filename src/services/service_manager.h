@@ -1,9 +1,6 @@
 #ifndef TELEMETRYSERVER_SERVICE_MANAGER_H
 #define TELEMETRYSERVER_SERVICE_MANAGER_H
 
-#include <devices/device_manager.h>
-#include <services/api/rest/rest_api_server.h>
-#include <services/api/streaming/streaming_server.h>
 #include <services/config/config.h>
 #include <services/data_cache/cache.h>
 #include <services/database/database.h>
@@ -18,12 +15,8 @@
 class ServiceManager {
 private:
     static Config* config;
-    static Config* persistedConfig;
     static Logger* logger;
     static Database* database;
-    static RestApiServer* restApiServer;
-    static StreamingServer* streamingServer;
-    static DeviceManager* deviceManager;
     static DataCache* dataCache;
 
 public:
@@ -32,23 +25,11 @@ public:
     static Config* getConfig() {
         return config;
     }
-    static Config* getPersistedConfig() {
-        return persistedConfig;
-    }
     static Logger* getLogger() {
         return logger;
     }
     static Database* getDatabase() {
         return database;
-    }
-    static RestApiServer* getRestApiServer() {
-        return restApiServer;
-    }
-    static StreamingServer* getStreamingServer() {
-        return streamingServer;
-    }
-    static DeviceManager* getDeviceManager() {
-        return deviceManager;
     }
     static DataCache* getDataCache() {
         return dataCache;

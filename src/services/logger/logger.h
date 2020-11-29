@@ -24,12 +24,12 @@ enum class LoggerLevel : int {
 class Logger {
 public:
     virtual ~Logger() = default;
-    virtual void header(std::string message, bool createLogRecord = false) = 0;
-    virtual void debug(std::string message, bool createLogRecord = false) = 0;
-    virtual void info(std::string message, bool createLogRecord = false) = 0;
-    virtual void warning(std::string message, bool createLogRecord = false) = 0;
-    virtual void error(std::string message, bool createLogRecord = false) = 0;
-    virtual void alert(std::string message, bool createLogRecord = false) = 0;
+    virtual void header(std::string message) = 0;
+    virtual void debug(std::string message) = 0;
+    virtual void info(std::string message) = 0;
+    virtual void warning(std::string message) = 0;
+    virtual void error(std::string message) = 0;
+    virtual void alert(std::string message) = 0;
     virtual void setLevel(LoggerLevel level) = 0;
     virtual void setLevel(std::string level) = 0;
     virtual LoggerLevel getLevel() = 0;

@@ -1,2 +1,2 @@
 # Runs a build
-./build/TelemetryServer
+./build/jet

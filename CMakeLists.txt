@@ -29,17 +29,17 @@ set(SOURCES
         #src/devices/protocols/nmea_0183/nmea_0183_device.cpp
         #src/devices/protocols/system_usage/system_usage_device.cpp
         #src/model/data_point.cpp
-        #src/services/config/json_env_config.cpp
+        src/services/config/json_env_config.cpp
         #src/services/config/persisted_config.cpp
-        #src/services/service_manager.cpp
-        #src/services/logger/console_logger.cpp
-        #src/services/database/sqlite/sqlite_database.cpp
-        #src/services/database/sqlite/sqlite_database_data_points.cpp
-        #src/services/data_cache/cache.cpp
-        #src/services/api/rest/rest_api_server.cpp
-        #src/services/api/streaming/streaming_server.cpp
+        src/services/service_manager.cpp
+        src/services/logger/console_logger.cpp
+        src/services/database/sqlite/sqlite_database.cpp
+        src/services/database/sqlite/sqlite_database_servers.cpp
+        src/services/database/sqlite/sqlite_database_data_points.cpp
+        src/services/data_cache/cache.cpp
         #src/utility/simple_timer.cpp
         #src/utility/serial_wrapper.cpp
+        src/model/server.cpp
 )
 
 # Platform-specific sources

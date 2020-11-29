@@ -1,7 +1,6 @@
 #include "service_manager.h"
 #include <constants.h>
 #include <fmt/format.h>
-#include <services/api/rest/rest_api_server.h>
 #include <services/config/json_env_config.h>
 #include <services/config/persisted_config.h>
 #include <services/data_cache/cache.h>
@@ -9,16 +8,15 @@
 #include <services/logger/console_logger.h>
 
 Config* ServiceManager::config;
-Config* ServiceManager::persistedConfig;
 Logger* ServiceManager::logger;
 Database* ServiceManager::database;
-RestApiServer* ServiceManager::restApiServer;
-StreamingServer* ServiceManager::streamingServer;
-DeviceManager* ServiceManager::deviceManager;
 DataCache* ServiceManager::dataCache;
 
 void ServiceManager::init() {
     logger = new ConsoleLogger();
+
+    // TODO: decide what to do with logging, hardcoding to log level none for now
+    logger->setLevel(LoggerLevel::LEVEL_NONE);
 
     // Set log enabled from configuration variable as soon as possible
     char* loggingEnv = getenv("TELEMETRYJET_LOGGING");
@@ -36,19 +34,10 @@ void ServiceManager::init() {
         setLogLevelViaEnv = true;
     }
 
-    logger->header("  _ _  ______  __     __");
-    logger->header("  __  /_  __/ / /__  / /_");
-    logger->header("   ___ / /_  / / _ \\/ __/");
-    logger->header("  __  / / /_/ /  __/ /_");
-    logger->header(" _ _ /_/\\____/\\___/\\__/");
-    logger->header(fmt::format("TelemetryJet Server v{}", TELEMETRYJET_VERSION));
-    logger->header("--------------------------");
-    logger->info("Started Console Logger.");
-
     config = new JsonEnvConfig();
 
     // Set log enabled and log level for logger once full config is loaded
-    bool logEnabled = config->getBool("logging", true);
+    bool logEnabled = config->getBool("logging", false);
     std::string logLevel = config->getString("log_level", "header");
 
     if (!setLogDisabledViaEnv && !logEnabled) {
@@ -75,31 +64,11 @@ void ServiceManager::init() {
     // Set up in-memory data cache
     logger->debug("ServiceManager: Initializing Data Cache");
     dataCache = new DataCache();
-
-    // Set up persisted configuration, which pulls from the database
-    logger->debug("ServiceManager: Initializing Persisted Configuration");
-    persistedConfig = new PersistedConfig();
-
-    // Set up REST API server
-    logger->debug("ServiceManager: Initializing REST API Server");
-    restApiServer = new RestApiServer();
-
-    // Setup streaming server
-    logger->debug("ServiceManager: Initializing Streaming API Server");
-    streamingServer = new StreamingServer();
-
-    // Setup Device Manager
-    logger->debug("ServiceManager: Initializing Device Manager");
-    deviceManager = new DeviceManager();
 }
 
 void ServiceManager::destroy() {
-    delete deviceManager;
     delete config;
-    delete persistedConfig;
     delete dataCache;
     delete database;
-    delete restApiServer;
-    delete streamingServer;
     delete logger;
 }

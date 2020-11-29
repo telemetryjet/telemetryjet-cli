@@ -28,7 +28,14 @@ public:
     record_data_point_t getDataPoint(int id) override;
     record_data_point_t createDataPoint(record_data_point_t dataPoint) override;
     void updateDataPoint(record_data_point_t dataPoint) override;
-    void deleteAllDataPointsForCurrentSystem() override;
+
+    // Servers
+    std::vector<record_server_t> getAllServers() override;
+    record_server_t getServer(const std::string& id) override;
+    bool serverExists(const std::string& id) override;
+    record_server_t createServer(record_server_t server) override;
+    void deleteServer(const std::string& id) override;
+    void deleteAllServers() override;
 };
 
 #endif  // TELEMETRYSERVER_SQLITE_DATABASE_H
