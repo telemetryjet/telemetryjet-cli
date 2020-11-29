@@ -9,7 +9,7 @@ UninstallDisplayIcon={app}\jet.exe
 Compression=lzma2
 SolidCompression=yes
 OutputDir=.
-OutputBaseFilename=telemetryjet-cli-windows_{#ApplicationVersion}
+OutputBaseFilename=telemetryjet-cli-windows_x86-64_{#ApplicationVersion}
 ArchitecturesInstallIn64BitMode=x64 arm64 ia64
 ArchitecturesAllowed=x64 arm64 ia64
 
