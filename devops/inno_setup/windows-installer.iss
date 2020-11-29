@@ -15,6 +15,8 @@ OutputBaseFilename=telemetryjet-cli-windows_x86-64_{#ApplicationVersion}
 ArchitecturesInstallIn64BitMode=x64 arm64 ia64
 ArchitecturesAllowed=x64 arm64 ia64
 ChangesEnvironment=yes
+SetupLogging=yes
+PrivilegesRequired=admin
 
 [Files]
 Source: "jet.exe"; DestDir: "{app}\bin"

@@ -26,7 +26,7 @@ begin
     end;
 
     { Overwrite (or create if missing) path environment variable }
-    if RegWriteStringValue(HKEY_CURRENT_USER, EnvironmentKey, 'Path', Paths)
+    if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
     then Log(Format('The [%s] added to PATH: [%s]', [instlPath, Paths]))
     else Log(Format('Error while adding the [%s] to PATH: [%s]', [instlPath, Paths]));
 end;
@@ -37,7 +37,7 @@ var
     P, Offset, DelimLen: Integer;
 begin
     { Skip if registry entry not exists }
-    if not RegQueryStringValue(HKEY_CURRENT_USER, EnvironmentKey, 'Path', Paths) then
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths) then
         exit;
 
     { Skip if string not found in path }
@@ -60,7 +60,7 @@ begin
     Delete(Paths, P - Offset, Length(instlPath) + DelimLen);
 
     { Overwrite path environment variable }
-    if RegWriteStringValue(HKEY_CURRENT_USER, EnvironmentKey, 'Path', Paths)
+    if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
     then Log(Format('The [%s] removed from PATH: [%s]', [instlPath, Paths]))
     else Log(Format('Error while removing the [%s] from PATH: [%s]', [instlPath, Paths]));
 end;
