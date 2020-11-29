@@ -6,7 +6,7 @@ var
     Paths: string;
 begin
     { Retrieve current path (use empty string if entry not exists) }
-    if not RegQueryStringValue(HKEY_CURRENT_USER, EnvironmentKey, 'Path', Paths) then
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths) then
         Paths := '';
 
     if Paths = '' then
