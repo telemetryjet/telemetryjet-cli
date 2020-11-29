@@ -30,8 +30,8 @@ pipeline {
                             bat "if exist \"telemetryjet-cli-windows_${TAG_NAME}.zip\" del \"telemetryjet-cli-windows_${TAG_NAME}.zip\""
                             bat "7z a -tzip \"telemetryjet-cli-windows_${TAG_NAME}.zip\" \"TelemetryJet CLI\""
                             bat "iscc /dApplicationVersion=\"${TAG_NAME}\" \"windows-installer.iss\""
-                            stash includes: "telemetryjet-cli-windows_${TAG_NAME}.zip", name: 'WINDOWS_BUILD_ARCHIVE'
-                            stash includes: "telemetryjet-cli-windows_${TAG_NAME}.exe", name: 'WINDOWS_BUILD_INSTALLER'
+                            stash includes: "telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip", name: 'WINDOWS_BUILD_ARCHIVE'
+                            stash includes: "telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe", name: 'WINDOWS_BUILD_INSTALLER'
                         }
                     }
                 }
@@ -47,8 +47,8 @@ pipeline {
             steps {
                 unstash 'WINDOWS_BUILD_ARCHIVE'
                 unstash 'WINDOWS_BUILD_INSTALLER'
-                sh "yes | cp -rf \"telemetryjet-cli-windows_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
-                sh "yes | cp -rf \"telemetryjet-cli-windows_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
+                sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
+                sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
             }
         }
     }
