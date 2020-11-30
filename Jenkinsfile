@@ -131,7 +131,7 @@ pipeline {
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-ubuntu_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/ubuntu/"
                 sh "yes | cp -rf \"telemetryjet-cli-rpi_arm_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/raspberrypi/"
-                sh "yes | cp -rf \"telemetryjet-cli-macos_x86-46_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/mac/"
+                sh "yes | cp -rf \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/mac/"
             }
         }
     }
