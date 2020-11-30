@@ -62,6 +62,31 @@ pipeline {
                         }
                     }
                 }
+                stage('Build on MacOS') {
+                    agent {
+                        label "master"
+                    }
+                    steps {
+                        sh 'gcc --version'
+                        sh 'cmake --version'
+                        sh 'mkdir -p build'
+                        dir('build') {
+                            sh 'cmake ..'
+                        }
+                        sh 'cmake --build build --target TelemetryJetCli'
+                        dir('build') {
+                            sh 'rm -rf telemetryjet-cli'
+                            sh 'mkdir -p telemetryjet-cli'
+                            sh 'mkdir -p telemetryjet-cli/bin'
+                            sh 'cp jet telemetryjet-cli/bin'
+                            sh 'cp README.txt telemetryjet-cli'
+                            sh 'cp LICENSE.txt telemetryjet-cli'
+                            sh "rm -f \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\""
+                            sh "zip -r \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\" telemetryjet-cli/"
+                            stash includes: "telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip", name: 'MACOS_BUILD_ARCHIVE'
+                        }
+                    }
+                }
                 stage('Build on Raspberry Pi') {
                     agent {
                         label "rpi-linux"
@@ -101,10 +126,12 @@ pipeline {
                 unstash 'WINDOWS_BUILD_INSTALLER'
                 unstash 'UBUNTU_BUILD_ARCHIVE'
                 unstash 'RPI_BUILD_ARCHIVE'
+                unstash 'MACOS_BUILD_ARCHIVE'
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-ubuntu_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/ubuntu/"
                 sh "yes | cp -rf \"telemetryjet-cli-rpi_arm_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/raspberrypi/"
+                sh "yes | cp -rf \"telemetryjet-cli-macos_x86-46_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/mac/"
             }
         }
     }
