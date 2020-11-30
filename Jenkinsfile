@@ -89,7 +89,7 @@ pipeline {
                 }
                 stage('Build on Raspberry Pi') {
                     agent {
-                        label "rpi-linux"
+                        label "macos"
                     }
                     steps {
                         sh 'gcc --version'
