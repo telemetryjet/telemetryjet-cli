@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+cmake_policy(SET CMP0074 NEW)
 
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
@@ -119,8 +120,20 @@ include(FetchContent)
 
 set(Boost_DEBUG 1)
 set(Boost_USE_STATIC_LIBS ON)
+
+if(WIN32 AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
+    message(WARNING "WIN32 compiler does not specify CMAKE_CXX_COMPILER_ARCHITECTURE_ID -- filling in manually")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "x64")
+    else()
+        set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "x86")
+    endif()
+    message(STATUS "Compiler architecture: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+endif()
+
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 FetchContent_Declare(
         CLI11
