@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0083 NEW)
 
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
@@ -101,7 +102,11 @@ configure_file(src/version.h.in src/version.h)
 
 #------------------- BUILD TARGETS ------------------------
 
+include(CheckPIESupported)
+check_pie_supported()
+
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
 set_target_properties(${PROJECT_NAME} PROPERTIES SKIP_BUILD_RPATH TRUE)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
