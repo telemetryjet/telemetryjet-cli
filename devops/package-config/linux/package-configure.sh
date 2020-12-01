@@ -13,7 +13,7 @@ cd build
 
 # Copy necessary files into manual installation bundle
 rm -rf telemetryjet-cli
-sh mkdir -p telemetryjet-cli
+mkdir -p telemetryjet-cli
 mkdir -p telemetryjet-cli/bin
 cp jet telemetryjet-cli/bin
 cp README.txt telemetryjet-cli
@@ -27,16 +27,18 @@ zip -r "telemetryjet-cli-ubuntu_x86-64_$1.zip" telemetryjet-cli/
 rm -rf telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package/usr/bin
-rsync -avr ../devops/package-config/linux telemetryjet-cli-package/
+rsync -avr ../devops/package-config/linux/deb/ telemetryjet-cli-package/
 find ./telemetryjet-cli-package -type d | xargs chmod 755
 objcopy jet ./telemetryjet-cli-package/usr/bin/jet --strip-debug --strip-unneeded
-gzip --best ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/copyright
-gzip --best ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog
-gzip --best ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog.Debian
+gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog
+gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog.Debian
 chmod 755 ./telemetryjet-cli-package/usr/bin/jet
 
 # Build and test the package
-fakeroot dpkg-deb --build telemetryjet-cli-package
+if [ -z "$FAKEROOTKEY" ];
+  then fakeroot;
+fi;
+dpkg-deb --build telemetryjet-cli-package
 lintian telemetryjet-cli-package.deb
 
 # Rename the debian package

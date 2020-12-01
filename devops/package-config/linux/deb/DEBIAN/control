@@ -5,7 +5,7 @@ Priority: optional
 Architecture: amd64
 Maintainer: TelemetryJet Team <telemetryjet@gmail.com>
 Homepage: https://www.telemetryjet.com/
-Depends:
+Depends: 
 Description: TelemetryJet CLI Information
  The TelemetryJet CLI is a utility for monitoring and controlling
  embedded hardware from your terminal. Pipe data from input devices
