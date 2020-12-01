@@ -103,6 +103,7 @@ configure_file(src/version.h.in src/version.h)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
+set_target_properties(${PROJECT_NAME} PROPERTIES SKIP_BUILD_RPATH TRUE)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
