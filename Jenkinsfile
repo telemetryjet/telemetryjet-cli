@@ -64,7 +64,7 @@ pipeline {
                 }
                 stage('Build on MacOS') {
                     agent {
-                        label "master"
+                        label "macos"
                     }
                     steps {
                         sh 'gcc --version'
@@ -89,7 +89,7 @@ pipeline {
                 }
                 stage('Build on Raspberry Pi') {
                     agent {
-                        label "macos"
+                        label "rpi"
                     }
                     steps {
                         sh 'gcc --version'
