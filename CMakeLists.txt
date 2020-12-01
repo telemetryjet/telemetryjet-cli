@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
+set(CMAKE_SKIP_RPATH TRUE)
 
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
