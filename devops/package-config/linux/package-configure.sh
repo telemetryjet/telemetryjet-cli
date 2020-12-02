@@ -31,7 +31,7 @@ rsync -avr ../devops/package-config/linux/deb/ telemetryjet-cli-package/
 
 # Change architecture from armhf -> arm for the package description
 ARCH=$1
-if [ $2 -eq "armhf"]
+if [ "$2" -eq "armhf"];
 then
   ARCH="arm"
 fi
