@@ -2,6 +2,8 @@
 set -e
 
 # Run cmake configuration
+# Force cmake to run a full configuration to root out any build problems
+rm -rf build
 mkdir -p build
 cd build
 cmake ..

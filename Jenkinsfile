@@ -15,6 +15,7 @@ pipeline {
                     steps {
                         bat 'gcc --version'
                         bat 'cmake --version'
+                        bat 'if exist build rmdir build /q /s'
                         bat 'if not exist build mkdir build'
                         dir('build') {
                             bat 'cmake .. -G "MinGW Makefiles"'
@@ -44,6 +45,7 @@ pipeline {
                     steps {
                         sh 'gcc --version'
                         sh 'cmake --version'
+                        sh 'rm -rf build'
                         sh 'mkdir -p build'
                         dir('build') {
                             sh 'cmake ..'
