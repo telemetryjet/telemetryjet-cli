@@ -28,12 +28,20 @@ rm -rf telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package/usr/bin
 rsync -avr ../devops/package-config/linux/deb/ telemetryjet-cli-package/
+
+# Change architecture from armhf -> arm for the package description
+ARCH=$1
+if [ $2 -eq "armhf"]
+then
+  ARCH="arm"
+fi
+
 tee telemetryjet-cli-package/DEBIAN/control << END
 Package: telemetryjet-cli
 Version: $1
 Section: utils
 Priority: optional
-Architecture: $2
+Architecture: $ARCH
 Maintainer: TelemetryJet Team <telemetryjet@gmail.com>
 Homepage: https://www.telemetryjet.com/
 Depends: 
