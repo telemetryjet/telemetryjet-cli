@@ -3,7 +3,7 @@ set -e
 
 # Run cmake configuration
 # Force cmake to run a full configuration to root out any build problems
-rm -rf build
+sudo rm -rf build
 mkdir -p build
 cd build
 cmake ..
@@ -14,7 +14,7 @@ cmake --build build --target TelemetryJetCli
 cd build
 
 # Copy necessary files into manual installation bundle
-rm -rf telemetryjet-cli
+sudo rm -rf telemetryjet-cli
 mkdir -p telemetryjet-cli
 mkdir -p telemetryjet-cli/bin
 cp jet telemetryjet-cli/bin
@@ -22,11 +22,11 @@ cp README.txt telemetryjet-cli
 cp LICENSE.txt telemetryjet-cli
 
 # Rename and zip up manual installation bundle
-rm -f "telemetryjet-cli-linux_$2_$1.zip"
+sudo rm -f "telemetryjet-cli-linux_$2_$1.zip"
 zip -r "telemetryjet-cli-linux_$2_$1.zip" telemetryjet-cli/
 
 # Pull all files for the debian package into the folder and set proper file permissions
-rm -rf telemetryjet-cli-package
+sudo rm -rf telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package
 mkdir -p telemetryjet-cli-package/usr/bin
 rsync -avr ../devops/package-config/linux/deb/ telemetryjet-cli-package/
