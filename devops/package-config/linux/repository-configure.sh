@@ -8,4 +8,4 @@ gzip -k -f Packages
 apt-ftparchive release . > Release
 rm -fr Release.gpg; gpg --default-key telemetryjet -abs -o Release.gpg Release
 rm -fr InRelease; gpg --default-key telemetryjet --clearsign -o InRelease Release
-sudo chmod -R www-data:www-data *
+sudo chown -R www-data:www-data *
