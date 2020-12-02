@@ -129,8 +129,8 @@ pipeline {
                 sh "yes | cp -rf \"telemetryjet-cli-linux_armhf_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/linux/armhf/"
                 sh "yes | cp -rf \"telemetryjet-cli-linux_armhf_${TAG_NAME}.deb\" /var/telemetryjet-downloads/builds/cli/linux/armhf/"
                 sh "yes | cp -rf \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/mac/"
-                sh "../devops/package-config/linux/repository-configure.sh ${TAG_NAME} amd64"
-                sh "../devops/package-config/linux/repository-configure.sh ${TAG_NAME} armhf"
+                sh "./devops/package-config/linux/repository-configure.sh ${TAG_NAME} amd64"
+                sh "./devops/package-config/linux/repository-configure.sh ${TAG_NAME} armhf"
             }
         }
     }
