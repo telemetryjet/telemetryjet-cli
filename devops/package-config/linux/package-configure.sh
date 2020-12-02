@@ -20,8 +20,8 @@ cp README.txt telemetryjet-cli
 cp LICENSE.txt telemetryjet-cli
 
 # Rename and zip up manual installation bundle
-rm -f "telemetryjet-cli-ubuntu_x86-64_$1.zip"
-zip -r "telemetryjet-cli-ubuntu_x86-64_$1.zip" telemetryjet-cli/
+rm -f "telemetryjet-cli-linux_$2_$1.zip"
+zip -r "telemetryjet-cli-linux_$2_$1.zip" telemetryjet-cli/
 
 # Pull all files for the debian package into the folder and set proper file permissions
 rm -rf telemetryjet-cli-package
@@ -33,7 +33,7 @@ Package: telemetryjet-cli
 Version: $1
 Section: utils
 Priority: optional
-Architecture: amd64
+Architecture: $2
 Maintainer: TelemetryJet Team <telemetryjet@gmail.com>
 Homepage: https://www.telemetryjet.com/
 Depends: 
@@ -59,17 +59,6 @@ dpkg-deb --build telemetryjet-cli-package
 lintian telemetryjet-cli-package.deb
 
 # Rename the debian package
-mv telemetryjet-cli-package.deb "telemetryjet-cli-ubuntu-x86_64_$1.deb"
+mv telemetryjet-cli-package.deb "telemetryjet-cli-linux_$2_$1.deb"
 
 cd ..
-
-# Update repository
-echo "===== UPDATING REPOSITORY ====== "
-cp "build/telemetryjet-cli-ubuntu-x86_64_$1.deb" /var/telemetryjet-downloads/builds/cli/ubuntu/apt-repository/amd64
-cd /var/telemetryjet-downloads/builds/cli/ubuntu/apt-repository/
-dpkg-sig -k telemetryjet --sign repo "amd64/telemetryjet-cli-ubuntu-x86_64_$1.deb"
-apt-ftparchive packages amd64 > Packages
-gzip -k -f Packages
-apt-ftparchive release . > Release
-rm -fr Release.gpg; gpg --default-key telemetryjet -abs -o Release.gpg Release
-rm -fr InRelease; gpg --default-key telemetryjet --clearsign -o InRelease Release
