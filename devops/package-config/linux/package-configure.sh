@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+username=$(whoami)
+
 # Run cmake configuration
 # Force cmake to run a full configuration to root out any build problems
 rm -rf build
@@ -70,5 +72,5 @@ lintian telemetryjet-cli-package.deb
 mv telemetryjet-cli-package.deb "telemetryjet-cli-linux_$2_$1.deb"
 
 cd telemetryjet-cli-package
-sudo chown -R jenkins:jenkins *
+sudo chown -R $username:$username *
 cd ..
