@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 # Update repository
 echo "===== UPDATING LINUX REPOSITORY FOR ARCHITECTURE $2 ====== "
 cd /var/telemetryjet-downloads/builds/cli/linux/$2/repo
@@ -11,3 +14,8 @@ gpg --default-key "TelemetryJet" -abs -o Release.gpg Release
 rm -fr InRelease;
 gpg --default-key "TelemetryJet" --clearsign -o InRelease Release
 sudo chown -R www-data:www-data *
+sudo chmod 664 KEY.gpg
+sudo chmod 664 Packages
+sudo chmod 664 Packages.gz
+sudo chmod 664 Release
+sudo chmod 664 Release.gpg
