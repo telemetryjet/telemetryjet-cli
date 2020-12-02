@@ -60,7 +60,7 @@ gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changel
 gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog.Debian
 chmod 755 ./telemetryjet-cli-package/usr/bin/jet
 cd telemetryjet-cli-package
-chown -R root:root *
+sudo chown -R root:root *
 cd ..
 
 dpkg-deb --build telemetryjet-cli-package
