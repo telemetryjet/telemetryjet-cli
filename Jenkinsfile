@@ -105,6 +105,7 @@ pipeline {
                 unstash 'LINUX_AMD64_DEB_PACKAGE'
                 unstash 'LINUX_ARMHF_DEB_PACKAGE'
                 unstash 'MACOS_BUILD_ARCHIVE'
+                sh 'sudo chmod -R www-data:www-data *'
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-linux_amd64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/linux/amd64/"
