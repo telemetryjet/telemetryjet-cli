@@ -6,6 +6,8 @@ dpkg-sig -k telemetryjet --sign repo "amd64/telemetryjet-cli-linux_$2_$1.deb"
 apt-ftparchive packages $2 > Packages
 gzip -k -f Packages
 apt-ftparchive release . > Release
-rm -fr Release.gpg; gpg --default-key telemetryjet -abs -o Release.gpg Release
-rm -fr InRelease; gpg --default-key telemetryjet --clearsign -o InRelease Release
+rm -fr Release.gpg;
+gpg --default-key "TelemetryJet" -abs -o Release.gpg Release
+rm -fr InRelease;
+gpg --default-key "TelemetryJet" --clearsign -o InRelease Release
 sudo chown -R www-data:www-data *
