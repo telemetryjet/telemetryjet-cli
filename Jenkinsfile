@@ -37,18 +37,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Build on Ubuntu') {
-                    agent {
-                        label "master"
-                    }
-                    steps {
-                        sh "./devops/package-config/linux/package-configure.sh ${TAG_NAME}"
-                        dir('build') {
-                            stash includes: "telemetryjet-cli-ubuntu_x86-64_${TAG_NAME}.zip", name: 'UBUNTU_BUILD_ARCHIVE'
-                            stash includes: "telemetryjet-cli-ubuntu_x86-64_${TAG_NAME}.deb", name: 'UBUNTU_BUILD_PKG'
-                        }
-                    }
-                }
                 stage('Build on MacOS') {
                     agent {
                         label "macos"
@@ -74,28 +62,27 @@ pipeline {
                         }
                     }
                 }
+                stage('Build on Ubuntu') {
+                    agent {
+                        label "master"
+                    }
+                    steps {
+                        sh "./devops/package-config/linux/package-configure.sh ${TAG_NAME} amd64"
+                        dir('build') {
+                            stash includes: "telemetryjet-cli-linux_amd64_${TAG_NAME}.zip", name: 'LINUX_AMD64_BUILD_ARCHIVE'
+                            stash includes: "telemetryjet-cli-linux_amd64_${TAG_NAME}.deb", name: 'LINUX_AMD64_DEB_PACKAGE'
+                        }
+                    }
+                }
                 stage('Build on Raspberry Pi') {
                     agent {
                         label "rpi"
                     }
                     steps {
-                        sh 'gcc --version'
-                        sh 'cmake --version'
-                        sh 'mkdir -p build'
+                        sh "./devops/package-config/linux/package-configure.sh ${TAG_NAME} armhf"
                         dir('build') {
-                            sh 'cmake ..'
-                        }
-                        sh 'cmake --build build --target TelemetryJetCli'
-                        dir('build') {
-                            sh 'rm -rf telemetryjet-cli'
-                            sh 'mkdir -p telemetryjet-cli'
-                            sh 'mkdir -p telemetryjet-cli/bin'
-                            sh 'cp jet telemetryjet-cli/bin'
-                            sh 'cp README.txt telemetryjet-cli'
-                            sh 'cp LICENSE.txt telemetryjet-cli'
-                            sh "rm -f \"telemetryjet-cli-rpi_arm_${TAG_NAME}.zip\""
-                            sh "zip -r \"telemetryjet-cli-rpi_arm_${TAG_NAME}.zip\" telemetryjet-cli/"
-                            stash includes: "telemetryjet-cli-rpi_arm_${TAG_NAME}.zip", name: 'RPI_BUILD_ARCHIVE'
+                            stash includes: "telemetryjet-cli-linux_armhf_${TAG_NAME}.zip", name: 'LINUX_ARMHF_BUILD_ARCHIVE'
+                            stash includes: "telemetryjet-cli-linux_armhf_${TAG_NAME}.deb", name: 'LINUX_ARMHF_DEB_PACKAGE'
                         }
                     }
                 }
@@ -111,13 +98,17 @@ pipeline {
             steps {
                 unstash 'WINDOWS_BUILD_ARCHIVE'
                 unstash 'WINDOWS_BUILD_INSTALLER'
-                unstash 'UBUNTU_BUILD_ARCHIVE'
-                unstash 'RPI_BUILD_ARCHIVE'
+                unstash 'LINUX_AMD64_BUILD_ARCHIVE'
+                unstash 'LINUX_ARMHF_BUILD_ARCHIVE'
+                unstash 'LINUX_AMD64_DEB_PACKAGE'
+                unstash 'LINUX_ARMHF_DEB_PACKAGE'
                 unstash 'MACOS_BUILD_ARCHIVE'
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
                 sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
-                sh "yes | cp -rf \"telemetryjet-cli-ubuntu_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/ubuntu/"
-                sh "yes | cp -rf \"telemetryjet-cli-rpi_arm_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/raspberrypi/"
+                sh "yes | cp -rf \"telemetryjet-cli-linux_amd64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/linux/amd64/"
+                sh "yes | cp -rf \"telemetryjet-cli-linux_amd64_${TAG_NAME}.deb\" /var/telemetryjet-downloads/builds/cli/linux/amd64/"
+                sh "yes | cp -rf \"telemetryjet-cli-linux_armhf_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/linux/armhf/"
+                sh "yes | cp -rf \"telemetryjet-cli-linux_armhf_${TAG_NAME}.deb\" /var/telemetryjet-downloads/builds/cli/linux/armhf/"
                 sh "yes | cp -rf \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/mac/"
             }
         }
