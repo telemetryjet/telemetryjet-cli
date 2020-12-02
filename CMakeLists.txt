@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
-set(CMAKE_SKIP_RPATH TRUE)
+option(CMAKE_SKIP_RPATH "Don't add rpath to executables" ON)
 
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
@@ -101,13 +101,17 @@ set(HEADERS_PRIVATE
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)
 
+SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+SET(BUILD_SHARED_LIBS OFF)
+SET(CMAKE_EXE_LINKER_FLAGS "-static")
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
 #------------------- BUILD TARGETS ------------------------
 
-include(CheckPIESupported)
-check_pie_supported()
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
-set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
 set_target_properties(${PROJECT_NAME} PROPERTIES SKIP_BUILD_RPATH TRUE)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
