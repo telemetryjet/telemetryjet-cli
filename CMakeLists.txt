@@ -113,7 +113,6 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 # Build static on linux and windows but not macos
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC -static)
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
     SET(BUILD_SHARED_LIBS OFF)
     SET(CMAKE_EXE_LINKER_FLAGS "-static")
 else()

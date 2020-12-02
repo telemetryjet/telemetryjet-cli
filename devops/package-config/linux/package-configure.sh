@@ -48,16 +48,21 @@ Description: TelemetryJet CLI Information
  See https://docs.dev.telemetryjet.com/cli/ for documentation and guides.
 
 END
-find ./telemetryjet-cli-package -type d | xargs chmod 755
-objcopy jet ./telemetryjet-cli-package/usr/bin/jet --strip-debug --strip-unneeded
-gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog
-gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog.Debian
-chmod 755 ./telemetryjet-cli-package/usr/bin/jet
 
 # Build and test the package
 if [ -z "$FAKEROOTKEY" ];
   then fakeroot;
 fi;
+
+find ./telemetryjet-cli-package -type d | xargs chmod 755
+objcopy jet ./telemetryjet-cli-package/usr/bin/jet --strip-debug --strip-unneeded
+gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog
+gzip --best -n ./telemetryjet-cli-package/usr/share/doc/telemetryjet-cli/changelog.Debian
+chmod 755 ./telemetryjet-cli-package/usr/bin/jet
+cd telemetryjet-cli-package
+chown -R root:root *
+cd ..
+
 dpkg-deb --build telemetryjet-cli-package
 lintian telemetryjet-cli-package.deb
 
