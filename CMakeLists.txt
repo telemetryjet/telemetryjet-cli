@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
-option(CMAKE_SKIP_RPATH "Don't add rpath to executables" ON)
 
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
@@ -59,6 +58,11 @@ else()
         #        ${SOURCES}
         #        src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
         #        )
+        set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+        set(CMAKE_HAVE_THREADS_LIBRARY 1)
+        set(CMAKE_USE_WIN32_THREADS_INIT 0)
+        set(CMAKE_USE_PTHREADS_INIT 1)
+        set(THREADS_PREFER_PTHREAD_FLAG ON)
     else()
         if (UNIX)
             message(STATUS "Adding Linux-specific sources")
@@ -101,16 +105,29 @@ set(HEADERS_PRIVATE
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)
 
-SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-SET(BUILD_SHARED_LIBS OFF)
-SET(CMAKE_EXE_LINKER_FLAGS "-static")
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
 #------------------- BUILD TARGETS ------------------------
 
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
-target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+
+# Build static on linux and windows but not macos
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+    SET(BUILD_SHARED_LIBS OFF)
+    SET(CMAKE_EXE_LINKER_FLAGS "-static")
+else()
+    if (APPLE)
+    else()
+        if (UNIX)
+            target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+            SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+            SET(BUILD_SHARED_LIBS OFF)
+            SET(CMAKE_EXE_LINKER_FLAGS "-static")
+        else()
+        endif()
+    endif()
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "jet")
 set_target_properties(${PROJECT_NAME} PROPERTIES SKIP_BUILD_RPATH TRUE)
