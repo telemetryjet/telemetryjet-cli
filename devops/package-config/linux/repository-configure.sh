@@ -15,5 +15,5 @@ rm -fr InRelease;
 gpg --default-key "TelemetryJet" --clearsign -o InRelease Release
 cd ..
 sudo chown -R www-data:www-data *
-sudo chmod -R 664 *
-sudo chmod 664 *
+sudo chmod -R 774 *
+sudo chmod 774 *

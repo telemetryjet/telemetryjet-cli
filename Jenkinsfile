@@ -115,8 +115,8 @@ pipeline {
                     //sh 'sudo chown jenkins:jenkins \"telemetryjet-cli-linux_armhf_${TAG_NAME}.deb\"'
                     //sh 'sudo chown jenkins:jenkins \"telemetryjet-cli-macos_x86-64_${TAG_NAME}.zip\"'
                     sh 'sudo chown -R www-data:www-data *'
-                    sh 'sudo chmod -R 664 *'
-                    sh 'sudo chmod 664 *'
+                    sh 'sudo chmod -R 774 *'
+                    sh 'sudo chmod 774 *'
                     sh 'ls -l'
                     sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.zip\" /var/telemetryjet-downloads/builds/cli/windows/"
                     sh "yes | cp -rf \"telemetryjet-cli-windows_x86-64_${TAG_NAME}.exe\" /var/telemetryjet-downloads/builds/cli/windows/"
