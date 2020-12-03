@@ -1,8 +1,8 @@
 #include "console_logger.h"
-#include "model/log.h"
 #include "utility/time_utils.h"
 #include <constants.h>
 #include <fmt/format.h>
+#include <iostream>
 
 // ANSI color code from
 // https://gist.github.com/zyvitski/fb12f2ce6bc9d3b141f3bd4410a6f7cf
@@ -43,63 +43,39 @@ void logHeader(ansi_color_code colorCode, const std::string& message) {
     fflush(stdout);
 }
 
-void ConsoleLogger::header(std::string message, bool createLogRecord) {
+void ConsoleLogger::header(std::string message) {
     if (level <= LoggerLevel::LEVEL_HEADER) {
         logHeader(ansi_color_code::blue, message);
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_HEADER);
-        }
     }
 }
 
-void ConsoleLogger::debug(std::string message, bool createLogRecord) {
+void ConsoleLogger::debug(std::string message) {
     if (level <= LoggerLevel::LEVEL_DEBUG) {
         log(message, "DEBUG");
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_DEBUG);
-        }
     }
 }
 
-void ConsoleLogger::info(std::string message, bool createLogRecord) {
+void ConsoleLogger::info(std::string message) {
     if (level <= LoggerLevel::LEVEL_INFO) {
         log(message, "INFO");
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_INFO);
-        }
     }
 }
 
-void ConsoleLogger::warning(std::string message, bool createLogRecord) {
+void ConsoleLogger::warning(std::string message) {
     if (level <= LoggerLevel::LEVEL_WARNING) {
         logColor(ansi_color_code::yellow, message, "WARNING");
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_WARNING);
-        }
     }
 }
 
-void ConsoleLogger::error(std::string message, bool createLogRecord) {
+void ConsoleLogger::error(std::string message) {
     if (level <= LoggerLevel::LEVEL_ERROR) {
         logColor(ansi_color_code::red, message, "ERROR");
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_ERROR);
-        }
     }
 }
 
-void ConsoleLogger::alert(std::string message, bool createLogRecord) {
+void ConsoleLogger::alert(std::string message) {
     if (level <= LoggerLevel::LEVEL_ALERT) {
         logColor(ansi_color_code::green, message, "ALERT");
-
-        if(createLogRecord) {
-            record_log_t::createLog(message, LOG_LEVEL_ALERT);
-        }
     }
 }
 

@@ -109,7 +109,3 @@ void SqliteDatabase::updateDataPoint(record_data_point_t dataPoint) {
         throwError(fmt::format("Error in updateDataPoint: {}", e.what()));
     }
 }
-
-void SqliteDatabase::deleteAllDataPointsForCurrentSystem() {
-    deleteBySystemId("data_points", record_system_t::getActiveSystem().id);
-}

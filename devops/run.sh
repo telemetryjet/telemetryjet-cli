@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Runs a build
-./build/TelemetryServer
+./build/jet
