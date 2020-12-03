@@ -57,6 +57,7 @@ void ServiceManager::init() {
         }
     }
 
+
     // Setup SQLite database
     logger->debug("ServiceManager: Initializing SQLite Database");
     database = new SqliteDatabase();
@@ -64,6 +65,8 @@ void ServiceManager::init() {
     // Set up in-memory data cache
     logger->debug("ServiceManager: Initializing Data Cache");
     dataCache = new DataCache();
+
+    //TODO: Exit early if any of the services does not work
 }
 
 void ServiceManager::destroy() {

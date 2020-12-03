@@ -37,6 +37,37 @@ void printVersion() {
                              CLI_VERSION_ARCH);
 }
 
+bool handleBooleanPrompt(std::string promptMessage) {
+    char input = 0;
+    while (input != 'Y' && input != 'y' && input != 'n' && input != 'N') {
+        std::cout << promptMessage << " (Y/n) ";
+        std::cin >> input;
+    }
+
+    return (input == 'Y' || input == 'y');
+}
+
+std::string handleStringPrompt(std::string promptMessage, std::string errorMessage, std::string defaultValue) {
+    std::string outputString;
+    // If there is a default, only prompt once before using the default
+    // If there is no default, force prompt until we get a value.
+    while (outputString.empty()) {
+        if (defaultValue.empty()) {
+            std::cout << promptMessage << ": ";
+        } else {
+            std::cout << promptMessage << " [Default: " << defaultValue << "]: ";
+        }
+        getline(std::cin, outputString);
+        if (outputString.empty() && !defaultValue.empty()) {
+            return defaultValue;
+        }
+        if (outputString.empty()) {
+            std::cout << errorMessage << "\n";
+        }
+    }
+    return outputString;
+}
+
 int main(int argc, char** argv) {
     CLI::App app{"TelemetryJet CLI"};
 
@@ -44,53 +75,47 @@ int main(int argc, char** argv) {
     std::string serverHost;
     std::string serverUsername;
     std::string serverPassword;
-    bool confirmation;
+    bool skipConfirmationPromptsFlag;
 
-    auto versionCommand
-        = app.add_subcommand("version", "Display the version and exit.")->group("Metadata");
-    auto updateCommand = app.add_subcommand("update", "Check for updates and install if available.")
-                             ->group("Metadata");
-    auto serverCommand
-        = app.add_subcommand("server", "Manage TelemetryJet server connections.")->group("Outputs");
+    bool optionFlag;
+    app.add_flag("-v,--version", optionFlag, "Display the version and exit");
+
+    auto serverCommand = app.add_subcommand(
+    "server",
+"Manage TelemetryJet server connections."
+                )->group("Outputs");
 
     // server subcommands
     auto serverAddCommand
         = serverCommand->add_subcommand("add", "Add a server connection.")->group("Outputs");
-    serverAddCommand->add_option("--alias", serverAlias, "Specify an alias for the server.")
-        ->required();
-    serverAddCommand->add_option("--host", serverHost, "Specify the url of the server instance.")
-        ->required();
-    serverAddCommand->add_option("--username", serverUsername, "Specify the username.")->required();
-    serverAddCommand->add_option("--password", serverPassword, "Specify the password.")->required();
+    serverAddCommand->add_option("--alias", serverAlias, "Specify an alias for the server.");
+    serverAddCommand->add_option("--host", serverHost, "Specify the url of the server instance.");
+    serverAddCommand->add_option("--username", serverUsername, "Specify the username.");
+    serverAddCommand->add_option("--password", serverPassword, "Specify the password.");
 
     auto serverListCommand
         = serverCommand->add_subcommand("list", "List the available server connections.")
               ->group("Outputs");
     auto serverRemoveCommand
-        = serverCommand->add_option("--remove", serverAlias, "Remove a server connection.")
+        = serverCommand->add_subcommand("remove", "Remove a server connection.")
               ->group("Outputs");
+    serverRemoveCommand->add_option("--alias", serverAlias, "Specify a server alias to be removed.");
+    serverRemoveCommand->add_flag("-y,--yes", skipConfirmationPromptsFlag, "Skip confirmation prompts.");
 
     auto serverClearCommand
         = serverCommand->add_subcommand("clear", "Clear all the server connections.")
               ->group("Outputs");
-    serverClearCommand->add_flag("-y,--yes", confirmation, "Skip confirmation prompts.");
+    serverClearCommand->add_flag("-y,--yes", skipConfirmationPromptsFlag, "Skip confirmation prompts.");
 
     auto streamCommand
         = app.add_subcommand("stream", "Connect to one or more devices.")->group("Streaming");
 
     CLI11_PARSE(app, argc, argv);
 
-    if (versionCommand->parsed()) {
+    if (optionFlag) {
         printVersion();
         return 0;
     }
-
-    if (updateCommand->parsed()) {
-        std::cout << "No updates available.\n";
-        return 0;
-    }
-
-    // server command implementations
 
     if (*serverListCommand) {
         SM::init();
@@ -104,13 +129,7 @@ int main(int argc, char** argv) {
     if (*serverClearCommand) {
         SM::init();
 
-        char input = 0;
-        while (input != 'Y' && input != 'n' && !confirmation) {
-            std::cout << "Are you sure you want to remove all servers? (Y/n) ";
-            std::cin >> input;
-        }
-
-        if (input == 'Y' || confirmation) {
+        if (skipConfirmationPromptsFlag || handleBooleanPrompt("Are you sure you want to remove all servers?")) {
             SM::getDatabase()->deleteAllServers();
             std::cout << "All servers removed from list.\n";
         }
@@ -121,9 +140,22 @@ int main(int argc, char** argv) {
     if (*serverAddCommand) {
         SM::init();
 
+        if (serverAlias.empty()) {
+            serverAlias = handleStringPrompt("Server alias", "A server alias is required.", "default");
+        }
         if (SM::getDatabase()->serverExists(serverAlias)) {
-            std::cout << "The alias " << serverAlias << " is already in use.\n";
+            std::cout << "The server alias '" << serverAlias << "' is already in use.\n";
             return 0;
+        }
+
+        if (serverHost.empty()) {
+            serverHost = handleStringPrompt("Server host", "A server host is required.", "app.telemetryjet.com");
+        }
+        if (serverUsername.empty()) {
+            serverUsername = handleStringPrompt("Server username","A server username is required.", "");
+        }
+        if (serverPassword.empty()) {
+            serverPassword = handleStringPrompt("Server password","A server password is required.", "");
         }
 
         record_server_t::createServer(serverAlias, serverHost, serverUsername, serverPassword);
@@ -134,9 +166,15 @@ int main(int argc, char** argv) {
     if (*serverRemoveCommand) {
         SM::init();
 
+        if (serverAlias.empty()) {
+            serverAlias = handleStringPrompt("Server alias", "A server alias is required.", "default");
+        }
+
         if (SM::getDatabase()->serverExists(serverAlias)) {
-            SM::getDatabase()->deleteServer(serverAlias);
-            std::cout << "Server " << serverAlias << " successfully removed.\n";
+            if (skipConfirmationPromptsFlag || handleBooleanPrompt(fmt::format("Are you sure you want to remove the server '{}'?", serverAlias))) {
+                SM::getDatabase()->deleteServer(serverAlias);
+                std::cout << "Server " << serverAlias << " successfully removed.\n";
+            }
         } else {
             std::cout << "The alias " << serverAlias << " does not exist.\n";
         }
