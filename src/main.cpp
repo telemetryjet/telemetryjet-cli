@@ -3,187 +3,81 @@
 #include "CLI/Formatter.hpp"
 #include "services/service_manager.h"
 #include "src/version.h"
-#include <algorithm>
 #include <fmt/format.h>
-
-void printServerList(const std::vector<record_server_t>& servers) {
-    int maxAliasLength = 5;  // length of "ALIAS"
-    int maxHostLength = 4;   // length of "HOST"
-    for (const record_server_t& server : servers) {
-        maxAliasLength = std::max(maxAliasLength, static_cast<int>(server.alias.length()));
-        maxHostLength = std::max(maxHostLength, static_cast<int>(server.host.length()));
-    }
-
-    std::cout << fmt::format("ALIAS{}    HOST{}    USERNAME\n",
-                             std::string(maxAliasLength - 5, ' '),
-                             std::string(maxHostLength - 4, ' '));
-
-    for (record_server_t server : servers) {
-        std::cout << fmt::format("{}{}    {}{}    {}\n",
-                                 server.alias,
-                                 std::string(maxAliasLength - server.alias.length(), ' '),
-                                 server.host,
-                                 std::string(maxHostLength - server.host.length(), ' '),
-                                 server.username);
-    }
-}
+#include <filesystem>
+#include <boost/filesystem.hpp>
+#include "utility/glob/glob.h"
+#include "utility/path_utils.h"
 
 void printVersion() {
-    std::cout << fmt::format("TelemetryJet CLI (version {}.{}.{}, platform {}, architecture {})\n",
+    SM::getLogger()->info(fmt::format("TelemetryJet CLI (version {}.{}.{}, platform {}, architecture {})",
                              CLI_VERSION_MAJOR,
                              CLI_VERSION_MINOR,
                              CLI_VERSION_PATCH,
                              CLI_VERSION_SYSTEM,
-                             CLI_VERSION_ARCH);
-}
-
-bool handleBooleanPrompt(std::string promptMessage) {
-    char input = 0;
-    while (input != 'Y' && input != 'y' && input != 'n' && input != 'N') {
-        std::cout << promptMessage << " (Y/n) ";
-        std::cin >> input;
-    }
-
-    return (input == 'Y' || input == 'y');
-}
-
-std::string handleStringPrompt(std::string promptMessage, std::string errorMessage, std::string defaultValue) {
-    std::string outputString;
-    // If there is a default, only prompt once before using the default
-    // If there is no default, force prompt until we get a value.
-    while (outputString.empty()) {
-        if (defaultValue.empty()) {
-            std::cout << promptMessage << ": ";
-        } else {
-            std::cout << promptMessage << " [Default: " << defaultValue << "]: ";
-        }
-        getline(std::cin, outputString);
-        if (outputString.empty() && !defaultValue.empty()) {
-            return defaultValue;
-        }
-        if (outputString.empty()) {
-            std::cout << errorMessage << "\n";
-        }
-    }
-    return outputString;
+                             CLI_VERSION_ARCH));
 }
 
 int main(int argc, char** argv) {
     CLI::App app{"TelemetryJet CLI"};
+    app.set_config();
+    SM::init();
 
-    std::string serverAlias;
-    std::string serverHost;
-    std::string serverUsername;
-    std::string serverPassword;
-    bool skipConfirmationPromptsFlag;
+    bool versionFlag;
+    bool silentFlag;
+    app.add_flag("-v,--version", versionFlag, "Display the version and exit");
+    app.add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
 
-    bool optionFlag;
-    app.add_flag("-v,--version", optionFlag, "Display the version and exit");
-
-    auto serverCommand = app.add_subcommand(
-    "server",
-"Manage TelemetryJet server connections."
-                )->group("Outputs");
-
-    // server subcommands
-    auto serverAddCommand
-        = serverCommand->add_subcommand("add", "Add a server connection.")->group("Outputs");
-    serverAddCommand->add_option("--alias", serverAlias, "Specify an alias for the server.");
-    serverAddCommand->add_option("--host", serverHost, "Specify the url of the server instance.");
-    serverAddCommand->add_option("--username", serverUsername, "Specify the username.");
-    serverAddCommand->add_option("--password", serverPassword, "Specify the password.");
-
-    auto serverListCommand
-        = serverCommand->add_subcommand("list", "List the available server connections.")
-              ->group("Outputs");
-    auto serverRemoveCommand
-        = serverCommand->add_subcommand("remove", "Remove a server connection.")
-              ->group("Outputs");
-    serverRemoveCommand->add_option("--alias", serverAlias, "Specify a server alias to be removed.");
-    serverRemoveCommand->add_flag("-y,--yes", skipConfirmationPromptsFlag, "Skip confirmation prompts.");
-
-    auto serverClearCommand
-        = serverCommand->add_subcommand("clear", "Clear all the server connections.")
-              ->group("Outputs");
-    serverClearCommand->add_flag("-y,--yes", skipConfirmationPromptsFlag, "Skip confirmation prompts.");
-
-    auto streamCommand
-        = app.add_subcommand("stream", "Connect to one or more devices.")->group("Streaming");
+    auto streamCommand = app.add_subcommand("stream", "Create and run a network of data sources.")->group("Streaming");
+    std::vector<std::string> configurationFileGlobs;
+    streamCommand->add_option("configurations", configurationFileGlobs, "Configuration files to load.");
 
     CLI11_PARSE(app, argc, argv);
 
-    if (optionFlag) {
+    if (silentFlag) {
+        SM::getLogger()->setLevel(LoggerLevel::LEVEL_NONE);
+    }
+
+    // If the version flag was specified, display the version and exit.
+    if (versionFlag) {
         printVersion();
+        SM::destroy();
         return 0;
     }
 
-    if (*serverListCommand) {
-        SM::init();
-
-        std::vector<record_server_t> servers = SM::getDatabase()->getAllServers();
-        printServerList(servers);
-
+    if (!streamCommand->parsed()) {
+        // Display the version and quit if no other commands were entered.
+        printVersion();
+        SM::getLogger()->info("No command was specified, exiting...");
+        SM::destroy();
         return 0;
     }
 
-    if (*serverClearCommand) {
-        SM::init();
+    std::string currentPath = boost::filesystem::current_path().generic_string();
 
-        if (skipConfirmationPromptsFlag || handleBooleanPrompt("Are you sure you want to remove all servers?")) {
-            SM::getDatabase()->deleteAllServers();
-            std::cout << "All servers removed from list.\n";
-        }
-
-        return 0;
-    }
-
-    if (*serverAddCommand) {
-        SM::init();
-
-        if (serverAlias.empty()) {
-            serverAlias = handleStringPrompt("Server alias", "A server alias is required.", "default");
-        }
-        if (SM::getDatabase()->serverExists(serverAlias)) {
-            std::cout << "The server alias '" << serverAlias << "' is already in use.\n";
-            return 0;
-        }
-
-        if (serverHost.empty()) {
-            serverHost = handleStringPrompt("Server host", "A server host is required.", "app.telemetryjet.com");
-        }
-        if (serverUsername.empty()) {
-            serverUsername = handleStringPrompt("Server username","A server username is required.", "");
-        }
-        if (serverPassword.empty()) {
-            serverPassword = handleStringPrompt("Server password","A server password is required.", "");
-        }
-
-        record_server_t::createServer(serverAlias, serverHost, serverUsername, serverPassword);
-        std::cout << "Server " << serverAlias << " successfully created.\n";
-        return 0;
-    }
-
-    if (*serverRemoveCommand) {
-        SM::init();
-
-        if (serverAlias.empty()) {
-            serverAlias = handleStringPrompt("Server alias", "A server alias is required.", "default");
-        }
-
-        if (SM::getDatabase()->serverExists(serverAlias)) {
-            if (skipConfirmationPromptsFlag || handleBooleanPrompt(fmt::format("Are you sure you want to remove the server '{}'?", serverAlias))) {
-                SM::getDatabase()->deleteServer(serverAlias);
-                std::cout << "Server " << serverAlias << " successfully removed.\n";
+    // Load configuration files
+    std::vector<std::filesystem::path> configurationFilePaths;
+    for (auto& configFileGlob : configurationFileGlobs) {
+        std::string absolutePathGlob = resolveRelativePathHome(configFileGlob);
+        SM::getLogger()->info(fmt::format("Rel path: [{}] -> abs path: [{}]", configFileGlob, absolutePathGlob));
+        for (std::filesystem::path& path : glob::rglob(absolutePathGlob)) {
+            std::filesystem::file_status fileStatus = std::filesystem::status(path);
+            if (std::filesystem::is_regular_file(fileStatus) || std::filesystem::is_symlink(fileStatus)) {
+                configurationFilePaths.push_back(path);
+            } else {
+                SM::getLogger()->warning(fmt::format("{} is not a regular file, ignoring...",path.string()));
             }
-        } else {
-            std::cout << "The alias " << serverAlias << " does not exist.\n";
         }
+    }
 
+    if (configurationFilePaths.empty()) {
+        // Display the version and quit if no configuration files were entered.
+        SM::getLogger()->info("No configuration files were specified, exiting...");
+        SM::destroy();
         return 0;
     }
 
-    printVersion();
-    std::cout << "No command was specified, exiting.\n";
-
-    return 0;
+    for (auto& configFilename : configurationFilePaths) {
+        SM::getLogger()->info(configFilename.generic_string());
+    }
 }

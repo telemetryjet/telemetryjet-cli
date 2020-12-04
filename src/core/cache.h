@@ -50,7 +50,7 @@ public:
                 pt.add(key, get<uint64_t>(key));
             } else {
                 throw std::runtime_error(
-                    "Cache variant type not implemented in DataCache::toPropertyTree()");
+                        "Cache variant type not implemented in DataCache::toPropertyTree()");
             }
         }
         return pt;

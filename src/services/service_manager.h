@@ -2,9 +2,8 @@
 #define TELEMETRYSERVER_SERVICE_MANAGER_H
 
 #include <services/config/config.h>
-#include <services/data_cache/cache.h>
-#include <services/database/database.h>
 #include <services/logger/logger.h>
+#include <services/parser/parser.h>
 
 /**
  * ServiceManager
@@ -16,8 +15,7 @@ class ServiceManager {
 private:
     static Config* config;
     static Logger* logger;
-    static Database* database;
-    static DataCache* dataCache;
+    static Parser* parser;
 
 public:
     static void init();
@@ -28,11 +26,8 @@ public:
     static Logger* getLogger() {
         return logger;
     }
-    static Database* getDatabase() {
-        return database;
-    }
-    static DataCache* getDataCache() {
-        return dataCache;
+    static Parser* getParser() {
+        return parser;
     }
 };
 

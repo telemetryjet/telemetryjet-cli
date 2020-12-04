@@ -1,6 +1,0 @@
-#ifndef TELEMETRYSERVER_RECORDS_H
-#define TELEMETRYSERVER_RECORDS_H
-
-#include "data_point.h"
-
-#endif //TELEMETRYSERVER_RECORDS_H

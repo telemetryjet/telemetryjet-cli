@@ -4,35 +4,42 @@
 #include <cstdlib>
 #include <string>
 #include <fmt/format.h>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 /**
  * resolveRelativePathHome
  * Replaces a relative path to a user's home with the absolute path.
+ * Also converts relative paths (., ..) into absolute paths.
  * eg ~/test -> /Users/chris/test
  */
-inline std::string resolveRelativePathHome(std::string homeDir, std::string directory) {
+inline std::string resolveRelativePathHome(std::string directory) {
+    #ifdef PLATFORM_WIN32
+        char* userProfileEnv = getenv("USERPROFILE");
+        char* userHomeDrive = getenv("HOMEDRIVE");
+        char* userHomePath = getenv("HOMEPATH");
+        std::string homeDir;
+        if (userProfileEnv == nullptr) {
+            homeDir = fmt::format("{}{}", userHomeDrive, userHomePath);
+        } else {
+            homeDir = std::string(userProfileEnv);
+        }
+    #else
+        std::string homeDir(getenv("HOME"));
+    #endif
+
+    std::string newPath = directory;
     if (directory.length() == 0){
-        return directory;
+        newPath = directory;
     }
     if (directory.length() == 1 && directory.front() == '~'){
-        return homeDir;
+        newPath = homeDir;
     }
     if (directory.length() >= 2 && directory.substr(0,2) == "~/") {
-        return fmt::format("{}{}",homeDir, directory.substr(1,directory.size() - 1));
+        newPath = fmt::format("{}{}",homeDir, directory.substr(1,directory.size() - 1));
     }
-    return directory;
-}
 
-/**
- * Get folder
- * From a file path, strips the filename to get the lowest directory.
- * eg /usr/bin/run -> /usr/bin
- */
-inline std::string getFolder(std::string path) {
-    boost::filesystem::path tempPath(path);
-    boost::filesystem::path dir = tempPath.parent_path();
-    return dir.generic_string();
+    std::filesystem::path canonicalPath = std::filesystem::weakly_canonical(newPath);
+    return canonicalPath.generic_string();
 }
 
 #endif //TELEMETRYSERVER_PATH_UTILS_H

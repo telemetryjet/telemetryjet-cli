@@ -26,22 +26,11 @@ endif()
 
 set(SOURCES
         src/main.cpp
-        #src/devices/device_manager.cpp
-        #src/devices/protocols/mock/mock_device.cpp
-        #src/devices/protocols/nmea_0183/nmea_0183_device.cpp
-        #src/devices/protocols/system_usage/system_usage_device.cpp
-        #src/model/data_point.cpp
-        src/services/config/json_env_config.cpp
-        #src/services/config/persisted_config.cpp
+        src/utility/glob/glob.cpp
+        src/services/config/config.cpp
+        src/services/logger/logger.cpp
+        src/services/parser/parser.cpp
         src/services/service_manager.cpp
-        src/services/logger/console_logger.cpp
-        src/services/database/sqlite/sqlite_database.cpp
-        src/services/database/sqlite/sqlite_database_servers.cpp
-        src/services/database/sqlite/sqlite_database_data_points.cpp
-        src/services/data_cache/cache.cpp
-        #src/utility/simple_timer.cpp
-        #src/utility/serial_wrapper.cpp
-        src/model/server.cpp
 )
 
 # Platform-specific sources
@@ -78,28 +67,13 @@ endif()
 
 
 set(HEADERS_PRIVATE
-        #src/constants.h
-        #src/devices/device_manager.h
-        #src/devices/protocols/mock/mock_device.h
-        #src/devices/protocols/nmea_0183/nmea_0183_device.h
-        #src/devices/protocols/system_usage/system_usage_statistics.h
-        #src/devices/protocols/system_usage/system_usage_device.h
-        #src/devices/device.h
-        #src/model/data_point.h
-        #src/services/service_manager.h
-        #src/services/config/config.h
-        #src/services/config/json_env_config.h
-        #src/services/config/persisted_config.h
-        #src/services/logger/logger.h
-        #src/services/logger/console_logger.h
-        #src/services/database/database.h
-        #src/services/database/sqlite/sqlite_database.h
-        #src/services/data_cache/cache.h
-        #src/utility/time_utils.h
-        #src/utility/path_utils.h
-        #src/utility/simple_timer.h
-        #src/utility/serial_wrapper.h
-        #src/ui/tray/tray_ui.h
+        src/constants.h
+        src/utility/glob/glob.h
+        src/utility/path_utils.h
+        src/services/config/config.h
+        src/services/logger/logger.h
+        src/services/parser/parser.h
+        src/services/service_manager.h
 )
 
 # Put version numbers into header

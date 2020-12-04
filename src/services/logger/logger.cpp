@@ -1,4 +1,4 @@
-#include "console_logger.h"
+#include "logger.h"
 #include "utility/time_utils.h"
 #include <constants.h>
 #include <fmt/format.h>
@@ -43,57 +43,57 @@ void logHeader(ansi_color_code colorCode, const std::string& message) {
     fflush(stdout);
 }
 
-void ConsoleLogger::header(std::string message) {
+void Logger::header(std::string message) {
     if (level <= LoggerLevel::LEVEL_HEADER) {
         logHeader(ansi_color_code::blue, message);
     }
 }
 
-void ConsoleLogger::debug(std::string message) {
+void Logger::debug(std::string message) {
     if (level <= LoggerLevel::LEVEL_DEBUG) {
         log(message, "DEBUG");
     }
 }
 
-void ConsoleLogger::info(std::string message) {
+void Logger::info(std::string message) {
     if (level <= LoggerLevel::LEVEL_INFO) {
         log(message, "INFO");
     }
 }
 
-void ConsoleLogger::warning(std::string message) {
+void Logger::warning(std::string message) {
     if (level <= LoggerLevel::LEVEL_WARNING) {
         logColor(ansi_color_code::yellow, message, "WARNING");
     }
 }
 
-void ConsoleLogger::error(std::string message) {
+void Logger::error(std::string message) {
     if (level <= LoggerLevel::LEVEL_ERROR) {
         logColor(ansi_color_code::red, message, "ERROR");
     }
 }
 
-void ConsoleLogger::alert(std::string message) {
+void Logger::alert(std::string message) {
     if (level <= LoggerLevel::LEVEL_ALERT) {
         logColor(ansi_color_code::green, message, "ALERT");
     }
 }
 
-ConsoleLogger::ConsoleLogger() = default;
+Logger::Logger() = default;
 
-ConsoleLogger::~ConsoleLogger() {
-    info("Stopped Console Logger.");
+Logger::~Logger() {
+    info("Stopped Logger.");
 }
 
-LoggerLevel ConsoleLogger::getLevel() {
+LoggerLevel Logger::getLevel() {
     return level;
 }
 
-void ConsoleLogger::setLevel(LoggerLevel newLevel) {
+void Logger::setLevel(LoggerLevel newLevel) {
     level = newLevel;
 }
 
-void ConsoleLogger::setLevel(std::string newLevel) {
+void Logger::setLevel(std::string newLevel) {
     if (newLevel == LOG_LEVEL_HEADER) {
         level = LoggerLevel::LEVEL_HEADER;
     } else if (newLevel == LOG_LEVEL_DEBUG) {

@@ -1,7 +1,16 @@
-#ifndef TELEMETRYSERVER_LOGGER_H
-#define TELEMETRYSERVER_LOGGER_H
+#ifndef TELEMETRYSERVER_CONSOLE_LOGGER_H
+#define TELEMETRYSERVER_CONSOLE_LOGGER_H
 
 #include <string>
+
+// log level strings
+#define LOG_LEVEL_HEADER "header"
+#define LOG_LEVEL_DEBUG "debug"
+#define LOG_LEVEL_INFO "info"
+#define LOG_LEVEL_WARNING "warning"
+#define LOG_LEVEL_ERROR "error"
+#define LOG_LEVEL_ALERT "alert"
+#define LOG_LEVEL_NONE "none"
 
 /**
  * Logger Level
@@ -18,21 +27,24 @@ enum class LoggerLevel : int {
 
 /**
  * Logger
- * Interface for a logger, which should implement 4 logging levels:
- * - Debug, Info, Warning, Error
+ * A common interface for logging data to the console.
+ * Allows log filtering, disabling, color-coded formats.
  */
 class Logger {
+private:
+    LoggerLevel level = LoggerLevel::LEVEL_HEADER;
 public:
-    virtual ~Logger() = default;
-    virtual void header(std::string message) = 0;
-    virtual void debug(std::string message) = 0;
-    virtual void info(std::string message) = 0;
-    virtual void warning(std::string message) = 0;
-    virtual void error(std::string message) = 0;
-    virtual void alert(std::string message) = 0;
-    virtual void setLevel(LoggerLevel level) = 0;
-    virtual void setLevel(std::string level) = 0;
-    virtual LoggerLevel getLevel() = 0;
+    Logger();
+    ~Logger();
+    void header(std::string message);
+    void debug(std::string message);
+    void info(std::string message);
+    void warning(std::string message);
+    void error(std::string message);
+    void alert(std::string message);
+    void setLevel(LoggerLevel level);
+    void setLevel(std::string level);
+    LoggerLevel getLevel();
 };
 
-#endif  // TELEMETRYSERVER_LOGGER_H
+#endif //TELEMETRYSERVER_CONSOLE_LOGGER_H
