@@ -5,6 +5,7 @@ cmake_policy(SET CMP0083 NEW)
 project(TelemetryJetCli VERSION 0.0.1
                         DESCRIPTION "TelemetryJet CLI"
                         LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
 
 ### Require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
@@ -36,7 +37,7 @@ set(SOURCES
         src/core/data_sources/console/console_data_source.cpp
         src/core/data_sources/system_stats/system_stats_data_source.cpp
         src/utility/simple_timer.cpp
-        src/utility/serial_wrapper.cpp
+        #src/utility/serial_wrapper.cpp
 )
 
 # Platform-specific sources
@@ -88,7 +89,7 @@ set(HEADERS_PRIVATE
         src/services/parser/parser.h
         src/services/service_manager.h
         src/utility/simple_timer.h
-        src/utility/serial_wrapper.h
+        #src/utility/serial_wrapper.h
 )
 
 # Put version numbers into header
@@ -158,8 +159,8 @@ FetchContent_Declare(
 FetchContent_GetProperties(serialport)
 if(NOT serialport_POPULATED)
     FetchContent_Populate(serialport)
-    include_directories(${serialport_SOURCE_DIR})
-    add_subdirectory(${serialport_SOURCE_DIR} ${serialport_BINARY_DIR} EXCLUDE_FROM_ALL)
+    #include_directories(${serialport_SOURCE_DIR})
+    #add_subdirectory(${serialport_SOURCE_DIR} ${serialport_BINARY_DIR} EXCLUDE_FROM_ALL)
     message(STATUS "Serialport SOURCE DIR: ${serialport_SOURCE_DIR}")
     message(STATUS "Serialport BINARY DIR: ${serialport_BINARY_DIR}")
 endif()
@@ -220,9 +221,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
+#target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
-
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
 
 # Dependencies and build flags for individual platforms

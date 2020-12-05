@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 #include <regex>
-namespace fs = std::filesystem;
+namespace fs = boost::filesystem;
 
 namespace glob {
 
@@ -182,7 +182,7 @@ namespace glob {
                     for (auto &entry : fs::directory_iterator(
                             current_directory, fs::directory_options::follow_directory_symlink |
                                                fs::directory_options::skip_permission_denied)) {
-                        if (!dironly || entry.is_directory()) {
+                        if (!dironly || fs::is_directory(entry)) {
                             if (dirname.is_absolute()) {
                                 result.push_back(entry.path());
                             } else {
@@ -346,8 +346,8 @@ namespace glob {
         return glob(pathname, true);
     }
 
-    std::vector<std::filesystem::path> glob(const std::vector<std::string> &pathnames) {
-        std::vector<std::filesystem::path> result;
+    std::vector<boost::filesystem::path> glob(const std::vector<std::string> &pathnames) {
+        std::vector<boost::filesystem::path> result;
         for (auto &pathname : pathnames) {
             for (auto &match : glob(pathname, false)) {
                 result.push_back(std::move(match));
@@ -356,8 +356,8 @@ namespace glob {
         return result;
     }
 
-    std::vector<std::filesystem::path> rglob(const std::vector<std::string> &pathnames) {
-        std::vector<std::filesystem::path> result;
+    std::vector<boost::filesystem::path> rglob(const std::vector<std::string> &pathnames) {
+        std::vector<boost::filesystem::path> result;
         for (auto &pathname : pathnames) {
             for (auto &match : glob(pathname, true)) {
                 result.push_back(std::move(match));
@@ -366,12 +366,12 @@ namespace glob {
         return result;
     }
 
-    std::vector<std::filesystem::path>
+    std::vector<boost::filesystem::path>
     glob(const std::initializer_list<std::string> &pathnames) {
         return glob(std::vector<std::string>(pathnames));
     }
 
-    std::vector<std::filesystem::path>
+    std::vector<boost::filesystem::path>
     rglob(const std::initializer_list<std::string> &pathnames) {
         return rglob(std::vector<std::string>(pathnames));
     }

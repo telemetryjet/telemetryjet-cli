@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <fmt/format.h>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 
 /**
  * resolveRelativePathHome
@@ -38,7 +38,7 @@ inline std::string resolveRelativePathHome(std::string directory) {
         newPath = fmt::format("{}{}",homeDir, directory.substr(1,directory.size() - 1));
     }
 
-    std::filesystem::path canonicalPath = std::filesystem::weakly_canonical(newPath);
+    boost::filesystem::path canonicalPath = boost::filesystem::weakly_canonical(newPath);
     return canonicalPath.generic_string();
 }
 

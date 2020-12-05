@@ -4,8 +4,8 @@
 #include "services/service_manager.h"
 #include "src/version.h"
 #include <fmt/format.h>
-#include <filesystem>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "utility/glob/glob.h"
 #include "utility/path_utils.h"
 #include <boost/algorithm/string.hpp>
@@ -70,15 +70,15 @@ int main(int argc, char** argv) {
     }
 
     // Load configuration files
-    std::vector<std::filesystem::path> configurationFilePaths;
+    std::vector<boost::filesystem::path> configurationFilePaths;
     int numIgnoredMatches = 0;
     for (auto& configFileGlob : configurationFileGlobs) {
         std::string absolutePathGlob = resolveRelativePathHome(configFileGlob);
         //SM::getLogger()->info(fmt::format("Rel path: [{}] -> abs path: [{}]", configFileGlob, absolutePathGlob));
-        for (std::filesystem::path& path : glob::rglob(absolutePathGlob)) {
-            std::filesystem::file_status fileStatus = std::filesystem::status(path);
+        for (boost::filesystem::path& path : glob::rglob(absolutePathGlob)) {
+            boost::filesystem::file_status fileStatus = boost::filesystem::status(path);
             std::string extensionString = boost::algorithm::to_lower_copy(path.extension().string());
-            if ((std::filesystem::is_regular_file(fileStatus) || std::filesystem::is_symlink(fileStatus)) && extensionString == ".json") {
+            if ((boost::filesystem::is_regular_file(fileStatus) || boost::filesystem::is_symlink(fileStatus)) && extensionString == ".json") {
                 configurationFilePaths.push_back(path);
             } else {
                 numIgnoredMatches++;
@@ -99,9 +99,9 @@ int main(int argc, char** argv) {
     std::vector<json> jsonConfigFiles;
     bool errorFlag = false;
     for (auto& configFilename : configurationFilePaths) {
-        std::filesystem::path filePath(configFilename);
+        boost::filesystem::path filePath(configFilename);
         try {
-            std::ifstream inputFile(configFilename);
+            boost::filesystem::ifstream inputFile(configFilename);
             json jsonConfigItem;
             inputFile >> jsonConfigItem;
 
@@ -116,13 +116,13 @@ int main(int argc, char** argv) {
                     throw std::runtime_error("Data source requires 'id' field.");
                 }
                 if (!item.contains("type")) {
-                    throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field is required.", item["id"]));
+                    throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field is required.", item["id"].get<std::string>()));
                 }
                 if (item.contains("type") && !item["type"].is_string()) {
-                    throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field must be of type String.", item["id"]));
+                    throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field must be of type String.", item["id"].get<std::string>()));
                 }
                 if (item.contains("prefix") && !item["prefix"].is_string()) {
-                    throw std::runtime_error(fmt::format("Error in data source '{}': 'prefix' field must be of type String.", item["id"]));
+                    throw std::runtime_error(fmt::format("Error in data source '{}': 'prefix' field must be of type String.", item["id"].get<std::string>()));
                 }
             }
 
