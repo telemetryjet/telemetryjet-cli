@@ -5,7 +5,7 @@
 #include <list>
 #include <cstdint>
 #include <iostream>
-#include <boost/asio/serial_port.hpp>
+#include <libserialport.h>
 
 /**
  * Serial Wrapper
@@ -18,7 +18,7 @@ private:
     int serialPortNumBytes;
     int serialBaudRate;
     std::string serialPortName;
-    //sp_port* serialPort;
+    sp_port* serialPort;
     std::list<uint8_t> serialPortBuffer;
 public:
     SerialWrapper(const std::string& portName, int baudRate);
@@ -26,6 +26,8 @@ public:
 
     // Core
     void poll();
+    void close();
+    void open();
 
     // Getters
               int getNumBytes();

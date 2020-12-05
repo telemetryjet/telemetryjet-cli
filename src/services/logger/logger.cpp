@@ -27,20 +27,25 @@ enum class ansi_color_code : int {
 };
 
 void log(const std::string& message, const std::string& level) {
-    fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
+    //fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
+    fmt::print(stderr, "{}\n", message);
 }
 
 void logColor(ansi_color_code colorCode, const std::string& message, const std::string& level) {
-    fmt::print("\033[1;{}m[{}] {}: {}\033[0m\n",
+    /*fmt::print("\033[1;{}m[{}] {}: {}\033[0m\n",
                static_cast<int>(colorCode),
                getTimestamp(),
                level,
                message);
-    fflush(stdout);
+               */
+    fmt::print(stderr, "\033[1;{}m{}\033[0m\n",
+               static_cast<int>(colorCode),
+               message);
+    fflush(stderr);
 }
 void logHeader(ansi_color_code colorCode, const std::string& message) {
     fmt::print("\033[1;{}m{}\033[0m\n", static_cast<int>(colorCode), message);
-    fflush(stdout);
+    fflush(stderr);
 }
 
 void Logger::header(std::string message) {
@@ -81,9 +86,7 @@ void Logger::alert(std::string message) {
 
 Logger::Logger() = default;
 
-Logger::~Logger() {
-    info("Stopped Logger.");
-}
+Logger::~Logger() = default;
 
 LoggerLevel Logger::getLevel() {
     return level;

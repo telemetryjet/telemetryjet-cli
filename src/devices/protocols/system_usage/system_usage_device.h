@@ -2,14 +2,13 @@
 #define TELEMETRYSERVER_SYSTEM_USAGE_DEVICE_H
 
 #include "devices/device.h"
-#include "devices/protocols/system_usage/system_usage_statistics.h"
+#include "core/data_sources/system_stats/system_usage_statistics.h"
 #include "utility/serial_wrapper.h"
 #include <utility/simple_timer.h>
 
 class SystemUsageDevice : public Device {
 private:
     SimpleTimer* timer;
-    SystemUsageStatistics* stats;
 
 public:
     void open(std::string address) override;

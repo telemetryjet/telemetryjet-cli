@@ -6,7 +6,6 @@ SerialWrapper::SerialWrapper(const std::string& portName, int baudRate) {
     serialPortName = portName;
     serialBaudRate = baudRate;
 
-    /*
     sp_return serialStatus = sp_get_port_by_name(serialPortName.c_str(), &serialPort);
     if (serialStatus == SP_OK) {
         serialStatus = sp_open(serialPort, SP_MODE_READ_WRITE);
@@ -15,7 +14,6 @@ SerialWrapper::SerialWrapper(const std::string& portName, int baudRate) {
             serialPortOpen = true;
         }
     }
-    */
 
     serialPortNumBytes = 0;
     if (!serialPortOpen) {

@@ -26,27 +26,32 @@ endif()
 
 set(SOURCES
         src/main.cpp
+        src/core/network.cpp
         src/utility/glob/glob.cpp
         src/services/config/config.cpp
         src/services/logger/logger.cpp
         src/services/parser/parser.cpp
         src/services/service_manager.cpp
+        src/core/data_sources/test/test_data_source.cpp
+        src/core/data_sources/console/console_data_source.cpp
+        src/core/data_sources/system_stats/system_stats_data_source.cpp
+        src/utility/simple_timer.cpp
 )
 
 # Platform-specific sources
 if (WIN32)
     message(STATUS "Adding Windows-specific sources")
-    #set(SOURCES
-    #        ${SOURCES}
-    #        src/devices/protocols/system_usage/system_usage_statistics_win32.cpp
-    #)
+    set(SOURCES
+            ${SOURCES}
+            src/core/data_sources/system_stats/system_usage_statistics_win32.cpp
+    )
 else()
     if (APPLE)
         message(STATUS "Adding Mac-specific sources")
-        #set(SOURCES
-        #        ${SOURCES}
-        #        src/devices/protocols/system_usage/system_usage_statistics_mac.cpp
-        #        )
+        set(SOURCES
+                ${SOURCES}
+                src/core/data_sources/system_stats/system_usage_statistics_mac.cpp
+                )
         set(CMAKE_THREAD_LIBS_INIT "-lpthread")
         set(CMAKE_HAVE_THREADS_LIBRARY 1)
         set(CMAKE_USE_WIN32_THREADS_INIT 0)
@@ -55,10 +60,10 @@ else()
     else()
         if (UNIX)
             message(STATUS "Adding Linux-specific sources")
-            #set(SOURCES
-            #        ${SOURCES}
-            #        src/devices/protocols/system_usage/system_usage_statistics_linux.cpp
-            #        )
+            set(SOURCES
+                    ${SOURCES}
+                    src/core/data_sources/system_stats/system_usage_statistics_linux.cpp
+                    )
         else()
             message(FATAL_ERROR "Unknown platform!")
         endif()
@@ -68,12 +73,20 @@ endif()
 
 set(HEADERS_PRIVATE
         src/constants.h
+        src/core/network.h
+        src/core/data_point.h
+        src/core/data_source.h
+        src/core/data_sources/test/test_data_source.h
+        src/core/data_sources/console/console_data_source.h
+        src/core/data_sources/system_stats/system_stats_data_source.h
+        src/core/data_sources/system_stats/system_usage_statistics.h
         src/utility/glob/glob.h
         src/utility/path_utils.h
         src/services/config/config.h
         src/services/logger/logger.h
         src/services/parser/parser.h
         src/services/service_manager.h
+        src/utility/simple_timer.h
 )
 
 # Put version numbers into header
@@ -175,12 +188,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(NemaTode)
 
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.7.3)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE CLI11::CLI11)
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
