@@ -6,9 +6,9 @@
 
 class TestDataSource : public DataSource {
 private:
-    float frequency = 100;
-    float amplitude = 100;
-    float offset = 0;
+    float frequency = 0.001;
+    float amplitude = 1000;
+    float offset = 1500;
     std::string key;
     uint64_t interval = 10;
     SimpleTimer* timer;

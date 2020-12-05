@@ -17,14 +17,14 @@ SerialWrapper::SerialWrapper(const std::string& portName, int baudRate) {
 
     serialPortNumBytes = 0;
     if (!serialPortOpen) {
-        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate), true);
+        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
     } else {
         SM::getLogger()->debug(fmt::format("Initialized serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
     }
 }
 
 SerialWrapper::~SerialWrapper() {
-    //sp_close(serialPort);
+    sp_close(serialPort);
     serialPortOpen = false;
     SM::getLogger()->debug(fmt::format("Closed serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
 }
@@ -33,14 +33,13 @@ void SerialWrapper::poll() {
     if (serialPortOpen) {
         // Add bytes to the buffer in chunks of 8
         uint8_t nextBytes[8];
-        /*
         while (sp_input_waiting(serialPort) > 0) {
             int num_bytes = sp_nonblocking_read(serialPort, nextBytes, 8);
             for (int i = 0; i < num_bytes; i++) {
                 serialPortBuffer.push_back(nextBytes[i]);
                 serialPortNumBytes++;
             }
-        }*/
+        }
     }
 }
 

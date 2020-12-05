@@ -36,6 +36,7 @@ set(SOURCES
         src/core/data_sources/console/console_data_source.cpp
         src/core/data_sources/system_stats/system_stats_data_source.cpp
         src/utility/simple_timer.cpp
+        src/utility/serial_wrapper.cpp
 )
 
 # Platform-specific sources
@@ -87,6 +88,7 @@ set(HEADERS_PRIVATE
         src/services/parser/parser.h
         src/services/service_manager.h
         src/utility/simple_timer.h
+        src/utility/serial_wrapper.h
 )
 
 # Put version numbers into header
@@ -150,6 +152,19 @@ find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED
 include_directories(${Boost_INCLUDE_DIRS})
 
 FetchContent_Declare(
+        serialport
+        GIT_REPOSITORY https://github.com/scottmudge/libserialport-cmake.git
+)
+FetchContent_GetProperties(serialport)
+if(NOT serialport_POPULATED)
+    FetchContent_Populate(serialport)
+    include_directories(${serialport_SOURCE_DIR})
+    add_subdirectory(${serialport_SOURCE_DIR} ${serialport_BINARY_DIR} EXCLUDE_FROM_ALL)
+    message(STATUS "Serialport SOURCE DIR: ${serialport_SOURCE_DIR}")
+    message(STATUS "Serialport BINARY DIR: ${serialport_BINARY_DIR}")
+endif()
+
+FetchContent_Declare(
         CLI11
         GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
 )
@@ -205,6 +220,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------

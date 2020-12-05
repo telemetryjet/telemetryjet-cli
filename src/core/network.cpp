@@ -10,7 +10,7 @@
 Network::Network(const json& definitions) {
     // Construct array of data sources from definitions.
     for (auto& dataSourceDefinition : definitions) {
-        if (dataSourceDefinition["type"] == "test") {
+        if (dataSourceDefinition["type"] == "test" || dataSourceDefinition["type"] == "arduino-serial") {
             json optionsNode = nullptr;
             if (dataSourceDefinition.contains("options")) {
                 optionsNode = dataSourceDefinition["options"];
