@@ -15,8 +15,8 @@ enum class DataPointValueType : int {
 class DataPoint {
 public:
     const std::string key;
-    const float value;
     const long long timestamp;
+    const float value;
     const DataPointValueType type;
 
     explicit DataPoint(std::string key, const float value, const long long timestamp) : key(key), timestamp(timestamp), value(value), type(DataPointValueType::FLOAT) {}

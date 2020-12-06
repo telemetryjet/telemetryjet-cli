@@ -29,7 +29,7 @@ set(SOURCES
         src/main.cpp
         src/core/network.cpp
         src/utility/glob/glob.cpp
-        src/services/config/config.cpp
+        src/services/config/data_point_cache.cpp
         src/services/logger/logger.cpp
         src/services/parser/parser.cpp
         src/services/service_manager.cpp
@@ -84,7 +84,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/system_stats/system_usage_statistics.h
         src/utility/glob/glob.h
         src/utility/path_utils.h
-        src/services/config/config.h
+        src/services/config/data_point_cache.h
         src/services/logger/logger.h
         src/services/parser/parser.h
         src/services/service_manager.h
