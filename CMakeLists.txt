@@ -211,7 +211,7 @@ endif()
 
 FetchContent_Declare(
         serialport
-        GIT_REPOSITORY https://github.com/scottmudge/libserialport-cmake.git
+        GIT_REPOSITORY https://github.com/chrisdalke/libserialport-cmake.git
 )
 if(NOT serialport_POPULATED)
     FetchContent_Populate(serialport)
@@ -239,6 +239,10 @@ else()
     if (APPLE)
         message(STATUS "Adding Apple-specific libraries")
         add_definitions(-DPLATFORM_APPLE)
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Cocoa")
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework AppKit")
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework IOKit")
+        target_link_libraries(${PROJECT_NAME} PRIVATE "-framework Foundation")
 
         # General-purpose header location for mac installed libraries
         target_include_directories(${PROJECT_NAME} PUBLIC /usr/local/include)
