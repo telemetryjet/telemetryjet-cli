@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSERVER_SERIAL_WRAPPER_H
-#define TELEMETRYSERVER_SERIAL_WRAPPER_H
+#ifndef SERIAL_WRAPPER_H
+#define SERIAL_WRAPPER_H
 
 #include <string>
 #include <list>
@@ -41,4 +41,4 @@ public:
 };
 
 
-#endif //TELEMETRYSERVER_SERIAL_WRAPPER_H
+#endif

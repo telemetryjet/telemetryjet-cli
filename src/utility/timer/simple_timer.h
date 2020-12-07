@@ -1,10 +1,11 @@
-#ifndef H_SIMPLE_TIMER
-#define H_SIMPLE_TIMER
+#ifndef SIMPLE_TIMER_H
+#define SIMPLE_TIMER_H
 
 #include <chrono>
 #include <cstdint>
 #include <iostream>
-#include "time_utils.h"
+#include "utility/time_utils.h"
+
 using namespace std::chrono;
 
 class SimpleTimer {

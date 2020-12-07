@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSERVER_PATH_UTILS_H
-#define TELEMETRYSERVER_PATH_UTILS_H
+#ifndef PATH_UTILS_H
+#define PATH_UTILS_H
 
 #include <cstdlib>
 #include <string>
@@ -42,4 +42,4 @@ inline std::string resolveRelativePathHome(std::string directory) {
     return canonicalPath.generic_string();
 }
 
-#endif //TELEMETRYSERVER_PATH_UTILS_H
+#endif

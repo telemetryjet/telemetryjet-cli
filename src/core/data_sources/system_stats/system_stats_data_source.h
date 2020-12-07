@@ -1,8 +1,8 @@
-#ifndef TELEMETRYJETCLI_SYSTEM_STATS_DATA_SOURCE_H
-#define TELEMETRYJETCLI_SYSTEM_STATS_DATA_SOURCE_H
+#ifndef SYSTEM_STATS_DATA_SOURCE_H
+#define SYSTEM_STATS_DATA_SOURCE_H
 
 #include "core/data_source.h"
-#include "utility/simple_timer.h"
+#include "utility/timer/simple_timer.h"
 #include "system_usage_statistics.h"
 
 class SystemStatsDataSource : public DataSource {
@@ -18,4 +18,4 @@ public:
     bool isOpen() override;
 };
 
-#endif //TELEMETRYJETCLI_SYSTEM_STATS_DATA_SOURCE_H
+#endif

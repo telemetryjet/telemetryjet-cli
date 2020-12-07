@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSERVER_CONSOLE_LOGGER_H
-#define TELEMETRYSERVER_CONSOLE_LOGGER_H
+#ifndef CONSOLE_LOGGER_H
+#define CONSOLE_LOGGER_H
 
 #include <string>
 
@@ -47,4 +47,4 @@ public:
     LoggerLevel getLevel();
 };
 
-#endif //TELEMETRYSERVER_CONSOLE_LOGGER_H
+#endif

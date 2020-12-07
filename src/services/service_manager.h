@@ -1,7 +1,7 @@
-#ifndef TELEMETRYSERVER_SERVICE_MANAGER_H
-#define TELEMETRYSERVER_SERVICE_MANAGER_H
+#ifndef SERVICE_MANAGER_H
+#define SERVICE_MANAGER_H
 
-#include <services/config/data_point_cache.h>
+#include <services/config/config.h>
 #include <services/logger/logger.h>
 #include <services/parser/parser.h>
 
@@ -13,21 +13,21 @@
  */
 class ServiceManager {
 private:
+    static Config* config;
     static Logger* logger;
-    static Parser* parser;
 
 public:
     static void init();
     static void destroy();
+    static Config* getConfig() {
+        return config;
+    }
     static Logger* getLogger() {
         return logger;
-    }
-    static Parser* getParser() {
-        return parser;
     }
 };
 
 // Alias ServiceManager to SM for shorter code
 typedef ServiceManager SM;
 
-#endif  // TELEMETRYSERVER_SERVICE_MANAGER_H
+#endif

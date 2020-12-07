@@ -1,5 +1,5 @@
-#ifndef TELEMETRYJETCLI_CONSOLE_DATA_SOURCE_H
-#define TELEMETRYJETCLI_CONSOLE_DATA_SOURCE_H
+#ifndef CONSOLE_DATA_SOURCE_H
+#define CONSOLE_DATA_SOURCE_H
 
 #include "core/data_source.h"
 
@@ -13,4 +13,4 @@ public:
     bool isOpen() override;
 };
 
-#endif //TELEMETRYJETCLI_CONSOLE_DATA_SOURCE_H
+#endif

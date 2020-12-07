@@ -1,5 +1,5 @@
-#ifndef TELEMETRYSERVER_SYSTEM_USAGE_STATISTICS_H
-#define TELEMETRYSERVER_SYSTEM_USAGE_STATISTICS_H
+#ifndef SYSTEM_USAGE_STATISTICS_H
+#define SYSTEM_USAGE_STATISTICS_H
 
 class SystemUsageStatistics {
 
@@ -28,4 +28,4 @@ private:
     unsigned long mIdle;
 };
 
-#endif  //TELEMETRYSERVER_SYSTEM_USAGE_STATISTICS_H
+#endif

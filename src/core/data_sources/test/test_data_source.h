@@ -1,8 +1,8 @@
-#ifndef TELEMETRYJETCLI_TEST_DATA_SOURCE_H
-#define TELEMETRYJETCLI_TEST_DATA_SOURCE_H
+#ifndef TEST_DATA_SOURCE_H
+#define TEST_DATA_SOURCE_H
 
 #include "core/data_source.h"
-#include "utility/simple_timer.h"
+#include "utility/timer/simple_timer.h"
 
 class TestDataSource : public DataSource {
 private:
@@ -21,4 +21,4 @@ public:
     bool isOpen() override;
 };
 
-#endif //TELEMETRYJETCLI_TEST_DATA_SOURCE_H
+#endif

@@ -1,7 +1,3 @@
-//
-// Created by chris on 12/4/2020.
-//
-
 #include "test_data_source.h"
 
 TestDataSource::TestDataSource(std::string id, const json& options) : DataSource(id, "test") {

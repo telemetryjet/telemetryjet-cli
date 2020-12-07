@@ -1,9 +1,9 @@
-#ifndef TELEMETRYSERVER_DATA_POINT_CACHE_H
-#define TELEMETRYSERVER_DATA_POINT_CACHE_H
+#ifndef DATA_CACHE_H
+#define DATA_CACHE_H
 
-#include "data_point_cache.h"
 #include "core/data_point.h"
 #include <unordered_map>
+#include <memory>
 
 class DataPointCache {
 private:
@@ -17,4 +17,4 @@ public:
     void clear();
 };
 
-#endif //TELEMETRYSERVER_DATA_POINT_CACHE_H
+#endif

@@ -1,5 +1,5 @@
-#ifndef TELEMETRYJETCLI_DATA_SOURCE_NETWORK_H
-#define TELEMETRYJETCLI_DATA_SOURCE_NETWORK_H
+#ifndef DATA_SOURCE_NETWORK_H
+#define DATA_SOURCE_NETWORK_H
 
 #include "data_source.h"
 #include <nlohmann/json.hpp>
@@ -19,4 +19,4 @@ public:
     bool isOpen();
 };
 
-#endif //TELEMETRYJETCLI_DATA_SOURCE_NETWORK_H
+#endif

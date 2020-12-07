@@ -2,9 +2,9 @@
 #define TELEMETRYSERVER_NMEA_0183_DEVICE_H
 
 #include "devices/device.h"
-#include "utility/serial_wrapper.h"
+#include "utility/serial/serial_wrapper.h"
 #include <nmeaparse/nmea.h>
-#include <utility/simple_timer.h>
+#include <utility/timer/simple_timer.h>
 
 using namespace nmea;
 

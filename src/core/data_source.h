@@ -1,5 +1,5 @@
-#ifndef TELEMETRYJETCLI_DATA_SOURCE_H
-#define TELEMETRYJETCLI_DATA_SOURCE_H
+#ifndef DATA_SOURCE_H
+#define DATA_SOURCE_H
 
 #include "data_point.h"
 #include <vector>

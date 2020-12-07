@@ -1,5 +1,6 @@
+#ifndef GLOB_H
+#define GLOB_H
 
-#pragma once
 #include <boost/filesystem.hpp>
 #include <string>
 #include <vector>
@@ -35,3 +36,5 @@ namespace glob {
     std::vector<boost::filesystem::path> rglob(const std::initializer_list<std::string> &pathnames);
 
 } // namespace glob
+
+#endif

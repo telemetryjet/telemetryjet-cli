@@ -1,5 +1,5 @@
-#ifndef TELEMETRYJETCLI_DATA_POINT_H
-#define TELEMETRYJETCLI_DATA_POINT_H
+#ifndef DATA_POINT_H
+#define DATA_POINT_H
 
 #include <utility>
 #include <variant>
@@ -22,4 +22,4 @@ public:
     explicit DataPoint(std::string key, const float value, const long long timestamp) : key(key), timestamp(timestamp), value(value), type(DataPointValueType::FLOAT) {}
 };
 
-#endif //TELEMETRYJETCLI_DATA_POINT_H
+#endif

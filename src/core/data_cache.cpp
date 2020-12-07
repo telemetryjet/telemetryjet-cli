@@ -1,5 +1,4 @@
-#include "data_point_cache.h"
-#include "core/data_point.h"
+#include "data_cache.h"
 
 void DataPointCache::set(const std::string& key, const std::shared_ptr<DataPoint>& dp) {
     map[key] = dp;

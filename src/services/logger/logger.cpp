@@ -1,8 +1,5 @@
 #include "logger.h"
-#include "utility/time_utils.h"
-#include <constants.h>
 #include <fmt/format.h>
-#include <iostream>
 
 // ANSI color code from
 // https://gist.github.com/zyvitski/fb12f2ce6bc9d3b141f3bd4410a6f7cf
