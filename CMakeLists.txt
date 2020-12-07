@@ -27,15 +27,18 @@ endif()
 
 set(SOURCES
         src/main.cpp
-        src/core/network.cpp
+
         src/core/data_cache.cpp
+        src/core/network.cpp
+
         src/core/data_sources/test/test_data_source.cpp
         src/core/data_sources/console/console_data_source.cpp
         src/core/data_sources/system_stats/system_stats_data_source.cpp
+
+        src/services/service_manager.cpp
         src/services/config/config.cpp
         src/services/logger/logger.cpp
-        src/services/parser/parser.cpp
-        src/services/service_manager.cpp
+
         src/utility/glob/glob.cpp
         src/utility/serial/serial_wrapper.cpp
         src/utility/timer/simple_timer.cpp
@@ -76,19 +79,21 @@ endif()
 
 set(HEADERS_PRIVATE
         src/constants.h
-        src/core/network.h
-        src/core/data_point.h
-        src/core/data_source.h
-        src/core/data_sources/test/test_data_source.h
-        src/core/data_sources/console/console_data_source.h
-        src/core/data_sources/system_stats/system_stats_data_source.h
-        src/core/data_sources/system_stats/system_usage_statistics.h
-        src/services/config/config.h
-        src/services/logger/logger.h
-        src/services/parser/parser.h
-        src/services/service_manager.h
 
         src/core/data_cache.h
+        src/core/data_point.h
+        src/core/data_source.h
+        src/core/network.h
+
+        src/core/data_sources/console/console_data_source.h
+        src/core/data_sources/test/test_data_source.h
+        src/core/data_sources/system_stats/system_stats_data_source.h
+        src/core/data_sources/system_stats/system_usage_statistics.h
+
+        src/services/service_manager.h
+        src/services/config/config.h
+        src/services/logger/logger.h
+
         src/utility/glob/glob.h
         src/utility/serial/serial_wrapper.h
         src/utility/timer/simple_timer.h
@@ -100,7 +105,6 @@ set(HEADERS_PRIVATE
 configure_file(src/version.h.in src/version.h)
 
 #------------------- BUILD TARGETS ------------------------
-
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 
@@ -205,6 +209,17 @@ if(NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
+FetchContent_Declare(
+        serialport
+        GIT_REPOSITORY https://github.com/scottmudge/libserialport-cmake.git
+)
+if(NOT serialport_POPULATED)
+    FetchContent_Populate(serialport)
+    add_subdirectory(${serialport_SOURCE_DIR} ${serialport_BINARY_DIR} EXCLUDE_FROM_ALL)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${serialport_SOURCE_DIR})
+    message(STATUS "Serialport source directory ${serialport_SOURCE_DIR}")
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE CLI11::CLI11)
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLiteCpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE simple-web-server)
@@ -212,6 +227,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE simple-websocket-server)
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
 

@@ -11,6 +11,7 @@
 #include <boost/algorithm/string.hpp>
 #include <nlohmann/json.hpp>
 #include "core/network.h"
+#include <libserialport.h>
 
 using json = nlohmann::json;
 
@@ -21,6 +22,46 @@ void printVersion() {
                              CLI_VERSION_PATCH,
                              CLI_VERSION_SYSTEM,
                              CLI_VERSION_ARCH));
+}
+
+void printSerialPorts() {
+        struct sp_port **port_list;
+        enum sp_return result = sp_list_ports(&port_list);
+
+        if (result != SP_OK) {
+            SM::getLogger()->error("Could not list serial ports!");
+            return;
+        }
+
+        for (int i = 0; port_list[i] != NULL; i++) {
+            struct sp_port *port = port_list[i];
+            char *port_name = sp_get_port_name(port);
+            char *port_desc = sp_get_port_description(port);
+            enum sp_transport transport = sp_get_port_transport(port);
+            std::string transportString = "Unknown";
+            SM::getLogger()->info(fmt::format(" - {}, {}, {}", port_name, port_desc));
+            if (transport == SP_TRANSPORT_NATIVE) {
+                SM::getLogger()->info(fmt::format("   - Transport: Software"));
+            } else if (transport == SP_TRANSPORT_USB) {
+                int usb_vid, usb_pid;
+                sp_get_port_usb_vid_pid(port, &usb_vid, &usb_pid);
+                int usb_bus, usb_address;
+                sp_get_port_usb_bus_address(port, &usb_bus, &usb_address);
+
+                SM::getLogger()->info(fmt::format("   - Transport: USB"));
+                SM::getLogger()->info(fmt::format("   - Manufacturer: {}", sp_get_port_usb_manufacturer(port)));
+                SM::getLogger()->info(fmt::format("   - Product: {}", sp_get_port_usb_product(port)));
+                SM::getLogger()->info(fmt::format("   - Serial: {}", sp_get_port_usb_serial(port)));
+                SM::getLogger()->info(fmt::format("   - VID: {}", usb_vid));
+                SM::getLogger()->info(fmt::format("   - PID: {}", usb_pid));
+                SM::getLogger()->info(fmt::format("   - Bus: {}", usb_bus));
+                SM::getLogger()->info(fmt::format("   - Address: {}", usb_address));
+            } else if (transport == SP_TRANSPORT_BLUETOOTH) {
+                SM::getLogger()->info(fmt::format("   - Transport: Bluetooth"));
+                SM::getLogger()->info(fmt::format("   - MAC Address: {}", sp_get_port_bluetooth_address(port)));
+            }
+        }
+        sp_free_port_list(port_list);
 }
 
 int main(int argc, char** argv) {
@@ -40,6 +81,8 @@ int main(int argc, char** argv) {
     streamCommand->add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
     streamCommand->add_flag("-t,--test", dryRunFlag, "Test configuration and exit without running");
 
+    auto listSerialPortsCommand = app.add_subcommand("list-ports", "List available serial ports.")->group("Serial Ports");
+
     CLI11_PARSE(app, argc, argv);
 
     if (silentFlag) {
@@ -49,6 +92,12 @@ int main(int argc, char** argv) {
     // If the version flag was specified, display the version and exit.
     if (versionFlag) {
         printVersion();
+        SM::destroy();
+        return 0;
+    }
+
+    if (listSerialPortsCommand->parsed()) {
+        printSerialPorts();
         SM::destroy();
         return 0;
     }
