@@ -39,7 +39,7 @@ void printSerialPorts() {
             char *port_desc = sp_get_port_description(port);
             enum sp_transport transport = sp_get_port_transport(port);
             std::string transportString = "Unknown";
-            SM::getLogger()->info(fmt::format(" - {}, {}, {}", port_name, port_desc));
+            SM::getLogger()->info(fmt::format(" - {}, {}", port_name, port_desc));
             if (transport == SP_TRANSPORT_NATIVE) {
                 SM::getLogger()->info(fmt::format("   - Transport: Software"));
             } else if (transport == SP_TRANSPORT_USB) {
