@@ -32,6 +32,7 @@ void printSerialPorts() {
             SM::getLogger()->error("Could not list serial ports!");
             return;
         }
+        SM::getLogger()->info("Serial ports:");
 
         for (int i = 0; port_list[i] != NULL; i++) {
             struct sp_port *port = port_list[i];
@@ -81,7 +82,7 @@ int main(int argc, char** argv) {
     streamCommand->add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
     streamCommand->add_flag("-t,--test", dryRunFlag, "Test configuration and exit without running");
 
-    auto listSerialPortsCommand = app.add_subcommand("list-ports", "List available serial ports.")->group("Serial Ports");
+    auto listSerialPortsCommand = app.add_subcommand("list-ports", "List information about available serial ports.")->group("Serial Ports");
 
     CLI11_PARSE(app, argc, argv);
 
