@@ -73,6 +73,7 @@ int main(int argc, char** argv) {
     bool versionFlag;
     bool silentFlag;
     bool dryRunFlag;
+    bool exitFlag;
     app.add_flag("-v,--version", versionFlag, "Display the version and exit");
     app.add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
 
@@ -80,6 +81,7 @@ int main(int argc, char** argv) {
     std::vector<std::string> configurationFileGlobs;
     streamCommand->add_option("configurations", configurationFileGlobs, "Configuration files to load.");
     streamCommand->add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
+    streamCommand->add_flag("-e,--exit", exitFlag, "Exit if any data source disconnects.");
     streamCommand->add_flag("-t,--test", dryRunFlag, "Test configuration and exit without running");
 
     auto listSerialPortsCommand = app.add_subcommand("list-ports", "List information about available serial ports.")->group("Serial Ports");
@@ -197,6 +199,12 @@ int main(int argc, char** argv) {
         SM::getLogger()->info("Loaded 1 configuration file.");
     } else {
         SM::getLogger()->info(fmt::format("Loaded {} configuration files.", configurationFilePaths.size()));
+    }
+
+    if (dryRunFlag) {
+        SM::getLogger()->info("Configuration files passed validation.");
+        SM::destroy();
+        return 0;
     }
 
     std::vector<Network> networks;

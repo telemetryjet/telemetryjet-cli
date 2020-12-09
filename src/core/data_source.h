@@ -18,6 +18,7 @@ public:
     const std::string prefix;
     std::vector<std::shared_ptr<DataPoint>> in;
     std::vector<std::shared_ptr<DataPoint>> out;
+    bool initialized;
     DataSource(std::string id, std::string type) : id(id), type(type), prefix(id) {};
     virtual ~DataSource() = default;
     virtual void open() = 0;

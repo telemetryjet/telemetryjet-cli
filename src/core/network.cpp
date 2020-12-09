@@ -5,6 +5,7 @@
 #include <core/data_sources/test/test_data_source.h>
 #include <core/data_sources/console/console_data_source.h>
 #include <core/data_sources/system_stats/system_stats_data_source.h>
+#include <core/data_sources/key_value_file/key_value_file.h>
 #include "network.h"
 
 Network::Network(const json& definitions) {
@@ -26,6 +27,13 @@ Network::Network(const json& definitions) {
         }
         if (dataSourceDefinition["type"] == "system_stats") {
             dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition["id"]));
+        }
+        if (dataSourceDefinition["type"] == "key-value-file") {
+            json optionsNode = nullptr;
+            if (dataSourceDefinition.contains("options")) {
+                optionsNode = dataSourceDefinition["options"];
+            }
+            dataSources.push_back(std::make_shared<KeyValueFile>(dataSourceDefinition["id"], optionsNode));
         }
     }
 }

@@ -34,6 +34,8 @@ set(SOURCES
         src/core/data_sources/test/test_data_source.cpp
         src/core/data_sources/console/console_data_source.cpp
         src/core/data_sources/system_stats/system_stats_data_source.cpp
+        src/core/data_sources/key_value_file/key_value_file.cpp
+        src/core/data_sources/key_value_stream/key_value_stream.cpp
 
         src/services/service_manager.cpp
         src/services/config/config.cpp
@@ -89,6 +91,8 @@ set(HEADERS_PRIVATE
         src/core/data_sources/test/test_data_source.h
         src/core/data_sources/system_stats/system_stats_data_source.h
         src/core/data_sources/system_stats/system_usage_statistics.h
+        src/core/data_sources/key_value_file/key_value_file.h
+        src/core/data_sources/key_value_stream/key_value_stream.h
 
         src/services/service_manager.h
         src/services/config/config.h
