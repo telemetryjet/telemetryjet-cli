@@ -12,6 +12,8 @@
 #include <nlohmann/json.hpp>
 #include "core/network.h"
 #include <libserialport.h>
+#include <boost/algorithm/string.hpp>
+
 
 using json = nlohmann::json;
 
@@ -22,6 +24,18 @@ void printVersion() {
                              CLI_VERSION_PATCH,
                              CLI_VERSION_SYSTEM,
                              CLI_VERSION_ARCH));
+}
+
+std::string cStringConvertHandleBlanks(char* str) {
+    if (str) {
+        std::string str2 = std::string(str);
+        boost::trim(str2);
+        if (str2.empty()) {
+            return "N/A";
+        }
+        return str2;
+    }
+    return "N/A";
 }
 
 void printSerialPorts() {
@@ -38,8 +52,8 @@ void printSerialPorts() {
             char *port_desc = sp_get_port_description(port);
             enum sp_transport transport = sp_get_port_transport(port);
             std::string transportString = "Unknown";
-            SM::getLogger()->info(fmt::format("{}", port_name ? port_name : "N/A"));
-            SM::getLogger()->info(fmt::format(" - Description: {}", port_desc ? port_desc : "N/A"));
+            SM::getLogger()->info(fmt::format("{}", cStringConvertHandleBlanks(port_name)));
+            SM::getLogger()->info(fmt::format(" - Description: {}", cStringConvertHandleBlanks(port_desc)));
             if (transport == SP_TRANSPORT_NATIVE) {
                 SM::getLogger()->info(fmt::format(" - Transport: Software"));
             } else if (transport == SP_TRANSPORT_USB) {
@@ -54,9 +68,9 @@ void printSerialPorts() {
                 char *serial = sp_get_port_usb_serial(port);
 
                 SM::getLogger()->info(fmt::format(" - Transport: USB"));
-                SM::getLogger()->info(fmt::format(" - Manufacturer: {}",  mfg ? mfg : "N/A"));
-                SM::getLogger()->info(fmt::format(" - Product: {}",  product ? product : "N/A"));
-                SM::getLogger()->info(fmt::format(" - Serial: {}",  serial ? serial : "N/A"));
+                SM::getLogger()->info(fmt::format(" - Manufacturer: {}",  cStringConvertHandleBlanks(mfg)));
+                SM::getLogger()->info(fmt::format(" - Product: {}",  cStringConvertHandleBlanks(product)));
+                SM::getLogger()->info(fmt::format(" - Serial Number: {}",  cStringConvertHandleBlanks(serial)));
                 SM::getLogger()->info(fmt::format(" - VID: {}", usb_vid));
                 SM::getLogger()->info(fmt::format(" - PID: {}", usb_pid));
                 SM::getLogger()->info(fmt::format(" - Bus: {}", usb_bus));
@@ -64,7 +78,7 @@ void printSerialPorts() {
             } else if (transport == SP_TRANSPORT_BLUETOOTH) {
                 SM::getLogger()->info(fmt::format(" - Transport: Bluetooth"));
                 char *addr = sp_get_port_bluetooth_address(port);
-                SM::getLogger()->info(fmt::format(" - MAC Address: {}", addr ? addr : "N/A"));
+                SM::getLogger()->info(fmt::format(" - MAC Address: {}", cStringConvertHandleBlanks(addr)));
             }
         }
         sp_free_port_list(port_list);
