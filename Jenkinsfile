@@ -68,6 +68,9 @@ pipeline {
                     agent {
                         label "master"
                     }
+                    environment {
+                        BOOST_ROOT = '/home/linuxbrew/.linuxbrew/Cellar/boost/1.74.0'
+                    }
                     steps {
                         sh "./devops/package-config/linux/package-configure.sh ${TAG_NAME} amd64"
                         dir('build') {
