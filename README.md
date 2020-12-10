@@ -1,6 +1,8 @@
 [![asciicast](https://asciinema.org/a/377404.svg)](https://asciinema.org/a/377404)
 
-# Introduction
+# TelemetryJet CLI
+
+## Overview
 
 The TelemetryJet CLI, `jet`, is a command-line tool for defining, monitoring, and controlling embedded telemetry systems.
 It's part of the TelemetryJet platform, which makes it easier to collect, analyze and share data from hardware systems.
@@ -109,6 +111,4 @@ Jet can interface with many data source types, including files, serial devices, 
 
 See the [Data Source Types](https://docs.telemetryjet.com/cli/guides/data_sources/) for a full list and individual guides.
 
-This list will expand over time. We're currently working on core data source types, including CSV files and streams.
-
-Need a data source type that is not listed? [Open an Issue](https://github.com/telemetryjet/telemetryjet-cli/issues/new) on the CLI Github suggesting it should be officially supported.
+This list will expand over time. We're currently working on core data source types, including CSV files and streams. Need a data source type that is not listed? [Open an Issue](https://github.com/telemetryjet/telemetryjet-cli/issues/new) on the CLI Github suggesting it should be officially supported.
