@@ -26,9 +26,10 @@ Network::Network(const json& definitions) {
             }
             dataSources.push_back(std::make_shared<ConsoleDataSource>(dataSourceDefinition["id"], optionsNode));
         }
+        /*
         if (dataSourceDefinition["type"] == "system_stats") {
             dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition["id"]));
-        }
+        }*/
         if (dataSourceDefinition["type"] == "key-value-file") {
             json optionsNode = nullptr;
             if (dataSourceDefinition.contains("options")) {
