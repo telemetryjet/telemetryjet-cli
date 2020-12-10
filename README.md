@@ -63,16 +63,16 @@ A configuration file contains an array of data source definitions:
 [
   {
     "id": "arduino1",
-    "type": "&lt;data source type&gt;",
+    "type": "<data source type>",
     "options": {
-      &lt;options for the data source&gt;
+      <options for the data source>
     }
   },
   {
     "id": "arduino2",
-    "type": "&lt;data source type&gt;",
+    "type": "<data source type>",
     "options": {
-      &lt;options for the data source&gt;
+      <options for the data source>
     }
   }
 ]
