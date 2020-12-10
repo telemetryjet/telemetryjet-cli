@@ -21,7 +21,7 @@ private:
     sp_port* serialPort;
     std::list<uint8_t> serialPortBuffer;
 public:
-    SerialWrapper(const std::string& portName, int baudRate);
+    SerialWrapper(std::string portName, int baudRate);
     ~SerialWrapper();
 
     // Core

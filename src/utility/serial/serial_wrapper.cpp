@@ -1,32 +1,19 @@
 #include "serial_wrapper.h"
+
+#include <utility>
 #include "services/service_manager.h"
 #include "fmt/format.h"
 
-SerialWrapper::SerialWrapper(const std::string& portName, int baudRate) {
-    serialPortName = portName;
+SerialWrapper::SerialWrapper(std::string portName, int baudRate) {
+    serialPortName = std::move(portName);
     serialBaudRate = baudRate;
-
-    sp_return serialStatus = sp_get_port_by_name(serialPortName.c_str(), &serialPort);
-    if (serialStatus == SP_OK) {
-        serialStatus = sp_open(serialPort, SP_MODE_READ_WRITE);
-        if (serialStatus == SP_OK) {
-            sp_set_baudrate(serialPort, serialBaudRate);
-            serialPortOpen = true;
-        }
-    }
-
-    serialPortNumBytes = 0;
-    if (!serialPortOpen) {
-        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
-    } else {
-        SM::getLogger()->debug(fmt::format("Initialized serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
-    }
+    serialPortOpen = false;
 }
 
 SerialWrapper::~SerialWrapper() {
-    sp_close(serialPort);
-    serialPortOpen = false;
-    SM::getLogger()->debug(fmt::format("Closed serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
+    if (serialPortOpen) {
+        close();
+    }
 }
 
 void SerialWrapper::poll() {
@@ -65,4 +52,28 @@ std::list<uint8_t> &SerialWrapper::getBuffer() {
 
 void SerialWrapper::clearBuffer() {
     serialPortBuffer.clear();
+}
+
+void SerialWrapper::open() {
+    sp_return serialStatus = sp_get_port_by_name(serialPortName.c_str(), &serialPort);
+    if (serialStatus == SP_OK) {
+        serialStatus = sp_open(serialPort, SP_MODE_READ_WRITE);
+        if (serialStatus == SP_OK) {
+            sp_set_baudrate(serialPort, serialBaudRate);
+            serialPortOpen = true;
+        }
+    }
+
+    serialPortNumBytes = 0;
+    if (!serialPortOpen) {
+        SM::getLogger()->warning(fmt::format("Failed to initialize serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
+    } else {
+        SM::getLogger()->debug(fmt::format("Initialized serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
+    }
+}
+
+void SerialWrapper::close() {
+    sp_close(serialPort);
+    serialPortOpen = false;
+    SM::getLogger()->debug(fmt::format("Closed serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
 }

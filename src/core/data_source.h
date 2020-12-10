@@ -15,11 +15,10 @@ private:
 public:
     const std::string id;
     const std::string type;
-    const std::string prefix;
     std::vector<std::shared_ptr<DataPoint>> in;
     std::vector<std::shared_ptr<DataPoint>> out;
     bool initialized;
-    DataSource(std::string id, std::string type) : id(id), type(type), prefix(id) {};
+    DataSource(std::string id, std::string type) : id(id), type(type) {};
     virtual ~DataSource() = default;
     virtual void open() = 0;
     virtual void close() = 0;

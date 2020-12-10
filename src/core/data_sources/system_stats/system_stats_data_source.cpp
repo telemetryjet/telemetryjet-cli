@@ -26,14 +26,14 @@ void SystemStatsDataSource::update() {
     if (timer->check()) {
         stats->calculate();
         uint64_t timestamp = getCurrentMillis();
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_disk_avail", prefix), stats->mDiskAvailable, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_disk_used", prefix), stats->mDiskUsage, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_mem_avail", prefix), stats->mPhysicalMemoryAvailable, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_mem_used", prefix), stats->mPhysicalMemoryUsed, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_cpu_used", prefix), stats->mCpuUsage, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_cpu_temp", prefix), stats->mCpuTemperature, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_gpu_used", prefix), stats->mGpuUsage, timestamp));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_gpu_temp", prefix), stats->mGpuTemperature, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_disk_avail", id), stats->mDiskAvailable, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_disk_used", id), stats->mDiskUsage, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_mem_avail", id), stats->mPhysicalMemoryAvailable, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_mem_used", id), stats->mPhysicalMemoryUsed, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_cpu_used", id), stats->mCpuUsage, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_cpu_temp", id), stats->mCpuTemperature, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_gpu_used", id), stats->mGpuUsage, timestamp));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.sys_gpu_temp", id), stats->mGpuTemperature, timestamp));
     }
 }
 

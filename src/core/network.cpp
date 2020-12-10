@@ -6,6 +6,7 @@
 #include <core/data_sources/console/console_data_source.h>
 #include <core/data_sources/system_stats/system_stats_data_source.h>
 #include <core/data_sources/key_value_file/key_value_file.h>
+#include <core/data_sources/key_value_stream/key_value_stream.h>
 #include "network.h"
 
 Network::Network(const json& definitions) {
@@ -34,6 +35,13 @@ Network::Network(const json& definitions) {
                 optionsNode = dataSourceDefinition["options"];
             }
             dataSources.push_back(std::make_shared<KeyValueFile>(dataSourceDefinition["id"], optionsNode));
+        }
+        if (dataSourceDefinition["type"] == "key-value-stream") {
+            json optionsNode = nullptr;
+            if (dataSourceDefinition.contains("options")) {
+                optionsNode = dataSourceDefinition["options"];
+            }
+            dataSources.push_back(std::make_shared<KeyValueStream>(dataSourceDefinition["id"], optionsNode));
         }
     }
 }
