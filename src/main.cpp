@@ -38,7 +38,18 @@ std::string cStringConvertHandleBlanks(char* str) {
     return "N/A";
 }
 
-void printSerialPorts() {
+std::string cIntConvertHandleBlanks(int* intPtr) {
+    if (intPtr) {
+        std::string str2 = std::string(fmt::format("{}",*intPtr));
+        boost::trim(str2);
+        if (str2.empty()) {
+            return "N/A";
+        }
+        return str2;
+    }
+    return "N/A";
+}
+void printSerialPorts(bool verbose) {
         struct sp_port **port_list;
         enum sp_return result = sp_list_ports(&port_list);
 
@@ -53,32 +64,47 @@ void printSerialPorts() {
             enum sp_transport transport = sp_get_port_transport(port);
             std::string transportString = "Unknown";
             SM::getLogger()->info(fmt::format("{}", cStringConvertHandleBlanks(port_name)));
-            SM::getLogger()->info(fmt::format(" - Description: {}", cStringConvertHandleBlanks(port_desc)));
+            if (verbose) {
+                SM::getLogger()->info(
+                    fmt::format(" - Description: {}", cStringConvertHandleBlanks(port_desc)));
+            }
             if (transport == SP_TRANSPORT_NATIVE) {
-                SM::getLogger()->info(fmt::format(" - Transport: Software"));
+                if (verbose) {
+                    SM::getLogger()->info(fmt::format(" - Transport: Software"));
+                }
             } else if (transport == SP_TRANSPORT_USB) {
-                int usb_vid, usb_pid;
-                sp_get_port_usb_vid_pid(port, &usb_vid, &usb_pid);
-                int usb_bus, usb_address;
-                sp_get_port_usb_bus_address(port, &usb_bus, &usb_address);
+                int *usb_vid = nullptr;
+                int *usb_pid = nullptr;
+                sp_return vidPidStatus = sp_get_port_usb_vid_pid(port, usb_vid, usb_pid);
+                int *usb_bus = nullptr;
+                int *usb_address = nullptr;
+                sp_return usbBusAddressStatus = sp_get_port_usb_bus_address(port, usb_bus, usb_address);
 
                 char *mfg = sp_get_port_usb_manufacturer(port);
 
                 char *product = sp_get_port_usb_product(port);
                 char *serial = sp_get_port_usb_serial(port);
 
-                SM::getLogger()->info(fmt::format(" - Transport: USB"));
-                SM::getLogger()->info(fmt::format(" - Manufacturer: {}",  cStringConvertHandleBlanks(mfg)));
-                SM::getLogger()->info(fmt::format(" - Product: {}",  cStringConvertHandleBlanks(product)));
-                SM::getLogger()->info(fmt::format(" - Serial Number: {}",  cStringConvertHandleBlanks(serial)));
-                SM::getLogger()->info(fmt::format(" - VID: {}", usb_vid));
-                SM::getLogger()->info(fmt::format(" - PID: {}", usb_pid));
-                SM::getLogger()->info(fmt::format(" - Bus: {}", usb_bus));
-                SM::getLogger()->info(fmt::format(" - Address: {}", usb_address));
+                if (verbose) {
+                    SM::getLogger()->info(fmt::format(" - Transport: USB"));
+                    SM::getLogger()->info(fmt::format(" - Manufacturer: {}",  cStringConvertHandleBlanks(mfg)));
+                    SM::getLogger()->info(fmt::format(" - Product: {}",  cStringConvertHandleBlanks(product)));
+                    SM::getLogger()->info(fmt::format(" - Serial Number: {}",  cStringConvertHandleBlanks(serial)));
+                    if (vidPidStatus == SP_OK) {
+                        SM::getLogger()->info(fmt::format(" - VID: {}", cIntConvertHandleBlanks(usb_vid)));
+                        SM::getLogger()->info(fmt::format(" - PID: {}", cIntConvertHandleBlanks(usb_pid)));
+                    }
+                    if (usbBusAddressStatus == SP_OK) {
+                        SM::getLogger()->info(fmt::format(" - Bus: {}", cIntConvertHandleBlanks(usb_bus)));
+                        SM::getLogger()->info(fmt::format(" - Address: {}", cIntConvertHandleBlanks(usb_address)));
+                    }
+                }
             } else if (transport == SP_TRANSPORT_BLUETOOTH) {
                 SM::getLogger()->info(fmt::format(" - Transport: Bluetooth"));
-                char *addr = sp_get_port_bluetooth_address(port);
-                SM::getLogger()->info(fmt::format(" - MAC Address: {}", cStringConvertHandleBlanks(addr)));
+                if (verbose) {
+                    char *addr = sp_get_port_bluetooth_address(port);
+                    SM::getLogger()->info(fmt::format(" - MAC Address: {}", cStringConvertHandleBlanks(addr)));
+                }
             }
         }
         sp_free_port_list(port_list);
@@ -93,6 +119,7 @@ int main(int argc, char** argv) {
     bool silentFlag;
     bool dryRunFlag;
     bool exitFlag;
+    bool listPortsVerboseFlag;
     app.add_flag("-v,--version", versionFlag, "Display the version and exit");
     app.add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
 
@@ -104,6 +131,7 @@ int main(int argc, char** argv) {
     streamCommand->add_flag("-t,--test", dryRunFlag, "Test configuration and exit without running");
 
     auto listSerialPortsCommand = app.add_subcommand("list-ports", "List information about available serial ports.")->group("Serial Ports");
+    listSerialPortsCommand->add_flag("-v,--verbose", listPortsVerboseFlag, "Display additional port metadata such as description, manufacturer, etc.");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -119,7 +147,7 @@ int main(int argc, char** argv) {
     }
 
     if (listSerialPortsCommand->parsed()) {
-        printSerialPorts();
+        printSerialPorts(listPortsVerboseFlag);
         SM::destroy();
         return 0;
     }
