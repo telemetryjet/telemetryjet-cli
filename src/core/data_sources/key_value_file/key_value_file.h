@@ -1,7 +1,7 @@
 #ifndef KEY_VALUE_FILE_H
 #define KEY_VALUE_FILE_H
 
-#include "core/data_sources/file_data_source.h"
+#include "core/data_sources/output_file_data_source.h"
 #include "utility/timer/simple_timer.h"
 #include <fstream>
 #include <iostream>

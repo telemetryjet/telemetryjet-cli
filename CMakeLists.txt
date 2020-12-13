@@ -33,7 +33,7 @@ set(SOURCES
 
         src/core/data_sources/test/test_data_source.cpp
         src/core/data_sources/console/console_data_source.cpp
-        src/core/data_sources/csv/csv_data_source.cpp
+        src/core/data_sources/csv/csv_file_output.cpp
         src/core/data_sources/system_stats/system_stats_data_source.cpp
         src/core/data_sources/key_value_file/key_value_file.cpp
         src/core/data_sources/key_value_stream/key_value_stream.cpp
@@ -89,7 +89,7 @@ set(HEADERS_PRIVATE
         src/core/network.h
 
         src/core/data_sources/console/console_data_source.h
-        src/core/data_sources/csv/csv_data_source.h
+        src/core/data_sources/csv/csv_file_output.h
         src/core/data_sources/test/test_data_source.h
         src/core/data_sources/system_stats/system_stats_data_source.h
         src/core/data_sources/system_stats/system_usage_statistics.h
@@ -105,7 +105,7 @@ set(HEADERS_PRIVATE
         src/utility/timer/simple_timer.h
         src/utility/path_utils.h
         src/utility/time_utils.h
-        src/core/data_sources/file_data_source.h src/core/data_sources/file_data_source.cpp)
+        src/core/data_sources/output_file_data_source.h src/core/data_sources/output_file_data_source.cpp)
 
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)

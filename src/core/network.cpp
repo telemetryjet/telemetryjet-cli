@@ -2,13 +2,13 @@
 // Created by chris on 12/3/2020.
 //
 
-#include <core/data_sources/test/test_data_source.h>
+#include "network.h"
 #include <core/data_sources/console/console_data_source.h>
-#include <core/data_sources/csv/csv_data_source.h>
-#include <core/data_sources/system_stats/system_stats_data_source.h>
+#include <core/data_sources/csv/csv_file_output.h>
 #include <core/data_sources/key_value_file/key_value_file.h>
 #include <core/data_sources/key_value_stream/key_value_stream.h>
-#include "network.h"
+#include <core/data_sources/system_stats/system_stats_data_source.h>
+#include <core/data_sources/test/test_data_source.h>
 
 Network::Network(const json& definitions) {
     // Construct array of data sources from definitions.

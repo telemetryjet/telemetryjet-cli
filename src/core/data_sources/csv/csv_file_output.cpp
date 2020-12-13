@@ -1,4 +1,4 @@
-#include "csv_data_source.h"
+#include "csv_file_output.h"
 #include <string>
 
 CsvFileOutput::CsvFileOutput(const std::string& id, const json& options)
