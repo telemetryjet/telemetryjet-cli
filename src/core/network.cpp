@@ -45,12 +45,12 @@ Network::Network(const json& definitions) {
             }
             dataSources.push_back(std::make_shared<KeyValueStream>(dataSourceDefinition["id"], optionsNode));
         }
-        if (dataSourceDefinition["type"] == "csv-file") {
+        if (dataSourceDefinition["type"] == "csv-file-output") {
             json optionsNode = nullptr;
             if (dataSourceDefinition.contains("options")) {
                 optionsNode = dataSourceDefinition["options"];
             }
-            dataSources.push_back(std::make_shared<CsvDataSource>(dataSourceDefinition["id"], optionsNode));
+            dataSources.push_back(std::make_shared<CsvFileOutput>(dataSourceDefinition["id"], optionsNode));
         }
     }
 }

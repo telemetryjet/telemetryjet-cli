@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <fstream>
 
-class CsvDataSource : public FileDataSource {
+class CsvFileOutput : public OutputFileDataSource {
 private:
     SimpleTimer* writeTimer;
     DataPointCache* cache;
@@ -16,8 +16,8 @@ private:
     bool rewriteRequired;
 
 public:
-    CsvDataSource(const std::string& id, const json& options);
-    ~CsvDataSource() override;
+    CsvFileOutput(const std::string& id, const json& options);
+    ~CsvFileOutput() override;
     void update() override;
 };
 

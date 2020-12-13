@@ -4,7 +4,7 @@
 
 namespace fs = boost::filesystem;
 
-FileDataSource::FileDataSource(const std::string& id, const std::string& type, const json &options)
+OutputFileDataSource::OutputFileDataSource(const std::string& id, const std::string& type, const json &options)
     : DataSource(id, type) {
     if (options.is_null()) {
         throw std::runtime_error(fmt::format("{} data source '{}' requires an options object.", type, id));
@@ -29,10 +29,9 @@ FileDataSource::FileDataSource(const std::string& id, const std::string& type, c
     }
 }
 
-FileDataSource::~FileDataSource() {
-}
+OutputFileDataSource::~OutputFileDataSource() = default;
 
-void FileDataSource::open() {
+void OutputFileDataSource::open() {
     // If we are in new file mode, increment filename until the file does not exist
     std::string absPath = resolveRelativePathHome(filename);
     fs::path pathObj(absPath);
@@ -58,13 +57,13 @@ void FileDataSource::open() {
     flushTimer = new SimpleTimer(1000);
 }
 
-void FileDataSource::close() {
+void OutputFileDataSource::close() {
     if (outputFile.is_open()){
         outputFile.close();
     }
     delete flushTimer;
 }
 
-bool FileDataSource::isOpen() {
+bool OutputFileDataSource::isOpen() {
     return !!outputFile;
 }

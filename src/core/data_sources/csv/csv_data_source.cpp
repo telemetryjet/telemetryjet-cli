@@ -1,50 +1,64 @@
 #include "csv_data_source.h"
+#include <string>
 
-CsvDataSource::CsvDataSource(const std::string& id, const json& options)
-    : FileDataSource(id, "csv-file", options) {
+CsvFileOutput::CsvFileOutput(const std::string& id, const json& options)
+    : OutputFileDataSource(id, "csv-file-output", options) {
     cache = new DataPointCache();
-    // TODO: configure timer interval with option
-    writeTimer = new SimpleTimer(1000);
     rewriteRequired = true;
+
+    if (!options.contains("write_interval_ms")) {
+        std::string interval;
+        try {
+            interval = options["write_interval_ms"];
+            writeTimer = new SimpleTimer(std::stoi(interval));
+        } catch (std::exception &e) {
+            throw std::runtime_error(fmt::format("Error creating timer with parsed write_interval_ms '{}'. {}", interval, e.what()));
+        }
+    } else {
+        writeTimer = new SimpleTimer(1000);
+    }
 }
 
-void CsvDataSource::update() {
+void CsvFileOutput::update() {
     // TODO: check if keys contains a new key, and rewrite file if so
-    // TODO: add timestamp column
 
     // update file on interval
     if (outputFile.is_open() && writeTimer->check()) {
         if(rewriteRequired) {
-            headers.empty();
+            headers.clear();
             for (const auto& key : cache->getKeys()) {
                 headers.push_back(key);
             }
 
             // write headers
             std::string headerLine;
+            headerLine.append("timestamp");
             for (const auto& header : headers) {
-                headerLine.append(fmt::format(headerLine.empty() ? "{}" : ",{}", header));
+                headerLine.append(fmt::format(",{}", header));
             }
             outputFile << fmt::format("{}\n", headerLine);
             rewriteRequired = false;
         }
 
+        uint64_t timestamp = getCurrentMillis();
+
         // write line
         std::string line;
+        line.append(fmt::format("{}", timestamp));
         for (const auto& header : headers) {
-            line.append(fmt::format(line.empty() ? "{}" : ",{}", cache->get(header)->value));
+            line.append(fmt::format(",{}", cache->get(header)->value));
         }
         outputFile << fmt::format("{}\n", line);
+    }
+
+    if (flushTimer) {
+        outputFile.flush();
     }
 
     // update cache
     for (auto& inDataPoint : in) {
         cache->set(inDataPoint->key, inDataPoint);
     }
-
-    if (flushTimer) {
-        outputFile.flush();
-    }
 }
 
-CsvDataSource::~CsvDataSource() = default;
+CsvFileOutput::~CsvFileOutput() = default;

@@ -8,7 +8,7 @@
 #include <memory>
 #include <regex>
 
-class KeyValueFile : public FileDataSource {
+class KeyValueFile : public OutputFileDataSource {
 private:
     std::basic_regex<char> equalsEscapeRegex;
 

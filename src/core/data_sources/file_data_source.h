@@ -8,7 +8,7 @@
 #include <regex>
 #include "utility/timer/simple_timer.h"
 
-class FileDataSource : public DataSource {
+class OutputFileDataSource : public DataSource {
 protected:
     std::ofstream outputFile;
     std::string filename;
@@ -17,8 +17,8 @@ protected:
     bool generateNewFile;
     SimpleTimer* flushTimer;
 public:
-    FileDataSource(const std::string& id, const std::string& type, const json &options);
-    ~FileDataSource() override;
+    OutputFileDataSource(const std::string& id, const std::string& type, const json &options);
+    ~OutputFileDataSource() override;
     void open() override;
     void close() override;
     bool isOpen() override;

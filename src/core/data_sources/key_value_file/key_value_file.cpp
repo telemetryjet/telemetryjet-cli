@@ -1,7 +1,7 @@
 #include "key_value_file.h"
 
 KeyValueFile::KeyValueFile(const std::string& id, const json &options)
-    : FileDataSource(id, "key-value-file", options) {
+    : OutputFileDataSource(id, "key-value-file", options) {
     equalsEscapeRegex = std::basic_regex("=");
 }
 
