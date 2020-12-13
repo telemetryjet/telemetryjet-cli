@@ -44,6 +44,7 @@ set(SOURCES
         src/utility/glob/glob.cpp
         src/utility/serial/serial_wrapper.cpp
         src/utility/timer/simple_timer.cpp
+        src/utility/messagepack.c
 )
 
 # Platform-specific sources
@@ -103,6 +104,7 @@ set(HEADERS_PRIVATE
         src/utility/timer/simple_timer.h
         src/utility/path_utils.h
         src/utility/time_utils.h
+        src/utility/messagepack.h
 )
 
 # Put version numbers into header
