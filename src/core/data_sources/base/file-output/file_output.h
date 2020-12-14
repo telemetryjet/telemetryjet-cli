@@ -1,5 +1,5 @@
-#ifndef TELEMETRYJETCLI_FILE_OUTPUT_H
-#define TELEMETRYJETCLI_FILE_OUTPUT_H
+#ifndef TELEMETRYJETCLI_FILE_OUTPUT_BASE_H
+#define TELEMETRYJETCLI_FILE_OUTPUT_BASE_H
 
 #include "core/data_source.h"
 #include <iostream>
