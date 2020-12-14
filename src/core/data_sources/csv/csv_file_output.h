@@ -13,8 +13,11 @@ private:
     DataPointCache* cache;
 
     std::vector<std::string> headers;
+    std::unordered_set<std::string> headerSet;
     bool rewriteRequired;
+    int newHeaderCount;
 
+    void rewrite();
 public:
     CsvFileOutput(const std::string& id, const json& options);
     ~CsvFileOutput() override;
