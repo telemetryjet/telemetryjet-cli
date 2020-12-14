@@ -1,5 +1,5 @@
-#ifndef KEY_VALUE_FILE_H
-#define KEY_VALUE_FILE_H
+#ifndef TELEMETRYJETCLI_FILE_OUTPUT_H
+#define TELEMETRYJETCLI_FILE_OUTPUT_H
 
 #include "core/data_source.h"
 #include <iostream>
@@ -8,21 +8,19 @@
 #include <regex>
 #include "utility/timer/simple_timer.h"
 
-class KeyValueFile : public DataSource {
-private:
+class FileOutputDataSource : public DataSource {
+protected:
     std::ofstream outputFile;
     std::string filename;
     std::ios::openmode mode;
     std::string modeString;
     bool generateNewFile;
     SimpleTimer* flushTimer;
-    std::basic_regex<char> equalsEscapeRegex;
 public:
-    KeyValueFile(std::string id, const json &options);
-    ~KeyValueFile() override;
+    FileOutputDataSource(const std::string& id, const std::string& type, const json &options);
+    ~FileOutputDataSource() override;
     void open() override;
     void close() override;
-    void update() override;
     bool isOpen() override;
 };
 

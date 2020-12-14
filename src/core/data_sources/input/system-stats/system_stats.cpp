@@ -2,7 +2,7 @@
 // Created by chris on 12/4/2020.
 //
 
-#include "system_stats_data_source.h"
+#include "system_stats.h"
 
 SystemStatsDataSource::SystemStatsDataSource(std::string id) : DataSource(id, "system_stats") {
 

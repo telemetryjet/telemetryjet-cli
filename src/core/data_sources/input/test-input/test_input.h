@@ -4,7 +4,7 @@
 #include "core/data_source.h"
 #include "utility/timer/simple_timer.h"
 
-class TestDataSource : public DataSource {
+class TestInputDataSource : public DataSource {
 private:
     float frequency = 0.001;
     float amplitude = 1000;
@@ -13,8 +13,8 @@ private:
     uint64_t interval = 10;
     SimpleTimer* timer;
 public:
-    TestDataSource(std::string id, const json &options);
-    ~TestDataSource() override;
+    TestInputDataSource(std::string id, const json &options);
+    ~TestInputDataSource() override;
     void open() override;
     void close() override;
     void update() override;

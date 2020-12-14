@@ -1,6 +1,6 @@
-#include "test_data_source.h"
+#include "test_input.h"
 
-TestDataSource::TestDataSource(std::string id, const json& options) : DataSource(id, "test") {
+TestInputDataSource::TestInputDataSource(std::string id, const json& options) : DataSource(id, "test-input") {
     if (options.is_null()) {
         throw std::runtime_error(fmt::format("test data source '{}' requires an options object!", id));
     }
@@ -23,13 +23,13 @@ TestDataSource::TestDataSource(std::string id, const json& options) : DataSource
     }
 }
 
-TestDataSource::~TestDataSource() = default;
+TestInputDataSource::~TestInputDataSource() = default;
 
-void TestDataSource::open() {
+void TestInputDataSource::open() {
     timer = new SimpleTimer(interval);
 }
 
-void TestDataSource::update() {
+void TestInputDataSource::update() {
     if (timer->check()) {
         uint64_t timestamp = getCurrentMillis();
         float newValue = (float)(sin((double)timestamp * ((double)frequency)) * amplitude) + offset + ((rand() % 1000 ) / 100.0);
@@ -37,10 +37,10 @@ void TestDataSource::update() {
     }
 }
 
-void TestDataSource::close() {
+void TestInputDataSource::close() {
     delete timer;
 }
 
-bool TestDataSource::isOpen() {
+bool TestInputDataSource::isOpen() {
     return true;
 }

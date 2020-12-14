@@ -27,24 +27,24 @@ endif()
 
 set(SOURCES
         src/main.cpp
-
         src/core/data_cache.cpp
         src/core/network.cpp
-
-        src/core/data_sources/test/test_data_source.cpp
-        src/core/data_sources/console/console_data_source.cpp
-        src/core/data_sources/system_stats/system_stats_data_source.cpp
-        src/core/data_sources/key_value_file/key_value_file.cpp
-        src/core/data_sources/key_value_stream/key_value_stream.cpp
-
-        src/services/service_manager.cpp
-        src/services/config/config.cpp
-        src/services/logger/logger.cpp
-
         src/utility/glob/glob.cpp
         src/utility/serial/serial_wrapper.cpp
         src/utility/timer/simple_timer.cpp
-        src/utility/messagepack.c
+        src/utility/messagepack/messagepack.cpp
+        src/services/service_manager.cpp
+        src/services/logger/logger.cpp
+        src/services/config/config.cpp
+
+        src/core/data_sources/base/file-input/file_input.cpp
+        src/core/data_sources/base/file-output/file_output.cpp
+        src/core/data_sources/base/serial-stream/serial_stream.cpp
+        src/core/data_sources/bidirectional/key-value-stream/key_value_stream.cpp
+        src/core/data_sources/input/test-input/test_input.cpp
+        src/core/data_sources/output/console-output/console_output.cpp
+        src/core/data_sources/output/csv-file-output/csv_file_output.cpp
+        src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
 )
 
 # Platform-specific sources
@@ -52,14 +52,12 @@ if (WIN32)
     message(STATUS "Adding Windows-specific sources")
     set(SOURCES
             ${SOURCES}
-            src/core/data_sources/system_stats/system_usage_statistics_win32.cpp
     )
 else()
     if (APPLE)
         message(STATUS "Adding Mac-specific sources")
         set(SOURCES
                 ${SOURCES}
-                src/core/data_sources/system_stats/system_usage_statistics_mac.cpp
                 )
         set(CMAKE_THREAD_LIBS_INIT "-lpthread")
         set(CMAKE_HAVE_THREADS_LIBRARY 1)
@@ -71,7 +69,6 @@ else()
             message(STATUS "Adding Linux-specific sources")
             set(SOURCES
                     ${SOURCES}
-                    src/core/data_sources/system_stats/system_usage_statistics_linux.cpp
                     )
         else()
             message(FATAL_ERROR "Unknown platform!")
@@ -79,32 +76,30 @@ else()
     endif()
 endif()
 
-
 set(HEADERS_PRIVATE
         src/constants.h
-
         src/core/data_cache.h
         src/core/data_point.h
         src/core/data_source.h
         src/core/network.h
-
-        src/core/data_sources/console/console_data_source.h
-        src/core/data_sources/test/test_data_source.h
-        src/core/data_sources/system_stats/system_stats_data_source.h
-        src/core/data_sources/system_stats/system_usage_statistics.h
-        src/core/data_sources/key_value_file/key_value_file.h
-        src/core/data_sources/key_value_stream/key_value_stream.h
-
-        src/services/service_manager.h
-        src/services/config/config.h
-        src/services/logger/logger.h
-
         src/utility/glob/glob.h
         src/utility/serial/serial_wrapper.h
         src/utility/timer/simple_timer.h
         src/utility/path_utils.h
         src/utility/time_utils.h
-        src/utility/messagepack.h
+        src/utility/messagepack/messagepack.h
+        src/services/service_manager.h
+        src/services/config/config.h
+        src/services/logger/logger.h
+
+        src/core/data_sources/base/file-input/file_input.h
+        src/core/data_sources/base/file-output/file_output.h
+        src/core/data_sources/base/serial-stream/serial_stream.h
+        src/core/data_sources/bidirectional/key-value-stream/key_value_stream.h
+        src/core/data_sources/input/test-input/test_input.h
+        src/core/data_sources/output/console-output/console_output.h
+        src/core/data_sources/output/csv-file-output/csv_file_output.h
+        src/core/data_sources/output/key-value-file-output/key_value_file_output.h
 )
 
 # Put version numbers into header

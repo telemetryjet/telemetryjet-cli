@@ -1,48 +1,31 @@
-//
-// Created by chris on 12/3/2020.
-//
-
-#include <core/data_sources/test/test_data_source.h>
-#include <core/data_sources/console/console_data_source.h>
-#include <core/data_sources/system_stats/system_stats_data_source.h>
-#include <core/data_sources/key_value_file/key_value_file.h>
-#include <core/data_sources/key_value_stream/key_value_stream.h>
+#include <core/data_sources/bidirectional/key-value-stream/key_value_stream.h>
+#include <core/data_sources/input/test-input/test_input.h>
+#include <core/data_sources/output/console-output/console_output.h>
+#include <core/data_sources/output/csv-file-output/csv_file_output.h>
+#include <core/data_sources/output/key-value-file-output/key_value_file_output.h>
 #include "network.h"
 
 Network::Network(const json& definitions) {
     // Construct array of data sources from definitions.
     for (auto& dataSourceDefinition : definitions) {
-        if (dataSourceDefinition["type"] == "test") {
-            json optionsNode = nullptr;
-            if (dataSourceDefinition.contains("options")) {
-                optionsNode = dataSourceDefinition["options"];
-            }
-            dataSources.push_back(std::make_shared<TestDataSource>(dataSourceDefinition["id"], optionsNode));
-        }
-        if (dataSourceDefinition["type"] == "console") {
-            json optionsNode = nullptr;
-            if (dataSourceDefinition.contains("options")) {
-                optionsNode = dataSourceDefinition["options"];
-            }
-            dataSources.push_back(std::make_shared<ConsoleDataSource>(dataSourceDefinition["id"], optionsNode));
-        }
-        /*
-        if (dataSourceDefinition["type"] == "system_stats") {
-            dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition["id"]));
-        }*/
-        if (dataSourceDefinition["type"] == "key-value-file") {
-            json optionsNode = nullptr;
-            if (dataSourceDefinition.contains("options")) {
-                optionsNode = dataSourceDefinition["options"];
-            }
-            dataSources.push_back(std::make_shared<KeyValueFile>(dataSourceDefinition["id"], optionsNode));
+        json optionsNode = nullptr;
+        if (dataSourceDefinition.contains("options")) {
+            optionsNode = dataSourceDefinition["options"];
         }
         if (dataSourceDefinition["type"] == "key-value-stream") {
-            json optionsNode = nullptr;
-            if (dataSourceDefinition.contains("options")) {
-                optionsNode = dataSourceDefinition["options"];
-            }
             dataSources.push_back(std::make_shared<KeyValueStream>(dataSourceDefinition["id"], optionsNode));
+        }
+        if (dataSourceDefinition["type"] == "test-input") {
+            dataSources.push_back(std::make_shared<TestInputDataSource>(dataSourceDefinition["id"], optionsNode));
+        }
+        if (dataSourceDefinition["type"] == "console-output") {
+            dataSources.push_back(std::make_shared<ConsoleOutputDataSource>(dataSourceDefinition["id"], optionsNode));
+        }
+        if (dataSourceDefinition["type"] == "csv-file-output") {
+            dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
+        }
+        if (dataSourceDefinition["type"] == "key-value-file-output") {
+            dataSources.push_back(std::make_shared<KeyValueFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
         }
     }
 }
