@@ -3,6 +3,7 @@
 #include <core/data_sources/output/console-output/console_output.h>
 #include <core/data_sources/output/csv-file-output/csv_file_output.h>
 #include <core/data_sources/output/key-value-file-output/key_value_file_output.h>
+#include <core/data_sources/input/key-value-file-input/key_value_file_input.h>
 #include "network.h"
 
 Network::Network(const json& definitions) {
@@ -25,6 +26,8 @@ Network::Network(const json& definitions) {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
         } else if (type == "key-value-file-output") {
             dataSources.push_back(std::make_shared<KeyValueFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
+        } else if (type == "key-value-file-input") {
+            dataSources.push_back(std::make_shared<KeyValueFileInputDataSource>(dataSourceDefinition["id"], optionsNode));
         } else {
             throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", id, type));
         }

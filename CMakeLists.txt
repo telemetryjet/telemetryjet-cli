@@ -33,6 +33,7 @@ set(SOURCES
         src/utility/serial/serial_wrapper.cpp
         src/utility/timer/simple_timer.cpp
         src/utility/messagepack/messagepack.cpp
+        src/utility/key_value/key_value_utils.cpp
         src/services/service_manager.cpp
         src/services/logger/logger.cpp
         src/services/config/config.cpp
@@ -45,6 +46,7 @@ set(SOURCES
         src/core/data_sources/output/console-output/console_output.cpp
         src/core/data_sources/output/csv-file-output/csv_file_output.cpp
         src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
+        src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
 )
 
 # Platform-specific sources
@@ -88,6 +90,7 @@ set(HEADERS_PRIVATE
         src/utility/path_utils.h
         src/utility/time_utils.h
         src/utility/messagepack/messagepack.h
+        src/utility/key_value/key_value_utils.h
         src/services/service_manager.h
         src/services/config/config.h
         src/services/logger/logger.h
@@ -100,6 +103,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/output/console-output/console_output.h
         src/core/data_sources/output/csv-file-output/csv_file_output.h
         src/core/data_sources/output/key-value-file-output/key_value_file_output.h
+        src/core/data_sources/input/key-value-file-input/key_value_file_input.h
 )
 
 # Put version numbers into header

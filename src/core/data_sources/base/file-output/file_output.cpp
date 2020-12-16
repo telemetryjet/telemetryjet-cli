@@ -67,9 +67,9 @@ void FileOutputDataSource::close() {
 }
 
 bool FileOutputDataSource::checkDone() {
-    return isOpen;
+    return true;
 }
 
 bool FileOutputDataSource::checkExitOnError() {
-    return isOpen;
+    return !isOpen;
 }
