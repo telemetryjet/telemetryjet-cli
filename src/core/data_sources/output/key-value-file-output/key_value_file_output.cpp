@@ -6,6 +6,9 @@ KeyValueFileOutputDataSource::KeyValueFileOutputDataSource(const std::string& id
 }
 
 void KeyValueFileOutputDataSource::update() {
+    if (!isOpen) {
+        return;
+    }
     if (outputFile.is_open()) {
         for (auto& inDataPoint : in) {
             std::string keyEscaped = std::regex_replace(inDataPoint->key, equalsEscapeRegex, "\\=");
@@ -18,5 +21,3 @@ void KeyValueFileOutputDataSource::update() {
         outputFile.flush();
     }
 }
-
-KeyValueFileOutputDataSource::~KeyValueFileOutputDataSource() = default;

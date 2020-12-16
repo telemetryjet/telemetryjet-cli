@@ -14,7 +14,6 @@ private:
 
 public:
     KeyValueFileOutputDataSource(const std::string& id, const json& options);
-    ~KeyValueFileOutputDataSource() override;
     void update() override;
 };
 

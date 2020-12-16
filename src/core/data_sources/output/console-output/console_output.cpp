@@ -1,12 +1,9 @@
 #include "console_output.h"
 
-ConsoleOutputDataSource::ConsoleOutputDataSource(std::string id, const json& options) : DataSource(id, "console-output") {
-}
+#include <utility>
 
-ConsoleOutputDataSource::~ConsoleOutputDataSource() = default;
-
-void ConsoleOutputDataSource::open() {
-
+ConsoleOutputDataSource::ConsoleOutputDataSource(std::string id, const json& options)
+    : DataSource(std::move(id), "console-output") {
 }
 
 void ConsoleOutputDataSource::update() {
@@ -15,12 +12,4 @@ void ConsoleOutputDataSource::update() {
             std::cout << fmt::format("{}={}\n",inValue->key, inValue->value);
         }
     }
-}
-
-void ConsoleOutputDataSource::close() {
-
-}
-
-bool ConsoleOutputDataSource::isOpen() {
-    return true;
 }

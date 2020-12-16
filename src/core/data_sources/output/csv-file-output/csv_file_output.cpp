@@ -98,5 +98,3 @@ void CsvFileOutputDataSource::rewrite() {
     newHeaderCount = 0;
     rewriteRequired = false;
 }
-
-CsvFileOutputDataSource::~CsvFileOutputDataSource() = default;

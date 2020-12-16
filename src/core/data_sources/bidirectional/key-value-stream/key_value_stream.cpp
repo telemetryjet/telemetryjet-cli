@@ -2,25 +2,16 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 
-KeyValueStream::KeyValueStream(const std::string& id, const json &options) : SerialStreamDataSource(id, "key-value-stream", options) {
-}
-
-KeyValueStream::~KeyValueStream() {
-
-}
-
-void KeyValueStream::close() {
-    if (serial->isOpen()) {
-        serial->close();
-    }
-
-    delete reconnectTimer;
-}
-
-void KeyValueStream::open() {
+KeyValueStream::KeyValueStream(const std::string& id, const json &options)
+    : SerialStreamDataSource(id, "key-value-stream", options) {
 }
 
 void KeyValueStream::update() {
+    if (!isOpen) {
+        return;
+    }
+    SerialStreamDataSource::update();
+
     if (!serial->getBuffer().empty()) {
         std::string tempLine;
         for (auto& inChar : serial->getBuffer()) {
@@ -72,8 +63,4 @@ void KeyValueStream::update() {
         }
         serial->clearBuffer();
     }
-}
-
-bool KeyValueStream::isOpen() {
-    return false;
 }

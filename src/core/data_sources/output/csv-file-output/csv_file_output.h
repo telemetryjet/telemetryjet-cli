@@ -20,7 +20,6 @@ private:
     void rewrite();
 public:
     CsvFileOutputDataSource(const std::string& id, const json& options);
-    ~CsvFileOutputDataSource() override;
     void update() override;
 };
 

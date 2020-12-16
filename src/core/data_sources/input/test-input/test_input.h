@@ -9,16 +9,20 @@ private:
     float frequency = 0.001;
     float amplitude = 1000;
     float offset = 1500;
-    std::string key;
+    std::string key = "value";
     uint64_t interval = 10;
-    SimpleTimer* timer;
+    std::unique_ptr<SimpleTimer> timer;
 public:
     TestInputDataSource(std::string id, const json &options);
-    ~TestInputDataSource() override;
     void open() override;
     void close() override;
     void update() override;
-    bool isOpen() override;
+    bool checkDone() override {
+        return false;
+    }
+    bool checkExitOnError() override {
+        return false;
+    }
 };
 
 #endif

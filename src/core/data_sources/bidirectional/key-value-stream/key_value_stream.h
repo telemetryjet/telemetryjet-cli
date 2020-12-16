@@ -12,9 +12,6 @@ private:
     std::list<uint8_t> keyValueBuffer;
 public:
     KeyValueStream(const std::string& id, const json &options);
-    ~KeyValueStream() override;
-    void open() override;
-    void close() override;
     void update() override;
 };
 

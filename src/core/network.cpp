@@ -13,18 +13,20 @@ Network::Network(const json& definitions) {
             optionsNode = dataSourceDefinition["options"];
         }
 
-        if (dataSourceDefinition["type"] == "key-value-stream") {
+        std::string id = dataSourceDefinition["id"];
+        std::string type = dataSourceDefinition["type"];
+        if (type == "key-value-stream") {
             dataSources.push_back(std::make_shared<KeyValueStream>(dataSourceDefinition["id"], optionsNode));
-        } else if (dataSourceDefinition["type"] == "test-input") {
+        } else if (type == "test-input") {
             dataSources.push_back(std::make_shared<TestInputDataSource>(dataSourceDefinition["id"], optionsNode));
-        } else if (dataSourceDefinition["type"] == "console-output") {
+        } else if (type == "console-output") {
             dataSources.push_back(std::make_shared<ConsoleOutputDataSource>(dataSourceDefinition["id"], optionsNode));
-        } else if (dataSourceDefinition["type"] == "csv-file-output") {
+        } else if (type == "csv-file-output") {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
-        } else if (dataSourceDefinition["type"] == "key-value-file-output") {
+        } else if (type == "key-value-file-output") {
             dataSources.push_back(std::make_shared<KeyValueFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
         } else {
-            throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", dataSourceDefinition["id"], dataSourceDefinition["type"]));
+            throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", id, type));
         }
     }
 }

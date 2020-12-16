@@ -6,11 +6,13 @@
 class ConsoleOutputDataSource : public DataSource {
 public:
     ConsoleOutputDataSource(std::string id, const json &options);
-    ~ConsoleOutputDataSource() override;
-    void open() override;
-    void close() override;
     void update() override;
-    bool isOpen() override;
+    bool checkDone() override {
+        return true;
+    }
+    bool checkExitOnError() override {
+        return false;
+    }
 };
 
 #endif

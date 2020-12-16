@@ -27,7 +27,7 @@ public:
     virtual void close() {
         isOpen = false;
     }
-    virtual void update() = 0;
+    virtual void update() {};
     virtual bool checkDone() {
         return false;
     }
