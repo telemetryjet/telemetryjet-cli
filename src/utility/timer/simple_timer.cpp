@@ -3,9 +3,15 @@
 
 SimpleTimer::SimpleTimer(uint64_t interval)
     : m_interval(interval) {
+    if (interval == 0) {
+        zeroInterval = true;
+    }
 }
 
 bool SimpleTimer::check() {
+    if (zeroInterval) {
+        return true;
+    }
     uint64_t currentTime = getCurrentMillis();
     uint64_t delta       = (currentTime - m_lastTime);
     if (delta >= m_interval) {

@@ -15,6 +15,7 @@ public:
     void reset();
 
 private:
+    bool zeroInterval = false;
     uint64_t m_lastTime;
     uint64_t m_interval;
 };

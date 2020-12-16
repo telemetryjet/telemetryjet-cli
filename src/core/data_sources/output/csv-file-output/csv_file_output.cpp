@@ -7,18 +7,13 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const js
     rewriteRequired = true;
 
     if (options.contains("write_interval_ms")) {
-        std::string interval;
-        try {
-            interval = options["write_interval_ms"];
-            writeTimer = new SimpleTimer(std::stoi(interval));
-        } catch (std::exception& e) {
-            throw std::runtime_error(
-                fmt::format("Error creating timer with parsed write_interval_ms '{}'. {}",
-                            interval,
-                            e.what()));
+        if (!options["write_interval_ms"].is_number_integer()) {
+            throw std::runtime_error(fmt::format("{} data source '{}' requires option 'write_interval_ms' of type Integer.", type, id));
         }
+        int writeInterval = options["write_interval_ms"];
+        writeTimer = new SimpleTimer(writeInterval);
     } else {
-        writeTimer = new SimpleTimer(1000);
+        writeTimer = new SimpleTimer(0);
     }
 }
 
@@ -80,6 +75,8 @@ void CsvFileOutputDataSource::rewrite() {
     }
 
     // open output file in overwrite mode
+    // We want to overwrite the existing file no matter what mode we were originally in
+    // File modes should only apply between jet sessions
     outputFile.open(filename, std::ios::trunc);
 
     // write updated data to file
@@ -88,12 +85,10 @@ void CsvFileOutputDataSource::rewrite() {
     for (const auto& header : headers) {
         headerLine.append(fmt::format(",{}", header));
     }
+
+    // Overwrite file with header and all the old data
     outputFile << fmt::format("{}\n{}", headerLine, updatedData);
     outputFile.flush();
-
-    // close overwrite stream and reopen
-    outputFile.close();
-    outputFile.open(filename, mode);
 
     newHeaderCount = 0;
     rewriteRequired = false;
