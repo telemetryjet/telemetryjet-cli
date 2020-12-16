@@ -14,10 +14,14 @@ protected:
     std::string filename;
 public:
     FileInputDataSource(const std::string& id, const std::string& type, const json &options);
-    ~FileInputDataSource() override;
     void open() override;
     void close() override;
-    bool isOpen() override;
+    bool checkDone() override {
+        return isOpen;
+    }
+    bool checkExitOnError() override {
+        return isOpen;
+    }
 };
 
 #endif

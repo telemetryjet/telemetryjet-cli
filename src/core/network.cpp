@@ -12,20 +12,19 @@ Network::Network(const json& definitions) {
         if (dataSourceDefinition.contains("options")) {
             optionsNode = dataSourceDefinition["options"];
         }
+
         if (dataSourceDefinition["type"] == "key-value-stream") {
             dataSources.push_back(std::make_shared<KeyValueStream>(dataSourceDefinition["id"], optionsNode));
-        }
-        if (dataSourceDefinition["type"] == "test-input") {
+        } else if (dataSourceDefinition["type"] == "test-input") {
             dataSources.push_back(std::make_shared<TestInputDataSource>(dataSourceDefinition["id"], optionsNode));
-        }
-        if (dataSourceDefinition["type"] == "console-output") {
+        } else if (dataSourceDefinition["type"] == "console-output") {
             dataSources.push_back(std::make_shared<ConsoleOutputDataSource>(dataSourceDefinition["id"], optionsNode));
-        }
-        if (dataSourceDefinition["type"] == "csv-file-output") {
+        } else if (dataSourceDefinition["type"] == "csv-file-output") {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
-        }
-        if (dataSourceDefinition["type"] == "key-value-file-output") {
+        } else if (dataSourceDefinition["type"] == "key-value-file-output") {
             dataSources.push_back(std::make_shared<KeyValueFileOutputDataSource>(dataSourceDefinition["id"], optionsNode));
+        } else {
+            throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", dataSourceDefinition["id"], dataSourceDefinition["type"]));
         }
     }
 }
@@ -74,9 +73,21 @@ void Network::stop() {
     }
 }
 
-bool Network::isOpen() {
+bool Network::checkDone() {
+    // Exit if all the devices have a 'done' flag
+    bool allDone = true;
     for (auto& dataSource : dataSources) {
-        if (dataSource->isOpen()) {
+        if (!dataSource->checkDone()) {
+            allDone = false;
+        }
+    }
+    return allDone;
+}
+
+bool Network::checkExitOnError() {
+    // Exit if any of the devices has an error and we are in --exit mode
+    for (auto& dataSource : dataSources) {
+        if (dataSource->checkExitOnError()) {
             return true;
         }
     }

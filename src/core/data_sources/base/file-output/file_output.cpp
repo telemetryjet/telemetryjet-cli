@@ -30,9 +30,6 @@ FileOutputDataSource::FileOutputDataSource(const std::string& id, const std::str
     }
 }
 
-FileOutputDataSource::~FileOutputDataSource() {
-}
-
 void FileOutputDataSource::open() {
     // If we are in new file mode, increment filename until the file does not exist
     std::string absPath = resolveRelativePathHome(filename);
@@ -56,16 +53,24 @@ void FileOutputDataSource::open() {
     } else {
         SM::getLogger()->info(fmt::format("Opened {} file {}.", type, pathObj.filename().string()));
     }
-    flushTimer = new SimpleTimer(1000);
+    flushTimer = std::make_unique<SimpleTimer>(1000);
+    DataSource::open();
 }
 
 void FileOutputDataSource::close() {
-    if (outputFile.is_open()){
-        outputFile.close();
+    if (isOpen) {
+        if (outputFile.is_open()){
+            outputFile.close();
+        }
+        flushTimer.reset();
+        DataSource::close();
     }
-    delete flushTimer;
 }
 
-bool FileOutputDataSource::isOpen() {
-    return outputFile.is_open();
+bool FileOutputDataSource::checkDone() {
+    return isOpen;
+}
+
+bool FileOutputDataSource::checkExitOnError() {
+    return isOpen;
 }

@@ -220,9 +220,6 @@ int main(int argc, char** argv) {
                 if (item.contains("type") && !item["type"].is_string()) {
                     throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field must be of type String.", item["id"].get<std::string>()));
                 }
-                if (item.contains("prefix") && !item["prefix"].is_string()) {
-                    throw std::runtime_error(fmt::format("Error in data source '{}': 'prefix' field must be of type String.", item["id"].get<std::string>()));
-                }
             }
 
             jsonConfigFiles.push_back(jsonConfigItem);
@@ -281,10 +278,20 @@ int main(int argc, char** argv) {
         for (auto& network : networks) {
             network.update();
         }
+
         shouldRun = false;
+        // Exit if all of the networks are done processing
         for (auto& network : networks) {
-            if (network.isOpen()) {
+            if (!network.checkDone()) {
                 shouldRun = true;
+            }
+        }
+        // Exit if any of the networks has an error and we are in --exit mode
+        if (exitFlag) {
+            for (auto& network : networks) {
+                if (network.checkExitOnError()) {
+                    shouldRun = false;
+                }
             }
         }
     }

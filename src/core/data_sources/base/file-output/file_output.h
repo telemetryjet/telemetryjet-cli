@@ -15,13 +15,13 @@ protected:
     std::ios::openmode mode;
     std::string modeString;
     bool generateNewFile;
-    SimpleTimer* flushTimer;
+    std::unique_ptr<SimpleTimer> flushTimer;
 public:
     FileOutputDataSource(const std::string& id, const std::string& type, const json &options);
-    ~FileOutputDataSource() override;
     void open() override;
     void close() override;
-    bool isOpen() override;
+    bool checkDone() override;
+    bool checkExitOnError() override;
 };
 
 #endif

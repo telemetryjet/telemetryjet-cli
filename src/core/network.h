@@ -16,7 +16,8 @@ public:
     void start();
     void update();
     void stop();
-    bool isOpen();
+    bool checkDone();
+    bool checkExitOnError();
 };
 
 #endif

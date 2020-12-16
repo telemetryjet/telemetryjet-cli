@@ -2,6 +2,7 @@
 #define DATA_SOURCE_H
 
 #include "data_point.h"
+#include <utility>
 #include <vector>
 #include <nlohmann/json.hpp>
 #include "fmt/format.h"
@@ -17,13 +18,22 @@ public:
     const std::string type;
     std::vector<std::shared_ptr<DataPoint>> in;
     std::vector<std::shared_ptr<DataPoint>> out;
-    bool initialized;
-    DataSource(std::string id, std::string type) : id(id), type(type) {};
+    bool isOpen = false;
+    DataSource(std::string id, std::string type) : id(std::move(id)), type(std::move(type)) {};
     virtual ~DataSource() = default;
-    virtual void open() = 0;
-    virtual void close() = 0;
+    virtual void open() {
+        isOpen = true;
+    }
+    virtual void close() {
+        isOpen = false;
+    }
     virtual void update() = 0;
-    virtual bool isOpen() = 0;
+    virtual bool checkDone() {
+        return false;
+    }
+    virtual bool checkExitOnError() {
+        return false;
+    }
 };
 
-#endif //TELEMETRYJETCLI_DATA_SOURCE_H
+#endif

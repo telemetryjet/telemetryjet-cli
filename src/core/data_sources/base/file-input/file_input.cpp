@@ -15,9 +15,6 @@ FileInputDataSource::FileInputDataSource(const std::string& id, const std::strin
     filename = options["filename"];
 }
 
-FileInputDataSource::~FileInputDataSource() {
-}
-
 void FileInputDataSource::open() {
     // Resolve filename to a path and open an input stream
     fs::path pathObj(resolveRelativePathHome(filename));
@@ -28,15 +25,15 @@ void FileInputDataSource::open() {
         throw std::runtime_error(fmt::format("Failed to open {} file {}.", type, pathObj.filename().string()));
     } else {
         SM::getLogger()->info(fmt::format("Opened {} file {}.", type, pathObj.filename().string()));
+        DataSource::open();
     }
 }
 
 void FileInputDataSource::close() {
-    if (inputFile.is_open()){
-        inputFile.close();
+    if (isOpen) {
+        if (inputFile.is_open()){
+            inputFile.close();
+        }
+        DataSource::close();
     }
-}
-
-bool FileInputDataSource::isOpen() {
-    return inputFile.is_open();
 }

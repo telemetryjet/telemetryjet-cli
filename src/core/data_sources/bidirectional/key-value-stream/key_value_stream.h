@@ -5,13 +5,10 @@
 #include <memory>
 #include "utility/serial/serial_wrapper.h"
 #include "utility/timer/simple_timer.h"
+#include "core/data_sources/base/serial-stream/serial_stream.h"
 
-class KeyValueStream: public DataSource {
+class KeyValueStream: public SerialStreamDataSource {
 private:
-    std::string portName;
-    int baudRate;
-    std::unique_ptr<SerialWrapper> serial;
-    SimpleTimer* reconnectTimer;
     std::list<uint8_t> keyValueBuffer;
 public:
     KeyValueStream(const std::string& id, const json &options);
@@ -19,7 +16,6 @@ public:
     void open() override;
     void close() override;
     void update() override;
-    bool isOpen() override;
 };
 
 #endif
