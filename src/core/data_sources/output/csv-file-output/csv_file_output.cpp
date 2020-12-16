@@ -18,6 +18,20 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const js
 }
 
 void CsvFileOutputDataSource::update() {
+    // update cache
+    for (auto& inDataPoint : in) {
+        cache->set(inDataPoint->key, inDataPoint);
+        // if cache contains a header we haven't seen yet
+        if (headerSet.insert(inDataPoint->key).second) {
+            headers.push_back(inDataPoint->key);
+            newHeaderCount++;
+            rewriteRequired = true;
+        }
+    }
+
+    // TODO: If the timer value is 0, and we have new data, write a new row
+    bool hasNewData = in.size() > 0;
+
     // update file on interval
     if (outputFile.is_open() && writeTimer->check()) {
         if (rewriteRequired) {
@@ -37,17 +51,6 @@ void CsvFileOutputDataSource::update() {
 
     if (flushTimer) {
         outputFile.flush();
-    }
-
-    // update cache
-    for (auto& inDataPoint : in) {
-        cache->set(inDataPoint->key, inDataPoint);
-        // if cache contains a header we haven't seen yet
-        if (headerSet.insert(inDataPoint->key).second) {
-            headers.push_back(inDataPoint->key);
-            newHeaderCount++;
-            rewriteRequired = true;
-        }
     }
 }
 
