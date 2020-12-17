@@ -11,13 +11,13 @@ class CsvFileOutputDataSource : public FileOutputDataSource {
 private:
     SimpleTimer* writeTimer;
     DataPointCache* cache;
+    int writeInterval;
+    uint64_t lastTimestamp;
 
     std::vector<std::string> headers;
     std::unordered_set<std::string> headerSet;
     bool rewriteRequired;
     int newHeaderCount;
-    int writeInterval;
-    uint64_t lastTimestamp;
 
     void rewrite();
 public:

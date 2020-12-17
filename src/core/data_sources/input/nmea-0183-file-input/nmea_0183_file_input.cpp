@@ -37,19 +37,8 @@ void NMEA0183FileInputDataSource::open() {
         uint64_t tsDay = gps->fix.timestamp.day;
         uint64_t tsYear = gps->fix.timestamp.year;
 
-        SM::getLogger()->info(fmt::format("tsHour = {}", tsHour));
-        SM::getLogger()->info(fmt::format("tsMin = {}", tsMin));
-        SM::getLogger()->info(fmt::format("tsSecFloat = {}", tsSecFloat));
-        SM::getLogger()->info(fmt::format("tsSec = {}", tsSec));
-        SM::getLogger()->info(fmt::format("tsMillis = {}", tsMillis));
-        SM::getLogger()->info(fmt::format("tsMonth = {}", tsMonth));
-        SM::getLogger()->info(fmt::format("tsDay = {}", tsDay));
-        SM::getLogger()->info(fmt::format("tsYear = {}", tsYear));
-
         boost::posix_time::ptime pt(boost::gregorian::date(tsYear, tsMonth, tsDay), boost::posix_time::time_duration(tsHour, tsMin, tsSec, tsMillis));
         uint64_t gpsTimestamp = (pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1))).total_milliseconds();
-
-        SM::getLogger()->info(fmt::format("{} -> {}", boost::posix_time::to_simple_string(pt), gpsTimestamp));
 
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.averageSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.averageSNR()));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.minSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.minSNR()));
