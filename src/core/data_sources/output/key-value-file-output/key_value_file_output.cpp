@@ -12,7 +12,7 @@ void KeyValueFileOutputDataSource::update() {
     if (outputFile.is_open()) {
         for (auto& inDataPoint : in) {
             std::string keyEscaped = std::regex_replace(inDataPoint->key, equalsEscapeRegex, "\\=");
-            std::string valueEscaped = std::regex_replace(fmt::format("{}",inDataPoint->value), equalsEscapeRegex, "\\=");
+            std::string valueEscaped = std::regex_replace(fmt::format("{}",inDataPoint->toString()), equalsEscapeRegex, "\\=");
             std::string keyValue = fmt::format("{}={}\n", keyEscaped,valueEscaped);
             outputFile << keyValue;
         }

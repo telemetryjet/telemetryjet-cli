@@ -16,6 +16,8 @@ private:
     std::unordered_set<std::string> headerSet;
     bool rewriteRequired;
     int newHeaderCount;
+    int writeInterval;
+    uint64_t lastTimestamp;
 
     void rewrite();
 public:

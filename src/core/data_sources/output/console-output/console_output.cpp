@@ -9,7 +9,7 @@ ConsoleOutputDataSource::ConsoleOutputDataSource(std::string id, const json& opt
 void ConsoleOutputDataSource::update() {
     if (!in.empty()) {
         for (auto& inValue : in) {
-            std::cout << fmt::format("{}={}\n",inValue->key, inValue->value);
+            std::cout << fmt::format("{}={}\n",inValue->key, inValue->toString());
         }
     }
 }

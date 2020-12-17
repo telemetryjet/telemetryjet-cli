@@ -28,6 +28,7 @@ endif()
 set(SOURCES
         src/main.cpp
         src/core/data_cache.cpp
+        src/core/data_point.cpp
         src/core/network.cpp
         src/utility/glob/glob.cpp
         src/utility/serial/serial_wrapper.cpp
@@ -48,6 +49,7 @@ set(SOURCES
         src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
         src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
+        src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
 )
 
 # Platform-specific sources
@@ -106,6 +108,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/output/key-value-file-output/key_value_file_output.h
         src/core/data_sources/input/key-value-file-input/key_value_file_input.h
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
+        src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
 )
 
 # Put version numbers into header

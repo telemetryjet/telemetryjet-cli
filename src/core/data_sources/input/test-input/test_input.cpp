@@ -28,7 +28,7 @@ void TestInputDataSource::open() {
 void TestInputDataSource::update() {
     if (isOpen && timer->check()) {
         uint64_t timestamp = getCurrentMillis();
-        float newValue = (float)(sin((double)timestamp * ((double)frequency)) * amplitude) + offset + ((rand() % 1000 ) / 100.0);
+        float64_t newValue = (sin(timestamp * frequency) * amplitude) + offset + ((rand() % 1000 ) / 100.0);
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.{}",id,key), newValue, timestamp));
     }
 }

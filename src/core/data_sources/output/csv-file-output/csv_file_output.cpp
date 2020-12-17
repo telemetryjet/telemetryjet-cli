@@ -10,7 +10,7 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const js
         if (!options["write_interval_ms"].is_number_integer()) {
             throw std::runtime_error(fmt::format("{} data source '{}' requires option 'write_interval_ms' of type Integer.", type, id));
         }
-        int writeInterval = options["write_interval_ms"];
+        writeInterval = options["write_interval_ms"];
         writeTimer = new SimpleTimer(writeInterval);
     } else {
         writeTimer = new SimpleTimer(0);
@@ -27,24 +27,35 @@ void CsvFileOutputDataSource::update() {
             newHeaderCount++;
             rewriteRequired = true;
         }
+        // Update last seen timestamp, which we will use when writing the row data if not in "write interval" mode
+        if (lastTimestamp < inDataPoint->timestamp) {
+            lastTimestamp = inDataPoint->timestamp;
+        }
     }
 
-    // TODO: If the timer value is 0, and we have new data, write a new row
-    bool hasNewData = in.size() > 0;
+    // If write interval has a number, do periodic writing
+    // If write interval is 0, write whenever a new data point comes in
+    bool shouldWriteRow;
+    uint64_t timestamp = getCurrentMillis();
+    if (writeInterval > 0) {
+        shouldWriteRow = writeTimer->check();
+    } else {
+        shouldWriteRow = in.size() > 0;
+        timestamp = lastTimestamp;
+    }
 
     // update file on interval
-    if (outputFile.is_open() && writeTimer->check()) {
+    if (outputFile.is_open() && shouldWriteRow) {
         if (rewriteRequired) {
             rewrite();
         }
 
-        uint64_t timestamp = getCurrentMillis();
 
         // write line
         std::string line;
         line.append(fmt::format("{}", timestamp));
         for (const auto& header : headers) {
-            line.append(fmt::format(",{}", cache->get(header)->value));
+            line.append(fmt::format(",{}", cache->get(header)->toString()));
         }
         outputFile << fmt::format("{}\n", line);
     }

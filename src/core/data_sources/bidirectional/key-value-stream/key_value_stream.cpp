@@ -18,9 +18,8 @@ void KeyValueStream::update() {
             if (inChar == '\n') {
                 try {
                     std::pair<std::string, std::string> keyPair = parseKeyValueBuffer(keyValueBuffer);
-                    float valueFloat = std::stof(keyPair.second);
                     uint64_t timestamp = getCurrentMillis();
-                    out.push_back(std::make_shared<DataPoint>(fmt::format("{}.{}",id,keyPair.first), valueFloat, timestamp));
+                    out.push_back(createDataPointFromString(fmt::format("{}.{}",id,keyPair.first), timestamp, keyPair.second));
                 } catch (std::exception &e) {
                 }
                 keyValueBuffer.clear();

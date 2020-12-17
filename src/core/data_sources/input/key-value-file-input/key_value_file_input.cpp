@@ -19,9 +19,8 @@ void KeyValueFileInputDataSource::update() {
             // Parse if we are at end of line or end of file
             try {
                 std::pair<std::string, std::string> keyPair = parseKeyValueBuffer(keyValueBuffer);
-                float valueFloat = std::stof(keyPair.second);
                 uint64_t timestamp = getCurrentMillis();
-                out.push_back(std::make_shared<DataPoint>(keyPair.first, valueFloat, timestamp));
+                out.push_back(createDataPointFromString(fmt::format("{}.{}",id,keyPair.first), timestamp, keyPair.second));
             } catch (std::exception &e) {
             }
             keyValueBuffer.clear();

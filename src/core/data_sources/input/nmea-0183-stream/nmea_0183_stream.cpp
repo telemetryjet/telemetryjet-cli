@@ -1,56 +1,25 @@
-#include "nmea_0183_file_input.h"
-#include "boost/date_time/posix_time/posix_time.hpp"
-#include "boost/date_time/gregorian/gregorian.hpp"
+#include "nmea_0183_stream.h"
 
-NMEA0183FileInputDataSource::NMEA0183FileInputDataSource(const std::string& id,
-                                                         const json& options)
-    : FileInputDataSource(id,"nmea-0183-file-input",options) {
+NMEA0183StreamDataSource::NMEA0183StreamDataSource(const std::string &id, const json &options)
+        : SerialStreamDataSource(id, "nmea-0183-stream", options) {
 }
-void NMEA0183FileInputDataSource::update() {
-    DataSource::update();
-    if (isOpen) {
-        char inChar;
-        bool fileOpen = true;
-        if (inputFile.get(inChar)) {
+
+void NMEA0183StreamDataSource::update() {
+    SerialStreamDataSource::update();
+
+    if (!serial->getBuffer().empty()) {
+        std::string tempLine;
+        for (auto& inChar : serial->getBuffer()) {
             parser.readByte(inChar);
-        } else {
-            fileOpen = false;
         }
-        if (!fileOpen) {
-            isDoneReading = true;
-        }
+        serial->clearBuffer();
     }
 }
-void NMEA0183FileInputDataSource::open() {
+
+void NMEA0183StreamDataSource::open() {
     gps = new nmea::GPSService(parser);
     gps->onUpdate += [&]() {
-        // Exit early if we don't have a GPS fix
-        if (gps->fix.status != 'A') {
-            return;
-        }
-        uint64_t tsHour = gps->fix.timestamp.hour;
-        uint64_t tsMin = gps->fix.timestamp.min;
-        float64_t tsSecFloat = gps->fix.timestamp.sec;
-        uint64_t tsSec = floor(tsSecFloat);
-        uint64_t tsMillis = (tsSecFloat - tsSec) * 1000.0;
-        uint64_t tsMonth = gps->fix.timestamp.month;
-        uint64_t tsDay = gps->fix.timestamp.day;
-        uint64_t tsYear = gps->fix.timestamp.year;
-
-        SM::getLogger()->info(fmt::format("tsHour = {}", tsHour));
-        SM::getLogger()->info(fmt::format("tsMin = {}", tsMin));
-        SM::getLogger()->info(fmt::format("tsSecFloat = {}", tsSecFloat));
-        SM::getLogger()->info(fmt::format("tsSec = {}", tsSec));
-        SM::getLogger()->info(fmt::format("tsMillis = {}", tsMillis));
-        SM::getLogger()->info(fmt::format("tsMonth = {}", tsMonth));
-        SM::getLogger()->info(fmt::format("tsDay = {}", tsDay));
-        SM::getLogger()->info(fmt::format("tsYear = {}", tsYear));
-
-        boost::posix_time::ptime pt(boost::gregorian::date(tsYear, tsMonth, tsDay), boost::posix_time::time_duration(tsHour, tsMin, tsSec, tsMillis));
-        uint64_t gpsTimestamp = (pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1))).total_milliseconds();
-
-        SM::getLogger()->info(fmt::format("{} -> {}", boost::posix_time::to_simple_string(pt), gpsTimestamp));
-
+        uint64_t gpsTimestamp = getCurrentMillis();
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.averageSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.averageSNR()));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.minSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.minSNR()));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.maxSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.maxSNR()));
@@ -74,10 +43,10 @@ void NMEA0183FileInputDataSource::open() {
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.hasEstimate", id), gpsTimestamp, (boolean_t)gps->fix.hasEstimate()));
     };
     parser.log = false;
-    FileInputDataSource::open();
+    SerialStreamDataSource::open();
 }
 
-void NMEA0183FileInputDataSource::close() {
+void NMEA0183StreamDataSource::close() {
     delete gps;
-    FileInputDataSource::close();
+    SerialStreamDataSource::close();
 }
