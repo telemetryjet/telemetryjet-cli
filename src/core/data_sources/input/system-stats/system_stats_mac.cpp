@@ -27,6 +27,7 @@ void SystemStatsDataSource::computeMemoryAvailable() {
         uint64_t mPhysicalMemoryUsed = used_memory;
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.available", id), timestamp, mPhysicalMemoryAvailable));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.used", id), timestamp, mPhysicalMemoryUsed));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.total", id), timestamp, mPhysicalMemoryAvailable + mPhysicalMemoryUsed));
     }
 }
 
