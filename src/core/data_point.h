@@ -10,12 +10,12 @@
 
 // Alias various types so we acn easily change their underlying type if needed
 typedef std::string string_t;
-typedef bool boolean_t;
+typedef bool bool_t;
 typedef float float32_t;
 typedef double float64_t;
 typedef boost::variant<
         string_t,
-        boolean_t,
+        bool_t,
         uint8_t,
         uint16_t,
         uint32_t,
@@ -52,7 +52,7 @@ public:
 
     DataPoint(string_t key, uint64_t timestamp):                  key(std::move(key)), timestamp(timestamp), type(DataPointType::EVENT) {}
     DataPoint(string_t key, uint64_t timestamp, string_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::STRING)  {}
-    DataPoint(string_t key, uint64_t timestamp, boolean_t value): key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::BOOLEAN) {}
+    DataPoint(string_t key, uint64_t timestamp, bool_t value):    key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::BOOLEAN) {}
     DataPoint(string_t key, uint64_t timestamp, uint8_t value):   key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT8)   {}
     DataPoint(string_t key, uint64_t timestamp, uint16_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT16)  {}
     DataPoint(string_t key, uint64_t timestamp, uint32_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT32)  {}
@@ -65,7 +65,7 @@ public:
     DataPoint(string_t key, uint64_t timestamp, float64_t value): key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::FLOAT64) {}
 
     inline string_t  getString()  { return boost::get<string_t>(value);  }
-    inline boolean_t getBoolean() { return boost::get<boolean_t>(value); }
+    inline bool_t    getBoolean() { return boost::get<bool_t>(value); }
     inline uint8_t   getUInt8()   { return boost::get<uint8_t>(value);   }
     inline uint16_t  getUInt16()  { return boost::get<uint16_t>(value);  }
     inline uint32_t  getUInt32()  { return boost::get<uint32_t>(value);  }

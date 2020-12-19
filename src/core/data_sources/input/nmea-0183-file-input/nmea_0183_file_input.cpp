@@ -57,10 +57,10 @@ void NMEA0183FileInputDataSource::open() {
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.travelAngle", id), gpsTimestamp, (float64_t)gps->fix.travelAngle));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.trackingSatellites", id), gpsTimestamp, (int32_t)gps->fix.trackingSatellites));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.visibleSatellites", id), gpsTimestamp, (int32_t)gps->fix.visibleSatellites));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.locked", id), gpsTimestamp, (boolean_t)gps->fix.locked()));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.locked", id), gpsTimestamp, (bool_t)gps->fix.locked()));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.horizontalAccuracy", id), gpsTimestamp, (float64_t)gps->fix.horizontalAccuracy()));
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.verticalAccuracy", id), gpsTimestamp, (float64_t)gps->fix.verticalAccuracy()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.hasEstimate", id), gpsTimestamp, (boolean_t)gps->fix.hasEstimate()));
+        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.hasEstimate", id), gpsTimestamp, (bool_t)gps->fix.hasEstimate()));
     };
     parser.log = false;
     FileInputDataSource::open();
