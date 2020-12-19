@@ -50,6 +50,7 @@ set(SOURCES
         src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
+        src/core/data_sources/input/system-stats/system_stats.cpp
 )
 
 # Platform-specific sources
@@ -57,13 +58,15 @@ if (WIN32)
     message(STATUS "Adding Windows-specific sources")
     set(SOURCES
             ${SOURCES}
+            src/core/data_sources/input/system-stats/system_stats_win32.cpp
     )
 else()
     if (APPLE)
         message(STATUS "Adding Mac-specific sources")
         set(SOURCES
                 ${SOURCES}
-                )
+                src/core/data_sources/input/system-stats/system_stats_mac.cpp
+        )
         set(CMAKE_THREAD_LIBS_INIT "-lpthread")
         set(CMAKE_HAVE_THREADS_LIBRARY 1)
         set(CMAKE_USE_WIN32_THREADS_INIT 0)
@@ -74,7 +77,8 @@ else()
             message(STATUS "Adding Linux-specific sources")
             set(SOURCES
                     ${SOURCES}
-                    )
+                    src/core/data_sources/input/system-stats/system_stats_linux.cpp
+            )
         else()
             message(FATAL_ERROR "Unknown platform!")
         endif()
@@ -109,6 +113,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/key-value-file-input/key_value_file_input.h
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
+        src/core/data_sources/input/system-stats/system_stats.h
 )
 
 # Put version numbers into header

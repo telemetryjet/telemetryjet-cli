@@ -6,6 +6,7 @@
 #include <core/data_sources/input/key-value-file-input/key_value_file_input.h>
 #include <core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h>
 #include <core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h>
+#include <core/data_sources/input/system-stats/system_stats.h>
 #include "network.h"
 
 Network::Network(const json& definitions) {
@@ -34,6 +35,8 @@ Network::Network(const json& definitions) {
             dataSources.push_back(std::make_shared<NMEA0183FileInputDataSource>(dataSourceDefinition["id"], optionsNode));
         } else if (type == "nmea-0183-stream") {
             dataSources.push_back(std::make_shared<NMEA0183StreamDataSource>(dataSourceDefinition["id"], optionsNode));
+        } else if (type == "system-stats") {
+            dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition["id"], optionsNode));
         } else {
             throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", id, type));
         }

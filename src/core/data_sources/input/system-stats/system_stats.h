@@ -3,19 +3,22 @@
 
 #include "core/data_source.h"
 #include "utility/timer/simple_timer.h"
-#include "system_usage_statistics.h"
 
 class SystemStatsDataSource : public DataSource {
 private:
     SimpleTimer* timer;
-    SystemUsageStatistics* stats;
+    void computeDiskAvailable();
+    void computeMemoryAvailable();
+    void computeCpuStats();
+    void computeGpuStats();
+    uint64_t cpuPreviousTotalTicks = 0;
+    uint64_t cpuPreviousIdleTicks = 0;
 public:
-    SystemStatsDataSource(std::string id);
+    explicit SystemStatsDataSource(std::string id, const json &options);
     ~SystemStatsDataSource() override;
     void open() override;
     void close() override;
     void update() override;
-    bool isOpen() override;
 };
 
 #endif
