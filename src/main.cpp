@@ -14,6 +14,7 @@
 #include <libserialport.h>
 #include <boost/algorithm/string.hpp>
 #include "utility/sdl/sdl.h"
+#include <SDL.h>
 
 using json = nlohmann::json;
 
@@ -276,7 +277,14 @@ int main(int argc, char** argv) {
         SM::getLogger()->info(fmt::format("Started streaming data for {} configuration files (Ctrl-C to stop)", configurationFilePaths.size()));
     }
     bool shouldRun = true;
+    SDL_Event event;
     while (shouldRun) {
+        while (shouldRun && SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT){
+                shouldRun = false;
+            }
+        }
+
         for (auto& network : networks) {
             network.update();
         }
