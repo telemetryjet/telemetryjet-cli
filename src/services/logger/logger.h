@@ -44,6 +44,7 @@ public:
     void alert(std::string message);
     void setLevel(LoggerLevel level);
     void setLevel(std::string level);
+    void clearScreen();
     LoggerLevel getLevel();
 };
 

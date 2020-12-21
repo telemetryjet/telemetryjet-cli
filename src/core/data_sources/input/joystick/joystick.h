@@ -3,10 +3,12 @@
 
 #include "core/data_source.h"
 #include <SDL.h>
+#include "utility/timer/simple_timer.h"
 
 class JoystickDataSource: public DataSource {
 private:
     SDL_Joystick* joy;
+    std::unique_ptr<SimpleTimer> pollTimer;
 public:
     JoystickDataSource(const std::string& id, const json &options);
     void open() override;
