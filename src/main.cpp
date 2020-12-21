@@ -13,7 +13,7 @@
 #include "core/network.h"
 #include <libserialport.h>
 #include <boost/algorithm/string.hpp>
-
+#include "utility/sdl/sdl.h"
 
 using json = nlohmann::json;
 
@@ -251,6 +251,10 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    std::cout << "TEST";
+
+    //SDLWrapper::init();
+
     std::vector<Network> networks;
     try {
         for (auto& jsonConfigFile : jsonConfigFiles) {
@@ -299,4 +303,6 @@ int main(int argc, char** argv) {
     for (auto& network : networks) {
         network.stop();
     }
+
+    //SDLWrapper::destroy();
 }

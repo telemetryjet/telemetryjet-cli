@@ -35,6 +35,7 @@ set(SOURCES
         src/utility/timer/simple_timer.cpp
         src/utility/messagepack/messagepack.cpp
         src/utility/key_value/key_value_utils.cpp
+        src/utility/sdl/sdl.cpp
         src/services/service_manager.cpp
         src/services/logger/logger.cpp
         src/services/config/config.cpp
@@ -51,6 +52,7 @@ set(SOURCES
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
         src/core/data_sources/input/system-stats/system_stats.cpp
+        src/core/data_sources/input/joystick/joystick.cpp
 )
 
 # Platform-specific sources
@@ -98,6 +100,7 @@ set(HEADERS_PRIVATE
         src/utility/time_utils.h
         src/utility/messagepack/messagepack.h
         src/utility/key_value/key_value_utils.h
+        src/utility/sdl/sdl.h
         src/services/service_manager.h
         src/services/config/config.h
         src/services/logger/logger.h
@@ -114,6 +117,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
         src/core/data_sources/input/system-stats/system_stats.h
+        src/core/data_sources/input/joystick/joystick.h
 )
 
 # Put version numbers into header
@@ -214,6 +218,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(NemaTode)
 
+FetchContent_Declare(
+        SDL2
+        GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
+        GIT_TAG release-2.0.12
+)
+FetchContent_MakeAvailable(SDL2)
+
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.7.3)
@@ -243,6 +254,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
 
