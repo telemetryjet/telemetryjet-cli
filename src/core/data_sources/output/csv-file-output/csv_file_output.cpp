@@ -11,7 +11,10 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const js
 
     if (options.contains("write_interval_ms")) {
         if (!options["write_interval_ms"].is_number_integer()) {
-            throw std::runtime_error(fmt::format("{} data source '{}' requires option 'write_interval_ms' of type Integer.", type, id));
+            throw std::runtime_error(fmt::format(
+                "{} data source '{}' requires option 'write_interval_ms' of type Integer.",
+                type,
+                id));
         }
         writeInterval = options["write_interval_ms"];
         writeTimer = new SimpleTimer(writeInterval);
@@ -53,12 +56,14 @@ void CsvFileOutputDataSource::update() {
             rewrite();
         }
 
-
         // write line
         std::string line;
         line.append(fmt::format("{}", timestamp));
         for (const auto& header : headers) {
-            line.append(fmt::format(",{}", cache->get(header)->toString()));
+            const auto dp = cache->get(header);
+            std::string val = dp->type == DataPointType::STRING ? sanitizeString(dp->toString())
+                                                                : dp->toString();
+            line.append(fmt::format(",{}", val));
         }
         outputFile << fmt::format("{}\n", line);
     }
@@ -78,7 +83,8 @@ void CsvFileOutputDataSource::rewrite() {
     tempFile.open(tempPath.string(), std::ios::trunc);
 
     if (!tempFile.is_open()) {
-        throw std::runtime_error(fmt::format("Failed to open temporary file {}.", tempPath.filename().string()));
+        throw std::runtime_error(
+            fmt::format("Failed to open temporary file {}.", tempPath.filename().string()));
     }
 
     // open input stream of current file
@@ -88,7 +94,7 @@ void CsvFileOutputDataSource::rewrite() {
     std::string headerLine;
     headerLine.append("timestamp");
     for (const auto& header : headers) {
-        headerLine.append(fmt::format(",{}", header));
+        headerLine.append(fmt::format(",{}", sanitizeString(header)));
     }
     tempFile << fmt::format("{}\n", headerLine);
 
@@ -99,7 +105,9 @@ void CsvFileOutputDataSource::rewrite() {
 
         std::regex newlines_re("\n+");
         while (getline(inputFile, line)) {
-            tempFile << fmt::format("{}{}\n",std::regex_replace(line, newlines_re, ""),std::string(newHeaderCount, ','));
+            tempFile << fmt::format("{}{}\n",
+                                    std::regex_replace(line, newlines_re, ""),
+                                    std::string(newHeaderCount, ','));
         }
         inputFile.close();
         tempFile.flush();
@@ -117,4 +125,14 @@ void CsvFileOutputDataSource::rewrite() {
 
     newHeaderCount = 0;
     rewriteRequired = false;
+}
+
+std::string CsvFileOutputDataSource::sanitizeString(const std::string& input) {
+    std::string sanitized;
+    std::regex newline_re("\n");
+    std::regex quotes_re("\"");
+
+    sanitized = std::regex_replace(input, newline_re, "\\n");
+    sanitized = std::regex_replace(sanitized, quotes_re, "\"\"");
+    return fmt::format("\"{}\"", sanitized);
 }

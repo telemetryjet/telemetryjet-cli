@@ -20,6 +20,7 @@ private:
     int newHeaderCount;
 
     void rewrite();
+    static std::string sanitizeString(const std::string& input);
 public:
     CsvFileOutputDataSource(const std::string& id, const json& options);
     void update() override;
