@@ -115,11 +115,11 @@ int main(int argc, char** argv) {
     app.set_config();
     SM::init();
 
-    bool versionFlag;
-    bool silentFlag;
-    bool dryRunFlag;
-    bool exitFlag;
-    bool listPortsVerboseFlag;
+    bool versionFlag = false;
+    bool silentFlag = false;
+    bool dryRunFlag = false;
+    bool exitFlag = false;
+    bool listPortsVerboseFlag = false;
     app.add_flag("-v,--version", versionFlag, "Display the version and exit");
     app.add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
 

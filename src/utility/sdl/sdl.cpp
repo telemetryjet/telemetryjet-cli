@@ -16,8 +16,9 @@ void SDLWrapper::init() {
         return;
     }
 
-    printf("%i joysticks were found.\n\n", SDL_NumJoysticks());
-    printf("The names of the joysticks are:\n");
+    SM::getLogger()->info(fmt::format("Input subsystem initialized."));
+
+    SM::getLogger()->info(fmt::format("Found {} joysticks.", SDL_NumJoysticks()));
 
     for(int i = 0; i < SDL_NumJoysticks(); i++) {
         SM::getLogger()->info(fmt::format("{}: {}", i, SDL_JoystickNameForIndex(i)));

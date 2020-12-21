@@ -220,8 +220,7 @@ FetchContent_MakeAvailable(NemaTode)
 
 FetchContent_Declare(
         SDL2
-        GIT_REPOSITORY https://github.com/SDL-mirror/SDL.git
-        GIT_TAG release-2.0.12
+        GIT_REPOSITORY https://github.com/chrisdalke/SDL.git
 )
 FetchContent_MakeAvailable(SDL2)
 

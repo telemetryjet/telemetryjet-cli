@@ -1,5 +1,9 @@
 #include "joystick.h"
 
+JoystickDataSource::JoystickDataSource(const std::string& id, const json &options)
+        : DataSource(id, "joystick") {
+}
+
 void JoystickDataSource::open() {
     DataSource::open();
 }

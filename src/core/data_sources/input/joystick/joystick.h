@@ -8,6 +8,7 @@ class JoystickDataSource: public DataSource {
 private:
     SDL_Joystick* joy;
 public:
+    JoystickDataSource(const std::string& id, const json &options);
     void open() override;
     void close() override;
     void update() override;
