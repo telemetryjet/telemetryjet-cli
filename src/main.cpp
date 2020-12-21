@@ -251,9 +251,7 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    std::cout << "TEST";
-
-    //SDLWrapper::init();
+    SDLWrapper::init();
 
     std::vector<Network> networks;
     try {
@@ -304,5 +302,5 @@ int main(int argc, char** argv) {
         network.stop();
     }
 
-    //SDLWrapper::destroy();
+    SDLWrapper::destroy();
 }

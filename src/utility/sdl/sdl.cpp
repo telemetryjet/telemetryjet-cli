@@ -1,6 +1,7 @@
 #include "sdl.h"
 #include <SDL.h>
 #include "services/service_manager.h"
+#include <fmt/format.h>
 
 bool SDLWrapper::initialized = false;
 
@@ -12,6 +13,14 @@ void SDLWrapper::init() {
         initialized = true;
     } else {
         SM::getLogger()->error("Failed to initialize input subsystem. Any joystick data sources will not function.");
+        return;
+    }
+
+    printf("%i joysticks were found.\n\n", SDL_NumJoysticks());
+    printf("The names of the joysticks are:\n");
+
+    for(int i = 0; i < SDL_NumJoysticks(); i++) {
+        SM::getLogger()->info(fmt::format("{}: {}", i, SDL_JoystickNameForIndex(i)));
     }
 }
 
