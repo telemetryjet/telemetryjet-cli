@@ -280,6 +280,7 @@ int main(int argc, char** argv) {
     SDL_Event event;
     while (shouldRun) {
         while (shouldRun && SDL_PollEvent(&event)) {
+            SM::getLogger()->info(fmt::format("Got event of type: {}", event.type));
             if (event.type == SDL_QUIT){
                 shouldRun = false;
             }
