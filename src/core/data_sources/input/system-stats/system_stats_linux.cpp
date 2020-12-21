@@ -19,8 +19,3 @@ void SystemStatsDataSource::computeCpuStats() {
     uint64_t timestamp = getCurrentMillis();
 
 }
-
-void SystemStatsDataSource::computeGpuStats() {
-    uint64_t timestamp = getCurrentMillis();
-
-}

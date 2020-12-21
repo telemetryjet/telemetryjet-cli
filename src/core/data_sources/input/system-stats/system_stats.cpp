@@ -20,7 +20,6 @@ void SystemStatsDataSource::update() {
         computeDiskAvailable();
         computeMemoryAvailable();
         computeCpuStats();
-        computeGpuStats();
     }
 }
 

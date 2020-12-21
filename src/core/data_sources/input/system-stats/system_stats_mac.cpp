@@ -51,7 +51,3 @@ void SystemStatsDataSource::computeCpuStats() {
         out.push_back(std::make_shared<DataPoint>(fmt::format("{}.cpu.idle", id), timestamp, (1.0 - cpuCurrentProportion) * 100.0));
     }
 }
-
-void SystemStatsDataSource::computeGpuStats() {
-    uint64_t timestamp = getCurrentMillis();
-}

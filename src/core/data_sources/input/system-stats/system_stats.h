@@ -10,9 +10,9 @@ private:
     void computeDiskAvailable();
     void computeMemoryAvailable();
     void computeCpuStats();
-    void computeGpuStats();
     uint64_t cpuPreviousTotalTicks = 0;
     uint64_t cpuPreviousIdleTicks = 0;
+    void* windowsMemInfo = nullptr;
 public:
     explicit SystemStatsDataSource(std::string id, const json &options);
     ~SystemStatsDataSource() override;
