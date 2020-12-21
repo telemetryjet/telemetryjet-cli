@@ -16,8 +16,6 @@ void SDLWrapper::init() {
         return;
     }
 
-    SM::getLogger()->info(fmt::format("Input subsystem initialized."));
-
     SM::getLogger()->info(fmt::format("Found {} joysticks.", SDL_NumJoysticks()));
 
     for(int i = 0; i < SDL_NumJoysticks(); i++) {

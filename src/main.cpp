@@ -279,13 +279,6 @@ int main(int argc, char** argv) {
     bool shouldRun = true;
     SDL_Event event;
     while (shouldRun) {
-        while (shouldRun && SDL_PollEvent(&event)) {
-            SM::getLogger()->info(fmt::format("Got event of type: {}", event.type));
-            if (event.type == SDL_QUIT){
-                shouldRun = false;
-            }
-        }
-
         for (auto& network : networks) {
             network.update();
         }
@@ -303,6 +296,13 @@ int main(int argc, char** argv) {
                 if (network.checkExitOnError()) {
                     shouldRun = false;
                 }
+            }
+        }
+
+        // Exit if we got a quit event from SDL
+        while (shouldRun && SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT){
+                shouldRun = false;
             }
         }
     }
