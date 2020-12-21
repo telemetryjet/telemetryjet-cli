@@ -1,5 +1,8 @@
 #include "csv_file_output.h"
+#include "utility/path_utils.h"
 #include <string>
+
+namespace fs = boost::filesystem;
 
 CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const json& options)
     : FileOutputDataSource(id, "csv-file-output", options) {
@@ -69,40 +72,48 @@ void CsvFileOutputDataSource::rewrite() {
     // close existing output file
     outputFile.close();
 
+    // create temporary output file
+    fs::path tempPath = fs::unique_path();
+    std::ofstream tempFile = std::ofstream();
+    tempFile.open(tempPath.string(), std::ios::trunc);
+
+    if (!tempFile.is_open()) {
+        throw std::runtime_error(fmt::format("Failed to open temporary file {}.", tempPath.filename().string()));
+    }
+
+    // open input stream of current file
     std::ifstream inputFile(filename);
 
-    // append commas for new headers to existing lines
-    std::string updatedData;
+    // write updated headers to file
+    std::string headerLine;
+    headerLine.append("timestamp");
+    for (const auto& header : headers) {
+        headerLine.append(fmt::format(",{}", header));
+    }
+    tempFile << fmt::format("{}\n", headerLine);
+
+    // write updated data to temporary file
     if (inputFile.is_open()) {
         std::string line;
         getline(inputFile, line);  // ignore headers
 
         std::regex newlines_re("\n+");
         while (getline(inputFile, line)) {
-            updatedData.append(fmt::format("{}{}\n",
-                                           std::regex_replace(line, newlines_re, ""),
-                                           std::string(newHeaderCount, ',')));
+            tempFile << fmt::format("{}{}\n",std::regex_replace(line, newlines_re, ""),std::string(newHeaderCount, ','));
         }
         inputFile.close();
+        tempFile.flush();
+        tempFile.close();
     } else {
         throw std::runtime_error(fmt::format("Cannot read file at {}", filename));
     }
 
-    // open output file in overwrite mode
-    // We want to overwrite the existing file no matter what mode we were originally in
-    // File modes should only apply between jet sessions
-    outputFile.open(filename, std::ios::trunc);
+    // replace output file with temporary file
+    fs::remove(filename);
+    fs::rename(tempPath, filename);
 
-    // write updated data to file
-    std::string headerLine;
-    headerLine.append("timestamp");
-    for (const auto& header : headers) {
-        headerLine.append(fmt::format(",{}", header));
-    }
-
-    // Overwrite file with header and all the old data
-    outputFile << fmt::format("{}\n{}", headerLine, updatedData);
-    outputFile.flush();
+    // reopen output file
+    outputFile.open(filename, std::ios::app);
 
     newHeaderCount = 0;
     rewriteRequired = false;
