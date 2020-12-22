@@ -23,6 +23,7 @@ private:
     static std::string sanitizeString(const std::string& input);
 public:
     CsvFileOutputDataSource(const std::string& id, const json& options);
+    void open() override;
     void update() override;
 };
 

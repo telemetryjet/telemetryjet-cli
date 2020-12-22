@@ -1,5 +1,6 @@
 #include "csv_file_output.h"
 #include "utility/path_utils.h"
+#include "utility/csv/csv_parser.h"
 #include <string>
 
 namespace fs = boost::filesystem;
@@ -20,6 +21,39 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const js
         writeTimer = new SimpleTimer(writeInterval);
     } else {
         writeTimer = new SimpleTimer(0);
+    }
+}
+
+void CsvFileOutputDataSource::open() {
+    FileOutputDataSource::open();
+    // if in append mode, read in the existing CSV headers
+    if (modeString == "append") {
+        std::ifstream file(filename);
+        if (file.is_open()) {
+            std::string line;
+            getline(file, line);
+            std::vector<std::string> parsedHeaders = parseCsvLine(line);
+
+            // TODO: remove this requirement after fixing logic in update method
+            if (parsedHeaders[0] != "timestamp")
+            {
+                std::string errorMsg = fmt::format("Parsing error in file {}. Expected first column of CSV file opened in append mode to be 'timestamp'.", filename);
+                SM::getLogger()->error(errorMsg);
+                throw std::runtime_error(errorMsg);
+            }
+
+            for (int i = 1; i < parsedHeaders.size(); i++)
+            {
+                const std::string& header = parsedHeaders[i];
+                headerSet.insert(header);
+                headers.push_back(header);
+            }
+
+            file.close();
+        } else {
+            throw std::runtime_error(fmt::format("Cannot read file at {}", filename));
+        }
+        rewriteRequired = false;
     }
 }
 
@@ -61,8 +95,11 @@ void CsvFileOutputDataSource::update() {
         line.append(fmt::format("{}", timestamp));
         for (const auto& header : headers) {
             const auto dp = cache->get(header);
-            std::string val = dp->type == DataPointType::STRING ? sanitizeString(dp->toString())
-                                                                : dp->toString();
+            std::string val;
+            if (dp != nullptr) {
+                val = dp->type == DataPointType::STRING ? sanitizeString(dp->toString())
+                                                        : dp->toString();
+            }
             line.append(fmt::format(",{}", val));
         }
         outputFile << fmt::format("{}\n", line);
@@ -92,7 +129,7 @@ void CsvFileOutputDataSource::rewrite() {
 
     // write updated headers to file
     std::string headerLine;
-    headerLine.append("timestamp");
+    headerLine.append(sanitizeString("timestamp"));
     for (const auto& header : headers) {
         headerLine.append(fmt::format(",{}", sanitizeString(header)));
     }
