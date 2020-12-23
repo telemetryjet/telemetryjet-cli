@@ -114,7 +114,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
         src/core/data_sources/input/system-stats/system_stats.h
-)
+        src/utility/csv/csv_parser.h src/utility/csv/csv_parser.cpp)
 
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)
