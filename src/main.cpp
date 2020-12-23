@@ -13,7 +13,8 @@
 #include "core/network.h"
 #include <libserialport.h>
 #include <boost/algorithm/string.hpp>
-
+#include "utility/sdl/sdl.h"
+#include <SDL.h>
 
 using json = nlohmann::json;
 
@@ -115,11 +116,11 @@ int main(int argc, char** argv) {
     app.set_config();
     SM::init();
 
-    bool versionFlag;
-    bool silentFlag;
-    bool dryRunFlag;
-    bool exitFlag;
-    bool listPortsVerboseFlag;
+    bool versionFlag = false;
+    bool silentFlag = false;
+    bool dryRunFlag = false;
+    bool exitFlag = false;
+    bool listPortsVerboseFlag = false;
     app.add_flag("-v,--version", versionFlag, "Display the version and exit");
     app.add_flag("-s,--silent", silentFlag, "Don't log any debug or error messages");
 
@@ -251,6 +252,8 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    SDLWrapper::init();
+
     std::vector<Network> networks;
     try {
         for (auto& jsonConfigFile : jsonConfigFiles) {
@@ -274,6 +277,7 @@ int main(int argc, char** argv) {
         SM::getLogger()->info(fmt::format("Started streaming data for {} configuration files (Ctrl-C to stop)", configurationFilePaths.size()));
     }
     bool shouldRun = true;
+    SDL_Event event;
     while (shouldRun) {
         for (auto& network : networks) {
             network.update();
@@ -294,9 +298,18 @@ int main(int argc, char** argv) {
                 }
             }
         }
+
+        // Exit if we got a quit event from SDL
+        while (shouldRun && SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT){
+                shouldRun = false;
+            }
+        }
     }
 
     for (auto& network : networks) {
         network.stop();
     }
+
+    SDLWrapper::destroy();
 }

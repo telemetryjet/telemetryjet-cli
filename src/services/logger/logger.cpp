@@ -1,5 +1,6 @@
 #include "logger.h"
 #include <fmt/format.h>
+#include <iostream>
 
 // ANSI color code from
 // https://gist.github.com/zyvitski/fb12f2ce6bc9d3b141f3bd4410a6f7cf
@@ -26,6 +27,11 @@ enum class ansi_color_code : int {
 void log(const std::string& message, const std::string& level) {
     //fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
     fmt::print(stderr, "{}\n", message);
+}
+
+void Logger::clearScreen() {
+    std::cout << "\033[2J\033[H";
+    std::cerr << "\033[2J\033[H";
 }
 
 void logColor(ansi_color_code colorCode, const std::string& message, const std::string& level) {
