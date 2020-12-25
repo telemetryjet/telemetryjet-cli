@@ -60,6 +60,7 @@ void NMEA0183FileInputDataSource::update() {
         fileOpen = false;
     }
     if (!fileOpen) {
+        SM::getLogger()->info(fmt::format("[{}] Finished reading from {}.", id, filename));
         state = INACTIVE;
     }
 }

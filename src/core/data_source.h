@@ -42,6 +42,7 @@ public:
     const std::string type;
     json options;
     std::mutex inMutex;
+    std::mutex initializationMutex;
     std::deque<std::shared_ptr<DataPoint>> _inQueue;
     std::deque<std::shared_ptr<DataPoint>> in;
     std::deque<std::shared_ptr<DataPoint>> out;

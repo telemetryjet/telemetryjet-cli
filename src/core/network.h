@@ -27,6 +27,7 @@ public:
     bool isDone();
     void propagateDataPoints(std::shared_ptr<DataSource> source);
     void checkDataSources();
+    void releaseDataSourceInitMutexes();
 };
 
 #endif

@@ -88,12 +88,16 @@ void Network::start() {
     for (auto& dataSource: dataSources) {
         try {
             dataSource->open();
+            dataSource->initializationMutex.lock();
             if (dataSource->state == UNINITIALIZED) {
                 throw std::runtime_error("Data source in uninitialized (invalid) state!");
             }
             dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
+                // Delay start of thread until all data sources have been initialized
+                dataSource->initializationMutex.lock();
                 SM::getLogger()->info(fmt::format("[{}] Started thread.", dataSource->id));
                 dataSourceThread(dataSource, _errMode);
+                dataSource->initializationMutex.unlock();
                 SM::getLogger()->info(fmt::format("[{}] Finished thread.", dataSource->id));
             }));
         } catch (std::runtime_error &e) {
@@ -103,6 +107,15 @@ void Network::start() {
         }
     }
 }
+
+
+void Network::releaseDataSourceInitMutexes() {
+    // Unlock all the data sources, releasing them to start handling data at the same time
+    for (auto& dataSource: dataSources) {
+        dataSource->initializationMutex.unlock();
+    }
+}
+
 
 void Network::stop() {
     // Set interrupt flag on the network.

@@ -289,6 +289,11 @@ int main(int argc, char** argv) {
         SM::getLogger()->info(fmt::format("Started streaming data for {} configuration files (Ctrl-C to stop)", configurationFilePaths.size()));
     }
 
+    // Release data source mutexes; starting data sources at one time after initialization is finished
+    for (auto& network : networks) {
+        network->releaseDataSourceInitMutexes();
+    }
+
     SDL_Event event;
     while (shouldRun) {
         // Wake up every 100ms to check for interrupt signals or other exit conditions
