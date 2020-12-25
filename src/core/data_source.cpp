@@ -1,6 +1,9 @@
 #include "data_source.h"
 #include "network.h"
 
+std::mutex DataSource::dependencyMutex;
+std::map<std::string, int> DataSource::dependencyMap;
+
 void DataSource::assertDependency(std::string key, std::string value, std::string errorMessage) {
     std::unique_lock<std::mutex> lock(dependencyMutex);
     std::string combinedKey = fmt::format("{}__{}", key, value);
@@ -39,5 +42,5 @@ void DataSource::flushDataPoints() {
 }
 
 std::shared_ptr<DataSource> DataSource::getptr() {
-    return std::shared_ptr<DataSource>(this);
+    return shared_from_this();
 }

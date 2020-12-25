@@ -2,6 +2,7 @@
 #define CONSOLE_LOGGER_H
 
 #include <string>
+#include <mutex>
 
 // log level strings
 #define LOG_LEVEL_HEADER "header"
@@ -25,6 +26,28 @@ enum class LoggerLevel : int {
     LEVEL_NONE = 7
 };
 
+// ANSI color code from
+// https://gist.github.com/zyvitski/fb12f2ce6bc9d3b141f3bd4410a6f7cf
+// https://en.wikipedia.org/wiki/ANSI_escape_code
+enum class ansi_color_code : int {
+    black = 30,
+    red = 31,
+    green = 32,
+    yellow = 33,
+    blue = 34,
+    magenta = 35,
+    cyan = 36,
+    white = 37,
+    bright_black = 90,
+    bright_red = 91,
+    bright_green = 92,
+    bright_yellow = 93,
+    bright_blue = 94,
+    bright_magenta = 95,
+    bright_cyan = 96,
+    bright_white = 97,
+};
+
 /**
  * Logger
  * A common interface for logging data to the console.
@@ -33,6 +56,11 @@ enum class LoggerLevel : int {
 class Logger {
 private:
     LoggerLevel level = LoggerLevel::LEVEL_HEADER;
+    void _logHeader(ansi_color_code colorCode, const std::string& message);
+    void _logColor(ansi_color_code colorCode, const std::string& message, const std::string& level);
+    void _log(const std::string& message, const std::string& level);
+    void _logRawLine(std::string line);
+    std::mutex logMutex;
 public:
     Logger();
     ~Logger();
@@ -45,6 +73,7 @@ public:
     void setLevel(LoggerLevel level);
     void setLevel(std::string level);
     void clearScreen();
+    void logRawLine(std::string message);
     LoggerLevel getLevel();
 };
 

@@ -12,6 +12,7 @@ SerialStreamDataSource::SerialStreamDataSource(const json &definition): DataSour
     }
     portName = options["port"];
     baudRate = options["baudrate"];
+    assertDependency("serialport", portName, fmt::format("Multiple data sources cannot share the same serial port: {}", portName));
 }
 
 void SerialStreamDataSource::open() {

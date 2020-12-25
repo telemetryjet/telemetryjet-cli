@@ -48,17 +48,6 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
 // Handles the complete lifecycle of a data source:
 // initialization, main loop, and cleanup.
 void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
-    try {
-        dataSource->open();
-        if (dataSource->state == UNINITIALIZED) {
-            throw std::runtime_error("Data source in uninitialized (invalid) state!");
-        }
-    } catch (std::runtime_error &e) {
-        dataSource->state = CLOSED;
-        dataSource->parent->error = true;
-        return;
-    }
-
     while (dataSource->state == ACTIVE || dataSource->state == ACTIVE_OUTPUT_ONLY) {
         try {
             boost::this_thread::interruption_point();
@@ -95,13 +84,23 @@ void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
 
 void Network::start() {
     bool _errMode = errorMode;
-    // Open a thread for each data source
+    // Initialize data source and open a thread to execute updates
     for (auto& dataSource: dataSources) {
-        dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
-            SM::getLogger()->info(fmt::format("[{}] Started thread.", dataSource->id));
-            dataSourceThread(dataSource, _errMode);
-            SM::getLogger()->info(fmt::format("[{}] Finished thread.", dataSource->id));
-        }));
+        try {
+            dataSource->open();
+            if (dataSource->state == UNINITIALIZED) {
+                throw std::runtime_error("Data source in uninitialized (invalid) state!");
+            }
+            dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
+                SM::getLogger()->info(fmt::format("[{}] Started thread.", dataSource->id));
+                dataSourceThread(dataSource, _errMode);
+                SM::getLogger()->info(fmt::format("[{}] Finished thread.", dataSource->id));
+            }));
+        } catch (std::runtime_error &e) {
+            dataSource->state = CLOSED;
+            dataSource->parent->error = true;
+            return;
+        }
     }
 }
 
@@ -137,8 +136,8 @@ bool Network::isDone() {
     // If all data sources are done, we can exit
     bool allDone = true;
     for (auto& dataSource: dataSources) {
-        if (dataSource->state != ACTIVE) {
-            allDone = true;
+        if (dataSource->state == ACTIVE) {
+            allDone = false;
         }
     }
     return allDone;
@@ -168,13 +167,16 @@ void Network::checkDataSources() {
 // The output queue is not guarded with a mutex
 void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
     if (!dataSourceOut->out.empty()) {
+        // Add prefix ID to all data points
+        for (auto& dataPoint : dataSourceOut->out) {
+            dataPoint->key = fmt::format("{}.{}", dataSourceOut->id, dataPoint->key);
+        }
+
         if (!interrupted) {
             for (auto& dataSourceIn : dataSources) {
                 if (dataSourceIn != dataSourceOut) {
                     for (auto& dataPoint : dataSourceOut->out) {
                         dataSourceIn->inMutex.lock();
-                        // Add prefix ID to all data points
-                        dataPoint->key = fmt::format("{}.{}", dataSourceOut->id, dataPoint->key);
                         dataSourceIn->_inQueue.push_back(dataPoint);
                         dataSourceIn->inMutex.unlock();
                     }

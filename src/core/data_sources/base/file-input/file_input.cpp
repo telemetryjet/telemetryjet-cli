@@ -11,6 +11,7 @@ FileInputDataSource::FileInputDataSource(const json &definition): DataSource(def
         throw std::runtime_error(fmt::format("{} data source '{}' requires option 'filename' of type String.", type, id));
     }
     filename = options["filename"];
+    assertDependency("file", filename, fmt::format("Multiple data sources cannot share the same input/output filename: {}", filename));
 }
 
 void FileInputDataSource::open() {

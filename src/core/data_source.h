@@ -32,8 +32,8 @@ typedef enum {
     CLOSED
 } DataSourceState;
 
-class DataSource: std::enable_shared_from_this<DataSource> {
-private:
+class DataSource: public std::enable_shared_from_this<DataSource> {
+protected:
     static std::mutex dependencyMutex;
     static std::map<std::string, int> dependencyMap;
 public:

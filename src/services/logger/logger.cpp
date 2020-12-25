@@ -2,39 +2,29 @@
 #include <fmt/format.h>
 #include <iostream>
 
-// ANSI color code from
-// https://gist.github.com/zyvitski/fb12f2ce6bc9d3b141f3bd4410a6f7cf
-// https://en.wikipedia.org/wiki/ANSI_escape_code
-enum class ansi_color_code : int {
-    black = 30,
-    red = 31,
-    green = 32,
-    yellow = 33,
-    blue = 34,
-    magenta = 35,
-    cyan = 36,
-    white = 37,
-    bright_black = 90,
-    bright_red = 91,
-    bright_green = 92,
-    bright_yellow = 93,
-    bright_blue = 94,
-    bright_magenta = 95,
-    bright_cyan = 96,
-    bright_white = 97,
-};
 
-void log(const std::string& message, const std::string& level) {
+void Logger::_logRawLine(std::string line) {
+    logMutex.lock();
+    std::cout << line;
+    logMutex.unlock();
+}
+
+void Logger::_log(const std::string& message, const std::string& level) {
+    logMutex.lock();
     //fmt::print("[{}] {}: {}\n", getTimestamp(), level, message);
     fmt::print(stderr, "{}\n", message);
+    logMutex.unlock();
 }
 
 void Logger::clearScreen() {
+    logMutex.lock();
     std::cout << "\033[2J\033[H";
     std::cerr << "\033[2J\033[H";
+    logMutex.unlock();
 }
 
-void logColor(ansi_color_code colorCode, const std::string& message, const std::string& level) {
+void Logger::_logColor(ansi_color_code colorCode, const std::string& message, const std::string& level) {
+    logMutex.lock();
     /*fmt::print("\033[1;{}m[{}] {}: {}\033[0m\n",
                static_cast<int>(colorCode),
                getTimestamp(),
@@ -45,45 +35,48 @@ void logColor(ansi_color_code colorCode, const std::string& message, const std::
                static_cast<int>(colorCode),
                message);
     fflush(stderr);
+    logMutex.unlock();
 }
-void logHeader(ansi_color_code colorCode, const std::string& message) {
+void Logger::_logHeader(ansi_color_code colorCode, const std::string& message) {
+    logMutex.lock();
     fmt::print("\033[1;{}m{}\033[0m\n", static_cast<int>(colorCode), message);
     fflush(stderr);
+    logMutex.unlock();
 }
 
 void Logger::header(std::string message) {
     if (level <= LoggerLevel::LEVEL_HEADER) {
-        logHeader(ansi_color_code::blue, message);
+        _logHeader(ansi_color_code::blue, message);
     }
 }
 
 void Logger::debug(std::string message) {
     if (level <= LoggerLevel::LEVEL_DEBUG) {
-        log(message, "DEBUG");
+        _log(message, "DEBUG");
     }
 }
 
 void Logger::info(std::string message) {
     if (level <= LoggerLevel::LEVEL_INFO) {
-        log(message, "INFO");
+        _log(message, "INFO");
     }
 }
 
 void Logger::warning(std::string message) {
     if (level <= LoggerLevel::LEVEL_WARNING) {
-        logColor(ansi_color_code::yellow, message, "WARNING");
+        _logColor(ansi_color_code::yellow, message, "WARNING");
     }
 }
 
 void Logger::error(std::string message) {
     if (level <= LoggerLevel::LEVEL_ERROR) {
-        logColor(ansi_color_code::red, message, "ERROR");
+        _logColor(ansi_color_code::red, message, "ERROR");
     }
 }
 
 void Logger::alert(std::string message) {
     if (level <= LoggerLevel::LEVEL_ALERT) {
-        logColor(ansi_color_code::green, message, "ALERT");
+        _logColor(ansi_color_code::green, message, "ALERT");
     }
 }
 

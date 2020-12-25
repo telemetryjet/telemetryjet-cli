@@ -31,12 +31,12 @@ void SimpleTimer::wait() {
     }
     uint64_t currentTime = getCurrentMillis();
     uint64_t delta       = (currentTime - m_lastTime);
-    if (delta >= m_interval) {
-        m_lastTime = currentTime;
-        return;
-    } else {
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(delta));
+    uint64_t timeRemaining = m_interval - delta;
+
+    if (timeRemaining > 0) {
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(timeRemaining));
     }
+    m_lastTime = getCurrentMillis();
 }
 
 void SimpleTimer::reset() {
