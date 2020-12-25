@@ -29,6 +29,7 @@ set(SOURCES
         src/main.cpp
         src/core/data_cache.cpp
         src/core/data_point.cpp
+        src/core/data_source.cpp
         src/core/network.cpp
         src/utility/glob/glob.cpp
         src/utility/serial/serial_wrapper.cpp
@@ -178,7 +179,7 @@ if(WIN32 AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
 endif()
 
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
-find_package(Boost COMPONENTS log log_setup system filesystem date_time REQUIRED)
+find_package(Boost COMPONENTS log log_setup system filesystem date_time thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 FetchContent_Declare(

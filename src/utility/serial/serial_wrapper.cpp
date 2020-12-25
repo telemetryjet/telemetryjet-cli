@@ -30,6 +30,22 @@ void SerialWrapper::poll() {
     }
 }
 
+void SerialWrapper::pollBlocking() {
+    if (serialPortOpen) {
+        // Add bytes to the buffer in chunks of 8
+        uint8_t nextBytes[8];
+        if (sp_input_waiting(serialPort) > 0) {
+            int num_bytes = sp_blocking_read_next(serialPort, nextBytes, 8, 1000);
+            if (num_bytes > 0) {
+                for (int i = 0; i < num_bytes; i++) {
+                    serialPortBuffer.push_back(nextBytes[i]);
+                    serialPortNumBytes++;
+                }
+            }
+        }
+    }
+}
+
 int SerialWrapper::getNumBytes() {
     return serialPortNumBytes;
 }

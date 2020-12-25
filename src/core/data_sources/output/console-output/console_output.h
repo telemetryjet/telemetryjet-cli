@@ -5,14 +5,9 @@
 
 class ConsoleOutputDataSource : public DataSource {
 public:
-    ConsoleOutputDataSource(std::string id, const json &options);
+    ConsoleOutputDataSource(const json &definition): DataSource(definition) {}
+    void open() override;
     void update() override;
-    bool checkDone() override {
-        return true;
-    }
-    bool checkExitOnError() override {
-        return false;
-    }
 };
 
 #endif

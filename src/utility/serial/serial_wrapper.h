@@ -26,6 +26,7 @@ public:
 
     // Core
     void poll();
+    void pollBlocking();
     void close();
     void open();
 

@@ -15,6 +15,7 @@
 #include <boost/algorithm/string.hpp>
 #include "utility/sdl/sdl.h"
 #include <SDL.h>
+#include <boost/thread.hpp>
 
 using json = nlohmann::json;
 
@@ -197,6 +198,7 @@ int main(int argc, char** argv) {
     }
 
     std::vector<json> jsonConfigFiles;
+    std::vector<std::string> jsonFilenames;
     bool errorFlag = false;
     for (auto& configFilename : configurationFilePaths) {
         boost::filesystem::path filePath(configFilename);
@@ -222,7 +224,7 @@ int main(int argc, char** argv) {
                     throw std::runtime_error(fmt::format("Error in data source '{}': 'type' field must be of type String.", item["id"].get<std::string>()));
                 }
             }
-
+            jsonFilenames.push_back(filePath.filename().string());
             jsonConfigFiles.push_back(jsonConfigItem);
         } catch (json::exception &e) {
             SM::getLogger()->error(fmt::format("Failed to parse JSON in configuration file '{}':", filePath.filename().string()));
@@ -246,19 +248,10 @@ int main(int argc, char** argv) {
         SM::getLogger()->info(fmt::format("Loaded {} configuration files.", configurationFilePaths.size()));
     }
 
-    if (dryRunFlag) {
-        SM::getLogger()->info("Configuration files passed validation.");
-        SM::destroy();
-        return 0;
-    }
-
-    SDLWrapper::init();
-
-    std::vector<Network> networks;
+    std::vector<std::shared_ptr<Network>> networks;
     try {
         for (auto& jsonConfigFile : jsonConfigFiles) {
-            Network newNetwork(jsonConfigFile);
-            networks.push_back(newNetwork);
+            networks.push_back(std::make_shared<Network>(jsonConfigFile, exitFlag));
         }
     } catch (std::exception &e) {
         SM::getLogger()->error("Failed to initialize network:");
@@ -267,8 +260,27 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    if (dryRunFlag) {
+        SM::getLogger()->info("Configuration files passed validation.");
+        SM::destroy();
+        return 0;
+    }
+
+    bool shouldRun = true;
+    SDLWrapper::init();
+    int i = 0;
     for (auto& network : networks) {
-        network.start();
+        try {
+            network->start();
+            if (!network->isInitialized()) {
+                throw std::runtime_error("Network in uninitialized (invalid) state!");
+            }
+        } catch (std::runtime_error& e) {
+            SM::getLogger()->error(e.what());
+            SM::getLogger()->error(fmt::format("Failed to start network {}, exiting...", jsonFilenames.at(i)));
+            return 0;
+        }
+        i++;
     }
 
     if (configurationFilePaths.size() == 1) {
@@ -276,26 +288,29 @@ int main(int argc, char** argv) {
     } else {
         SM::getLogger()->info(fmt::format("Started streaming data for {} configuration files (Ctrl-C to stop)", configurationFilePaths.size()));
     }
-    bool shouldRun = true;
+
     SDL_Event event;
     while (shouldRun) {
-        for (auto& network : networks) {
-            network.update();
-        }
+        // Wake up every 100ms to check for interrupt signals or other exit conditions
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
 
+        // Check if all of the networks are done processing all data sources
         shouldRun = false;
         // Exit if all of the networks are done processing
         for (auto& network : networks) {
-            if (!network.checkDone()) {
+            if (!network->isDone()) {
                 shouldRun = true;
             }
         }
-        // Exit if any of the networks has an error and we are in --exit mode
-        if (exitFlag) {
-            for (auto& network : networks) {
-                if (network.checkExitOnError()) {
-                    shouldRun = false;
-                }
+
+        for (auto& network : networks) {
+            network->checkDataSources();
+        }
+
+        // Check if any of the networks was flagged with an error condition
+        for (auto& network : networks) {
+            if (network->error) {
+                shouldRun = false;
             }
         }
 
@@ -307,8 +322,9 @@ int main(int argc, char** argv) {
         }
     }
 
+    // Wait for all the threads to rejoin/clean up their individual resources
     for (auto& network : networks) {
-        network.stop();
+        network->stop();
     }
 
     SDLWrapper::destroy();

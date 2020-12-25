@@ -6,7 +6,7 @@
 
 class SystemStatsDataSource : public DataSource {
 private:
-    SimpleTimer* timer;
+    std::shared_ptr<SimpleTimer> timer;
     void computeDiskAvailable();
     void computeMemoryAvailable();
     void computeCpuStats();
@@ -14,8 +14,7 @@ private:
     uint64_t cpuPreviousIdleTicks = 0;
     void* windowsMemInfo = nullptr;
 public:
-    explicit SystemStatsDataSource(std::string id, const json &options);
-    ~SystemStatsDataSource() override;
+    SystemStatsDataSource(const json &definition): DataSource(definition) {}
     void open() override;
     void close() override;
     void update() override;

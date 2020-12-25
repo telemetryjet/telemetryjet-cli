@@ -1,26 +1,6 @@
 #include "nmea_0183_file_input.h"
 #include "boost/date_time/posix_time/posix_time.hpp"
-#include "boost/date_time/gregorian/gregorian.hpp"
 
-NMEA0183FileInputDataSource::NMEA0183FileInputDataSource(const std::string& id,
-                                                         const json& options)
-    : FileInputDataSource(id,"nmea-0183-file-input",options) {
-}
-void NMEA0183FileInputDataSource::update() {
-    DataSource::update();
-    if (isOpen) {
-        char inChar;
-        bool fileOpen = true;
-        if (inputFile.get(inChar)) {
-            parser.readByte(inChar);
-        } else {
-            fileOpen = false;
-        }
-        if (!fileOpen) {
-            isDoneReading = true;
-        }
-    }
-}
 void NMEA0183FileInputDataSource::open() {
     gps = new nmea::GPSService(parser);
     gps->onUpdate += [&]() {
@@ -40,27 +20,27 @@ void NMEA0183FileInputDataSource::open() {
         boost::posix_time::ptime pt(boost::gregorian::date(tsYear, tsMonth, tsDay), boost::posix_time::time_duration(tsHour, tsMin, tsSec, tsMillis));
         uint64_t gpsTimestamp = (pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1))).total_milliseconds();
 
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.averageSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.averageSNR()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.minSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.minSNR()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.maxSNR", id), gpsTimestamp, (float64_t)gps->fix.almanac.maxSNR()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.almanac.percentComplete", id), gpsTimestamp, (float64_t)gps->fix.almanac.percentComplete()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.status", id), gpsTimestamp, fmt::format("{}",gps->fix.status)));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.type", id), gpsTimestamp, (uint8_t)gps->fix.type));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.quality", id), gpsTimestamp, (uint8_t)gps->fix.quality));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.dilution", id), gpsTimestamp, (float64_t)gps->fix.dilution));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.horizontalDilution", id), gpsTimestamp, (float64_t)gps->fix.horizontalDilution));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.verticalDilution", id), gpsTimestamp, (float64_t)gps->fix.verticalDilution));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.altitude", id), gpsTimestamp, (float64_t)gps->fix.altitude));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.latitude", id), gpsTimestamp, (float64_t)gps->fix.latitude));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.longitude", id), gpsTimestamp, (float64_t)gps->fix.longitude));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.speed", id), gpsTimestamp, (float64_t)gps->fix.speed));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.travelAngle", id), gpsTimestamp, (float64_t)gps->fix.travelAngle));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.trackingSatellites", id), gpsTimestamp, (int32_t)gps->fix.trackingSatellites));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.visibleSatellites", id), gpsTimestamp, (int32_t)gps->fix.visibleSatellites));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.locked", id), gpsTimestamp, (bool_t)gps->fix.locked()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.horizontalAccuracy", id), gpsTimestamp, (float64_t)gps->fix.horizontalAccuracy()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.verticalAccuracy", id), gpsTimestamp, (float64_t)gps->fix.verticalAccuracy()));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.hasEstimate", id), gpsTimestamp, (bool_t)gps->fix.hasEstimate()));
+        write(std::make_shared<DataPoint>("almanac.averageSNR", gpsTimestamp, (float64_t)gps->fix.almanac.averageSNR()));
+        write(std::make_shared<DataPoint>("almanac.minSNR", gpsTimestamp, (float64_t)gps->fix.almanac.minSNR()));
+        write(std::make_shared<DataPoint>("almanac.maxSNR", gpsTimestamp, (float64_t)gps->fix.almanac.maxSNR()));
+        write(std::make_shared<DataPoint>("almanac.percentComplete", gpsTimestamp, (float64_t)gps->fix.almanac.percentComplete()));
+        write(std::make_shared<DataPoint>("status", gpsTimestamp, fmt::format("{}",gps->fix.status)));
+        write(std::make_shared<DataPoint>("type", gpsTimestamp, (uint8_t)gps->fix.type));
+        write(std::make_shared<DataPoint>("quality", gpsTimestamp, (uint8_t)gps->fix.quality));
+        write(std::make_shared<DataPoint>("dilution", gpsTimestamp, (float64_t)gps->fix.dilution));
+        write(std::make_shared<DataPoint>("horizontalDilution", gpsTimestamp, (float64_t)gps->fix.horizontalDilution));
+        write(std::make_shared<DataPoint>("verticalDilution", gpsTimestamp, (float64_t)gps->fix.verticalDilution));
+        write(std::make_shared<DataPoint>("altitude", gpsTimestamp, (float64_t)gps->fix.altitude));
+        write(std::make_shared<DataPoint>("latitude", gpsTimestamp, (float64_t)gps->fix.latitude));
+        write(std::make_shared<DataPoint>("longitude", gpsTimestamp, (float64_t)gps->fix.longitude));
+        write(std::make_shared<DataPoint>("speed", gpsTimestamp, (float64_t)gps->fix.speed));
+        write(std::make_shared<DataPoint>("travelAngle", gpsTimestamp, (float64_t)gps->fix.travelAngle));
+        write(std::make_shared<DataPoint>("trackingSatellites", gpsTimestamp, (int32_t)gps->fix.trackingSatellites));
+        write(std::make_shared<DataPoint>("visibleSatellites", gpsTimestamp, (int32_t)gps->fix.visibleSatellites));
+        write(std::make_shared<DataPoint>("locked", gpsTimestamp, (bool_t)gps->fix.locked()));
+        write(std::make_shared<DataPoint>("horizontalAccuracy", gpsTimestamp, (float64_t)gps->fix.horizontalAccuracy()));
+        write(std::make_shared<DataPoint>("verticalAccuracy", gpsTimestamp, (float64_t)gps->fix.verticalAccuracy()));
+        write(std::make_shared<DataPoint>("hasEstimate", gpsTimestamp, (bool_t)gps->fix.hasEstimate()));
     };
     parser.log = false;
     FileInputDataSource::open();
@@ -69,4 +49,17 @@ void NMEA0183FileInputDataSource::open() {
 void NMEA0183FileInputDataSource::close() {
     delete gps;
     FileInputDataSource::close();
+}
+
+void NMEA0183FileInputDataSource::update() {
+    char inChar;
+    bool fileOpen = true;
+    if (inputFile.get(inChar)) {
+        parser.readByte(inChar);
+    } else {
+        fileOpen = false;
+    }
+    if (!fileOpen) {
+        state = INACTIVE;
+    }
 }

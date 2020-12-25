@@ -4,3 +4,4 @@ xcode
 .idea
 cmake-build-debug
 .vs/
+doxygen/

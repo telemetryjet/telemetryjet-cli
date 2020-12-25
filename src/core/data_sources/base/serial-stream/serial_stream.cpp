@@ -1,7 +1,6 @@
 #include "serial_stream.h"
 
-SerialStreamDataSource::SerialStreamDataSource(const std::string &id, const std::string &type, const json &options)
-    : DataSource(id, type) {
+SerialStreamDataSource::SerialStreamDataSource(const json &definition): DataSource(definition) {
     if (options.is_null()) {
         throw std::runtime_error(fmt::format("{} data source '{}' requires an options object.", type, id));
     }
@@ -22,33 +21,24 @@ void SerialStreamDataSource::open() {
 }
 
 void SerialStreamDataSource::close() {
-    if (isOpen) {
-        if (serial->isOpen()) {
-            serial->close();
-        }
-
-        reconnectTimer.reset();
-        DataSource::close();
+    if (serial->isOpen()) {
+        serial->close();
     }
+
+    reconnectTimer.reset();
+    DataSource::close();
 }
 
 void SerialStreamDataSource::update() {
-    if (isOpen) {
-        if (serial->isOpen()) {
-            serial->poll();
-        }
-
-        if (reconnectTimer->check() && !serial->isOpen()) {
-            // Periodically try to open serial port
-            serial->open();
-        }
+    if (serial->isOpen()) {
+        error = false;
+        serial->pollBlocking();
     }
-}
 
-bool SerialStreamDataSource::checkDone() {
-    return false;
-}
-
-bool SerialStreamDataSource::checkExitOnError() {
-    return !isOpen || !serial->isOpen();
+    if (reconnectTimer->check() && !serial->isOpen()) {
+        // Periodically try to open serial port
+        serial->open();
+        // Set error flag if we are unable to connect
+        error = !serial->isOpen();
+    }
 }

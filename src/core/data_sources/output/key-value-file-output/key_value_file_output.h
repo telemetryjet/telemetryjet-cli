@@ -10,11 +10,10 @@
 
 class KeyValueFileOutputDataSource : public FileOutputDataSource {
 private:
-    std::basic_regex<char> equalsEscapeRegex;
+    std::basic_regex<char> equalsEscapeRegex = std::basic_regex("=");
     uint64_t lastTimestamp;
-
 public:
-    KeyValueFileOutputDataSource(const std::string& id, const json& options);
+    KeyValueFileOutputDataSource(const json &definition): FileOutputDataSource(definition) {}
     void update() override;
 };
 

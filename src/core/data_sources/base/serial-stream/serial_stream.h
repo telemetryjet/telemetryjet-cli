@@ -12,12 +12,10 @@ protected:
     std::unique_ptr<SerialWrapper> serial;
     std::unique_ptr<SimpleTimer> reconnectTimer;
 public:
-    SerialStreamDataSource(const std::string &id, const std::string &type, const json &options);
+    SerialStreamDataSource(const json &definition);
     void open() override;
     void close() override;
     void update() override;
-    bool checkDone() override;
-    bool checkExitOnError() override;
 };
 
 #endif

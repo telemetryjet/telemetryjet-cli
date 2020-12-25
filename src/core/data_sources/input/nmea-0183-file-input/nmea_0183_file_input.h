@@ -8,10 +8,8 @@ class NMEA0183FileInputDataSource : public FileInputDataSource {
 private:
     nmea::NMEAParser parser;
     nmea::GPSService* gps;
-    void createDataPoint(std::string key, float value, uint64_t timestamp);
 public:
-    NMEA0183FileInputDataSource(const std::string& id,
-                                const json& options);
+    NMEA0183FileInputDataSource(const json &definition): FileInputDataSource(definition) {}
     void open() override;
     void close() override;
     void update() override;

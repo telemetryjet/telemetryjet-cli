@@ -22,7 +22,7 @@ private:
     void rewrite();
     static std::string sanitizeString(const std::string& input);
 public:
-    CsvFileOutputDataSource(const std::string& id, const json& options);
+    CsvFileOutputDataSource(const json& definition);
     void open() override;
     void update() override;
 };

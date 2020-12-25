@@ -1,19 +1,14 @@
 #include "joystick.h"
 
-JoystickDataSource::JoystickDataSource(const std::string& id, const json &options)
-        : DataSource(id, "joystick") {
-}
-
 void JoystickDataSource::open() {
     if (SDL_NumJoysticks() <= 0) {
-        SM::getLogger()->error(fmt::format("{}: No joysticks were found!", id));
-        return;
+        throw std::runtime_error(fmt::format("{}: No joysticks were found!", id));
     }
 
     joy = SDL_JoystickOpen(0);
 
     if (!joy) {
-        SM::getLogger()->error(fmt::format("{}: Failed to open joystick!", id));
+        throw std::runtime_error(fmt::format("{}: Failed to open joystick!", id));
         return;
     }
 
@@ -24,42 +19,35 @@ void JoystickDataSource::open() {
 }
 
 void JoystickDataSource::close() {
-    if (isOpen) {
-        SDL_JoystickClose(joy);
-        pollTimer->reset();
-        DataSource::close();
-    }
+    SDL_JoystickClose(joy);
+    pollTimer.reset();
+    DataSource::close();
 }
 
 void JoystickDataSource::update() {
-    if (!isOpen) {
-        return;
+    pollTimer->wait();
+
+    if (SDL_JoystickGetAttached(joy) == SDL_FALSE) {
+        throw std::runtime_error(fmt::format("{}: joystick is no longer attached!", id));
     }
 
+    uint64_t timestamp = getCurrentMillis();
+    int numAxes = SDL_JoystickNumAxes(joy);
+    for (int axisId = 0; axisId < numAxes; axisId++) {
+        int16_t axisPositionInt = SDL_JoystickGetAxis(joy, axisId);
+        float64_t axisPositionNormalized = axisPositionInt / 32767.0;
+        if (axisPositionNormalized < -1.0) {
+            axisPositionNormalized = -1.0;
+        }
+        if (axisPositionNormalized > 1.0) {
+            axisPositionNormalized = 1.0;
+        }
+        write(std::make_shared<DataPoint>(fmt::format("axis_{}", axisId), timestamp, axisPositionNormalized));
+    }
 
-    if (pollTimer->check()) {
-        if (SDL_JoystickGetAttached(joy) == SDL_FALSE) {
-            close();
-            return;
-        }
-        uint64_t timestamp = getCurrentMillis();
-        int numAxes = SDL_JoystickNumAxes(joy);
-        for (int axisId = 0; axisId < numAxes; axisId++) {
-            int16_t axisPositionInt = SDL_JoystickGetAxis(joy, axisId);
-            float64_t axisPositionNormalized = axisPositionInt / 32767.0;
-            if (axisPositionNormalized < -1.0) {
-                axisPositionNormalized = -1.0;
-            }
-            if (axisPositionNormalized > 1.0) {
-                axisPositionNormalized = 1.0;
-            }
-            out.push_back(std::make_shared<DataPoint>(fmt::format("{}.axis_{}",id, axisId), timestamp, axisPositionNormalized));
-        }
-
-        int numButtons = SDL_JoystickNumButtons(joy);
-        for (int buttonId = 0; buttonId < numButtons; buttonId++) {
-            bool_t buttonPosition = SDL_JoystickGetButton(joy, buttonId) == 1;
-            out.push_back(std::make_shared<DataPoint>(fmt::format("{}.button_{}",id, buttonId), timestamp, buttonPosition));
-        }
+    int numButtons = SDL_JoystickNumButtons(joy);
+    for (int buttonId = 0; buttonId < numButtons; buttonId++) {
+        bool_t buttonPosition = SDL_JoystickGetButton(joy, buttonId) == 1;
+        write(std::make_shared<DataPoint>(fmt::format("button_{}", buttonId), timestamp, buttonPosition));
     }
 }

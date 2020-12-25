@@ -1,6 +1,7 @@
 #include "test_input.h"
+#include <random>
 
-TestInputDataSource::TestInputDataSource(std::string id, const json& options) : DataSource(id, "test-input") {
+TestInputDataSource::TestInputDataSource(const json& definition): DataSource(definition) {
     if (options.is_object()) {
         if (options.contains("frequency") && options["frequency"].is_number()) {
             frequency = options["frequency"];
@@ -26,16 +27,14 @@ void TestInputDataSource::open() {
 }
 
 void TestInputDataSource::update() {
-    if (isOpen && timer->check()) {
-        uint64_t timestamp = getCurrentMillis();
-        float64_t newValue = (sin((float64_t)timestamp * (float64_t)frequency) * amplitude) + offset + ((rand() % 1000 ) / 100.0);
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.{}",id,key), timestamp, newValue));
-    }
+    timer->wait();
+
+    uint64_t timestamp = getCurrentMillis();
+    float64_t newValue = (sin((float64_t)timestamp * (float64_t)frequency) * amplitude) + offset + ((std::rand() % 1000 ) / 100.0);
+    write(std::make_shared<DataPoint>(key, timestamp, newValue));
 }
 
 void TestInputDataSource::close() {
-    if (isOpen) {
-        timer.reset();
-        DataSource::close();
-    }
+    timer.reset();
+    DataSource::close();
 }

@@ -9,8 +9,7 @@ class KeyValueFileInputDataSource : public FileInputDataSource {
 private:
     std::list<uint8_t> keyValueBuffer;
 public:
-    KeyValueFileInputDataSource(const std::string& id,
-                                const json& options);
+    KeyValueFileInputDataSource(const json &definition): FileInputDataSource(definition) {}
     void update() override;
 };
 

@@ -14,14 +14,11 @@ protected:
     std::string filename;
     std::ios::openmode mode;
     std::string modeString;
-    bool generateNewFile;
     std::unique_ptr<SimpleTimer> flushTimer;
 public:
-    FileOutputDataSource(const std::string& id, const std::string& type, const json &options);
+    FileOutputDataSource(const json &definition);
     void open() override;
     void close() override;
-    bool checkDone() override;
-    bool checkExitOnError() override;
 };
 
 #endif

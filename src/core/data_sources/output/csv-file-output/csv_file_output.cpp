@@ -5,8 +5,7 @@
 
 namespace fs = boost::filesystem;
 
-CsvFileOutputDataSource::CsvFileOutputDataSource(const std::string& id, const json& options)
-    : FileOutputDataSource(id, "csv-file-output", options) {
+CsvFileOutputDataSource::CsvFileOutputDataSource(const json& definition): FileOutputDataSource(definition) {
     cache = new DataPointCache();
     rewriteRequired = true;
 

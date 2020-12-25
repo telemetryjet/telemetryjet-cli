@@ -10,7 +10,7 @@ private:
     nmea::NMEAParser parser;
     nmea::GPSService* gps;
 public:
-    NMEA0183StreamDataSource(const std::string& id, const json &options);
+    NMEA0183StreamDataSource(const json &definition): SerialStreamDataSource(definition) {}
     void open() override;
     void close() override;
     void update() override;

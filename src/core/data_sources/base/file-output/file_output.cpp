@@ -1,11 +1,9 @@
 #include "file_output.h"
 #include "utility/path_utils.h"
-#include "boost/filesystem.hpp"
 
 namespace fs = boost::filesystem;
 
-FileOutputDataSource::FileOutputDataSource(const std::string& id, const std::string& type, const json &options)
-    : DataSource(id, type) {
+FileOutputDataSource::FileOutputDataSource(const json &definition): DataSource(definition) {
     if (options.is_null()) {
         throw std::runtime_error(fmt::format("{} data source '{}' requires an options object.", type, id));
     }
@@ -23,7 +21,6 @@ FileOutputDataSource::FileOutputDataSource(const std::string& id, const std::str
         mode = std::ios::app;
     } else if (modeString == "new") {
         mode = std::ios::app;
-        generateNewFile = true;
     } else {
         throw std::runtime_error(fmt::format("{} data source '{}' has invalid value for 'mode': {}.", type, id, modeString));
     }
@@ -54,22 +51,13 @@ void FileOutputDataSource::open() {
     }
     flushTimer = std::make_unique<SimpleTimer>(1000);
     DataSource::open();
+    state = ACTIVE_OUTPUT_ONLY;
 }
 
 void FileOutputDataSource::close() {
-    if (isOpen) {
-        if (outputFile.is_open()){
-            outputFile.close();
-        }
-        flushTimer.reset();
-        DataSource::close();
+    if (outputFile.is_open()){
+        outputFile.close();
     }
-}
-
-bool FileOutputDataSource::checkDone() {
-    return true;
-}
-
-bool FileOutputDataSource::checkExitOnError() {
-    return !isOpen;
+    flushTimer.reset();
+    DataSource::close();
 }

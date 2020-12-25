@@ -2,10 +2,6 @@
 
 #include <utility>
 
-ConsoleOutputDataSource::ConsoleOutputDataSource(std::string id, const json& options)
-    : DataSource(std::move(id), "console-output") {
-}
-
 void ConsoleOutputDataSource::update() {
     if (!in.empty()) {
         std::string out;
@@ -14,4 +10,9 @@ void ConsoleOutputDataSource::update() {
         }
         std::cout << out;
     }
+}
+
+void ConsoleOutputDataSource::open() {
+    DataSource::open();
+    state = ACTIVE_OUTPUT_ONLY;
 }

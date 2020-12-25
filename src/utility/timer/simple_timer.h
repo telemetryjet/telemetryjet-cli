@@ -10,8 +10,9 @@ using namespace std::chrono;
 
 class SimpleTimer {
 public:
-    SimpleTimer(uint64_t interval);
+    explicit SimpleTimer(uint64_t interval);
     bool check();
+    void wait();
     void reset();
 
 private:

@@ -13,16 +13,10 @@ private:
     uint64_t interval = 10;
     std::unique_ptr<SimpleTimer> timer;
 public:
-    TestInputDataSource(std::string id, const json &options);
+    TestInputDataSource(const json& definition);
     void open() override;
     void close() override;
     void update() override;
-    bool checkDone() override {
-        return false;
-    }
-    bool checkExitOnError() override {
-        return false;
-    }
 };
 
 #endif

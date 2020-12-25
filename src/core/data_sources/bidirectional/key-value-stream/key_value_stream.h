@@ -12,7 +12,7 @@ class KeyValueStream: public SerialStreamDataSource {
 private:
     std::list<uint8_t> keyValueBuffer;
 public:
-    KeyValueStream(const std::string& id, const json &options);
+    KeyValueStream(const json &definition): SerialStreamDataSource(definition) {}
     void update() override;
 };
 

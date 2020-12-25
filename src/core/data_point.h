@@ -45,7 +45,7 @@ enum class DataPointType : int {
 
 class DataPoint {
 public:
-    const string_t key;
+    string_t key;
     const uint64_t timestamp;
     const data_type_union_t value;
     const DataPointType type;

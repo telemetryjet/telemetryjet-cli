@@ -10,16 +10,10 @@ private:
     SDL_Joystick* joy;
     std::unique_ptr<SimpleTimer> pollTimer;
 public:
-    JoystickDataSource(const std::string& id, const json &options);
+    JoystickDataSource(const json &definition): DataSource(definition) {}
     void open() override;
     void close() override;
     void update() override;
-    bool checkDone() override {
-        return false;
-    }
-    bool checkExitOnError() override {
-        return false;
-    }
 };
 
 #endif

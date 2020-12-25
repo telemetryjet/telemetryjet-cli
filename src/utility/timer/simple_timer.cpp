@@ -1,5 +1,7 @@
 #include "simple_timer.h"
 #include <iostream>
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
 
 SimpleTimer::SimpleTimer(uint64_t interval)
     : m_interval(interval) {
@@ -19,6 +21,21 @@ bool SimpleTimer::check() {
         return true;
     } else {
         return false;
+    }
+}
+
+// Sleep until timer expires
+void SimpleTimer::wait() {
+    if (zeroInterval) {
+        return;
+    }
+    uint64_t currentTime = getCurrentMillis();
+    uint64_t delta       = (currentTime - m_lastTime);
+    if (delta >= m_interval) {
+        m_lastTime = currentTime;
+        return;
+    } else {
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(delta));
     }
 }
 
