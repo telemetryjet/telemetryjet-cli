@@ -21,7 +21,7 @@ void KeyValueFileInputDataSource::update() {
         keyValueBuffer.clear();
     }
     if (endOfFile) {
-        SM::getLogger()->info(fmt::format("[{}] Finished reading from {}.", id, filename));
+        SM::getLogger()->info(fmt::format("[{}] Finished reading from {}", id, filename));
         state = INACTIVE;
     }
 }

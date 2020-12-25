@@ -2,17 +2,17 @@
 
 SerialStreamDataSource::SerialStreamDataSource(const json &definition): DataSource(definition) {
     if (options.is_null()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires an options object.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires an options object", id, type));
     }
     if (!options.contains("port") || !options["port"].is_string()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires option 'port' of type String.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires option 'port' of type String", id, type));
     }
     if (!options.contains("baudrate") || !options["baudrate"].is_number_integer()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires option 'baudrate' of type Integer.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires option 'baudrate' of type Integer", id, type));
     }
     portName = options["port"];
     baudRate = options["baudrate"];
-    assertDependency("serialport", portName, fmt::format("Multiple data sources cannot share the same serial port: {}", portName));
+    assertDependency("serialport", portName, fmt::format("[{}] Multiple data sources cannot share the same serial port: {}", id, portName));
 }
 
 void SerialStreamDataSource::open() {

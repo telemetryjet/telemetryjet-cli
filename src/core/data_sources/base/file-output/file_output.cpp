@@ -5,13 +5,13 @@ namespace fs = boost::filesystem;
 
 FileOutputDataSource::FileOutputDataSource(const json &definition): DataSource(definition) {
     if (options.is_null()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires an options object.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires an options object", id, type));
     }
     if (!options.contains("filename") || !options["filename"].is_string()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires option 'filename' of type String.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires option 'filename' of type String", id, type));
     }
     if (!options.contains("mode") || !options["mode"].is_string()) {
-        throw std::runtime_error(fmt::format("{} data source '{}' requires option 'mode' of type String.", type, id));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' requires option 'mode' of type String", id, type));
     }
     filename = options["filename"];
     modeString = options["mode"];
@@ -22,9 +22,9 @@ FileOutputDataSource::FileOutputDataSource(const json &definition): DataSource(d
     } else if (modeString == "new") {
         mode = std::ios::app;
     } else {
-        throw std::runtime_error(fmt::format("{} data source '{}' has invalid value for 'mode': {}.", type, id, modeString));
+        throw std::runtime_error(fmt::format("[{}] data source type '{}' has invalid value for 'mode': {}", id, type, modeString));
     }
-    assertDependency("file", filename, fmt::format("Multiple data sources cannot share the same input/output filename: {}", filename));
+    assertDependency("file", filename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, filename));
 }
 
 void FileOutputDataSource::open() {
@@ -45,10 +45,10 @@ void FileOutputDataSource::open() {
     outputFile = std::ofstream();
     outputFile.open(filename, mode);
     if (!outputFile.is_open()){
-        SM::getLogger()->error(fmt::format("Failed to open {} file {}.", type, pathObj.filename().string()));
-        throw std::runtime_error(fmt::format("Failed to open {} file {}.", type, pathObj.filename().string()));
+        SM::getLogger()->error(fmt::format("[{}] Failed to open file {}", id, pathObj.filename().string()));
+        throw std::runtime_error(fmt::format("[{}] Failed to open file {}", id, pathObj.filename().string()));
     } else {
-        SM::getLogger()->info(fmt::format("Opened {} file {}.", type, pathObj.filename().string()));
+        SM::getLogger()->info(fmt::format("[{}] Opened file {}", id, pathObj.filename().string()));
     }
     flushTimer = std::make_unique<SimpleTimer>(1000);
     DataSource::open();

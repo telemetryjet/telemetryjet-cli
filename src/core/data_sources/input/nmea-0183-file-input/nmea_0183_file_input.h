@@ -8,6 +8,7 @@ class NMEA0183FileInputDataSource : public FileInputDataSource {
 private:
     nmea::NMEAParser parser;
     nmea::GPSService* gps;
+    int fileLine = 0;
 public:
     NMEA0183FileInputDataSource(const json &definition): FileInputDataSource(definition) {}
     void open() override;

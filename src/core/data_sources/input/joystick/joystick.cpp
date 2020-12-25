@@ -2,17 +2,17 @@
 
 void JoystickDataSource::open() {
     if (SDL_NumJoysticks() <= 0) {
-        throw std::runtime_error(fmt::format("{}: No joysticks were found!", id));
+        throw std::runtime_error(fmt::format("[{}] No joysticks were found!", id));
     }
 
     joy = SDL_JoystickOpen(0);
 
     if (!joy) {
-        throw std::runtime_error(fmt::format("{}: Failed to open joystick!", id));
+        throw std::runtime_error(fmt::format("[{}] Failed to open joystick!", id));
         return;
     }
 
-    SM::getLogger()->info(fmt::format("{}: Opened joystick {}.", id,SDL_JoystickName(joy)));
+    SM::getLogger()->info(fmt::format("[{}] Opened joystick {}", id,SDL_JoystickName(joy)));
 
     pollTimer = std::make_unique<SimpleTimer>(10);
     DataSource::open();
@@ -28,7 +28,7 @@ void JoystickDataSource::update() {
     pollTimer->wait();
 
     if (SDL_JoystickGetAttached(joy) == SDL_FALSE) {
-        throw std::runtime_error(fmt::format("{}: joystick is no longer attached!", id));
+        throw std::runtime_error(fmt::format("[{}] joystick is no longer attached!", id));
     }
 
     uint64_t timestamp = getCurrentMillis();

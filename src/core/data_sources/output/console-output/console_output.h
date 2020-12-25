@@ -6,7 +6,7 @@
 class ConsoleOutputDataSource : public DataSource {
 public:
     ConsoleOutputDataSource(const json &definition): DataSource(definition) {
-        assertDependency("console", "", "Multiple data sources cannot share use of standard input/output.");
+        assertDependency("console", "", fmt::format("[{}] Multiple data sources cannot share use of standard input/output.", id));
     }
     void open() override;
     void update() override;

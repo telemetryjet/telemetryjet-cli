@@ -12,9 +12,9 @@ CsvFileOutputDataSource::CsvFileOutputDataSource(const json& definition): FileOu
     if (options.contains("write_interval_ms")) {
         if (!options["write_interval_ms"].is_number_integer()) {
             throw std::runtime_error(fmt::format(
-                "{} data source '{}' requires option 'write_interval_ms' of type Integer.",
-                type,
-                id));
+                "[{}] data source type '{}' requires option 'write_interval_ms' of type Integer",
+                id,
+                type));
         }
         writeInterval = options["write_interval_ms"];
         writeTimer = new SimpleTimer(writeInterval);
@@ -36,7 +36,7 @@ void CsvFileOutputDataSource::open() {
             // TODO: remove this requirement after fixing logic in update method
             if (parsedHeaders[0] != "timestamp")
             {
-                std::string errorMsg = fmt::format("Parsing error in file {}. Expected first column of CSV file opened in append mode to be 'timestamp'.", filename);
+                std::string errorMsg = fmt::format("[{}] Parsing error in file {}. Expected first column of CSV file opened in append mode to be 'timestamp'", id, filename);
                 SM::getLogger()->error(errorMsg);
                 throw std::runtime_error(errorMsg);
             }
@@ -50,7 +50,7 @@ void CsvFileOutputDataSource::open() {
 
             file.close();
         } else {
-            throw std::runtime_error(fmt::format("Cannot read file at {}", filename));
+            throw std::runtime_error(fmt::format("[{}] Cannot read file at {}", id, filename));
         }
         rewriteRequired = false;
     }
@@ -120,7 +120,7 @@ void CsvFileOutputDataSource::rewrite() {
 
     if (!tempFile.is_open()) {
         throw std::runtime_error(
-            fmt::format("Failed to open temporary file {}.", tempPath.filename().string()));
+            fmt::format("[{}] Failed to open temporary file {}", id, tempPath.filename().string()));
     }
 
     // open input stream of current file
@@ -149,7 +149,7 @@ void CsvFileOutputDataSource::rewrite() {
         tempFile.flush();
         tempFile.close();
     } else {
-        throw std::runtime_error(fmt::format("Cannot read file at {}", filename));
+        throw std::runtime_error(fmt::format("[{}] Cannot read file at {}", id, filename));
     }
 
     // replace output file with temporary file

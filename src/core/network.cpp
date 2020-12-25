@@ -9,6 +9,7 @@
 #include <core/data_sources/input/system-stats/system_stats.h>
 #include <core/data_sources/input/joystick/joystick.h>
 #include "network.h"
+#include <boost/lexical_cast.hpp>
 
 Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) {
     // Construct array of data sources from definitions.
@@ -36,7 +37,7 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
         } else if (type == "joystick") {
             dataSources.push_back(std::make_shared<JoystickDataSource>(dataSourceDefinition));
         } else {
-            throw std::runtime_error(fmt::format("Data source '{}' has unknown type {}.", id, type));
+            throw std::runtime_error(fmt::format("[{}] Data source has unknown type {}.", id, type));
         }
         dataSources.back()->parent = this;
     }
@@ -72,7 +73,7 @@ void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
             dataSource->flushDataPoints();
         } catch (boost::thread_interrupted& e) {
             dataSource->state = INACTIVE;
-        } catch (std::runtime_error &e) {
+        } catch (std::exception &e) {
             SM::getLogger()->error(fmt::format("[{}] {}", dataSource->id, e.what()));
             dataSource->parent->error = true;
             dataSource->state = INACTIVE;
@@ -90,17 +91,18 @@ void Network::start() {
             dataSource->open();
             dataSource->initializationMutex.lock();
             if (dataSource->state == UNINITIALIZED) {
-                throw std::runtime_error("Data source in uninitialized (invalid) state!");
+                throw std::runtime_error(fmt::format("[{}] Data source in uninitialized (invalid) state!", dataSource->id));
             }
             dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
                 // Delay start of thread until all data sources have been initialized
+                std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
                 dataSource->initializationMutex.lock();
-                SM::getLogger()->info(fmt::format("[{}] Started thread.", dataSource->id));
+                SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
                 dataSourceThread(dataSource, _errMode);
                 dataSource->initializationMutex.unlock();
-                SM::getLogger()->info(fmt::format("[{}] Finished thread.", dataSource->id));
+                SM::getLogger()->info(fmt::format("[{}] Finished worker thread with ID {}", dataSource->id, threadId));
             }));
-        } catch (std::runtime_error &e) {
+        } catch (std::exception &e) {
             dataSource->state = CLOSED;
             dataSource->parent->error = true;
             return;
@@ -152,6 +154,16 @@ bool Network::isDone() {
         if (dataSource->state == ACTIVE) {
             allDone = false;
         }
+        // Also give a chance for the output-only data sources to output their full queues
+        // Prevents race conditions on exit; we want the output to flush completely at least once
+        // to get the last data points from an input file.
+        if (dataSource->state == ACTIVE_OUTPUT_ONLY
+            && (
+                dataSource->_inQueue.size() > 0 ||
+                dataSource->in.size() > 0
+           )) {
+            allDone = false;
+        }
     }
     return allDone;
 }
@@ -171,6 +183,13 @@ void Network::checkDataSources() {
             if (dataSourceLastUpdatedDelta > 5000) {
                 SM::getLogger()->warning(fmt::format("[{}] Warning: Data source stuck in update ({} ms)", dataSource->id, dataSourceLastUpdatedDelta));
             }
+
+            // TODO: Check for indications that the input data sources are producing more than the output data sources
+            // To detect: For each data source output, check size of input queue before and after handling
+            // If the size is LARGER after handling a loop, we're getting data faster than we can handle it
+            // Flag this in a counter, and if this happens too many times trigger a warning message
+            // To test this, add an artificial lag to the console data source to make it take 100ms per line it outputs.
+            // If a data source outputs more than that, it will overwhelm the console data source.
         }
     }
 }

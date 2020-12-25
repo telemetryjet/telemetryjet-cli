@@ -55,12 +55,19 @@ void NMEA0183FileInputDataSource::update() {
     char inChar;
     bool fileOpen = true;
     if (inputFile.get(inChar)) {
-        parser.readByte(inChar);
+        try {
+            parser.readByte(inChar);
+        } catch (std::exception &e) {
+            SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to parse NMEA sentence in {} on line {}", id, filename, fileLine));
+        }
+        if (inChar == '\n') {
+            fileLine += 1;
+        }
     } else {
         fileOpen = false;
     }
     if (!fileOpen) {
-        SM::getLogger()->info(fmt::format("[{}] Finished reading from {}.", id, filename));
+        SM::getLogger()->info(fmt::format("[{}] Finished reading from {}", id, filename));
         state = INACTIVE;
     }
 }

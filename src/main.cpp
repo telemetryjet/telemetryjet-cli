@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
             if (!network->isInitialized()) {
                 throw std::runtime_error("Network in uninitialized (invalid) state!");
             }
-        } catch (std::runtime_error& e) {
+        } catch (std::exception& e) {
             SM::getLogger()->error(e.what());
             SM::getLogger()->error(fmt::format("Failed to start network {}, exiting...", jsonFilenames.at(i)));
             return 0;
