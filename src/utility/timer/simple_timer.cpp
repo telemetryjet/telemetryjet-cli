@@ -4,7 +4,7 @@
 #include <boost/chrono.hpp>
 
 SimpleTimer::SimpleTimer(uint64_t interval)
-    : m_interval(interval) {
+    : m_lastTime(0), m_interval(interval) {
     if (interval == 0) {
         zeroInterval = true;
     }
