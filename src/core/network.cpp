@@ -87,26 +87,20 @@ void Network::start() {
     bool _errMode = errorMode;
     // Initialize data source and open a thread to execute updates
     for (auto& dataSource: dataSources) {
-        try {
-            dataSource->open();
-            dataSource->initializationMutex.lock();
-            if (dataSource->state == UNINITIALIZED) {
-                throw std::runtime_error(fmt::format("[{}] Data source in uninitialized (invalid) state!", dataSource->id));
-            }
-            dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
-                // Delay start of thread until all data sources have been initialized
-                std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
-                dataSource->initializationMutex.lock();
-                SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
-                dataSourceThread(dataSource, _errMode);
-                dataSource->initializationMutex.unlock();
-                SM::getLogger()->info(fmt::format("[{}] Finished worker thread with ID {}", dataSource->id, threadId));
-            }));
-        } catch (std::exception &e) {
-            dataSource->state = CLOSED;
-            dataSource->parent->error = true;
-            return;
+        dataSource->open();
+        dataSource->initializationMutex.lock();
+        if (dataSource->state == UNINITIALIZED) {
+            throw std::runtime_error(fmt::format("[{}] Data source in uninitialized (invalid) state!", dataSource->id));
         }
+        dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
+            // Delay start of thread until all data sources have been initialized
+            std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+            dataSource->initializationMutex.lock();
+            SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
+            dataSourceThread(dataSource, _errMode);
+            dataSource->initializationMutex.unlock();
+            SM::getLogger()->info(fmt::format("[{}] Finished worker thread with ID {}", dataSource->id, threadId));
+        }));
     }
 }
 

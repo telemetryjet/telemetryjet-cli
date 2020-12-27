@@ -9,7 +9,6 @@ void JoystickDataSource::open() {
 
     if (!joy) {
         throw std::runtime_error(fmt::format("[{}] Failed to open joystick!", id));
-        return;
     }
 
     SM::getLogger()->info(fmt::format("[{}] Opened joystick {}", id,SDL_JoystickName(joy)));
