@@ -171,6 +171,7 @@ void Network::checkDataSources() {
             // Check for errors
             if (errorMode) {
                 if (dataSource->error) {
+                    SM::getLogger()->error(fmt::format("[{}] Error in data source, exiting...", dataSource->id));
                     error = true;
                 }
             }

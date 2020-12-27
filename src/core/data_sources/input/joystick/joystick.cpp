@@ -4,6 +4,7 @@ void JoystickDataSource::openJoystick() {
     isJoystickOpen = false;
     if (SDL_NumJoysticks() <= 0) {
         SM::getLogger()->warning(fmt::format("[{}] Could not connect to a joystick! Will retry in 5000ms", id));
+        error = true;
         return;
     }
 
@@ -11,9 +12,11 @@ void JoystickDataSource::openJoystick() {
 
     if (!joy) {
         SM::getLogger()->warning(fmt::format("[{}] Could not connect to a joystick! Will retry in 5000ms", id));
+        error = true;
         return;
     }
 
+    error = false;
     isJoystickOpen = true;
     SM::getLogger()->info(fmt::format("[{}] Opened joystick {}", id,SDL_JoystickName(joy)));
 }
