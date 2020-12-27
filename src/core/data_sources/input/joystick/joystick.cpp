@@ -41,7 +41,10 @@ void JoystickDataSource::update() {
             return;
         }
 
+
         uint64_t timestamp = getCurrentMillis();
+        write(std::make_shared<DataPoint>("connected", timestamp, true));
+
         int numAxes = SDL_JoystickNumAxes(joy);
         for (int axisId = 0; axisId < numAxes; axisId++) {
             int16_t axisPositionInt = SDL_JoystickGetAxis(joy, axisId);
@@ -63,5 +66,9 @@ void JoystickDataSource::update() {
     } else {
         reconnectTimer->wait();
         openJoystick();
+        if (!isJoystickOpen) {
+            uint64_t timestamp = getCurrentMillis();
+            write(std::make_shared<DataPoint>("connected", timestamp, false));
+        }
     }
 }
