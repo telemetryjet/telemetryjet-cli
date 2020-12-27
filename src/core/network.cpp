@@ -8,6 +8,7 @@
 #include <core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h>
 #include <core/data_sources/input/system-stats/system_stats.h>
 #include <core/data_sources/input/joystick/joystick.h>
+#include <core/data_sources/output/sqlite-output/sqlite_output.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -36,6 +37,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition));
         } else if (type == "joystick") {
             dataSources.push_back(std::make_shared<JoystickDataSource>(dataSourceDefinition));
+        } else if (type == "sqlite-output") {
+            dataSources.push_back(std::make_shared<SqliteOutputDataSource>(dataSourceDefinition));
         } else {
             throw std::runtime_error(fmt::format("[{}] Data source has unknown type {}.", id, type));
         }
