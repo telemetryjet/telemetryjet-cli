@@ -2,6 +2,14 @@
 #include <utility>
 #include <boost/algorithm/string.hpp>
 
+std::pair<std::string, std::string> parseKeyValueString(std::string keyValueString) {
+    std::list<uint8_t> keyValueBuffer;
+    for (auto& chr : keyValueString) {
+        keyValueBuffer.push_back((uint8_t)chr);
+    }
+    return parseKeyValueBuffer(keyValueBuffer);
+}
+
 std::pair<std::string, std::string> parseKeyValueBuffer(std::list<uint8_t> keyValueBuffer) {
     std::string key;
     std::string value;

@@ -57,6 +57,7 @@ set(SOURCES
         src/core/data_sources/input/joystick/joystick.cpp
         src/utility/csv/csv_parser.cpp
         src/core/data_sources/output/sqlite-output/sqlite_output.cpp
+        src/core/data_sources/input/console-input/console_input.cpp
 )
 
 # Platform-specific sources
@@ -125,6 +126,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/joystick/joystick.h
         src/utility/csv/csv_parser.h
         src/core/data_sources/output/sqlite-output/sqlite_output.h
+        src/core/data_sources/input/console-input/console_input.h
 )
 
 # Put version numbers into header

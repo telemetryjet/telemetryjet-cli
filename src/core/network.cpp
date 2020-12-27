@@ -9,6 +9,7 @@
 #include <core/data_sources/input/system-stats/system_stats.h>
 #include <core/data_sources/input/joystick/joystick.h>
 #include <core/data_sources/output/sqlite-output/sqlite_output.h>
+#include <core/data_sources/input/console-input/console_input.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -23,6 +24,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<TestInputDataSource>(dataSourceDefinition));
         } else if (type == "console-output") {
             dataSources.push_back(std::make_shared<ConsoleOutputDataSource>(dataSourceDefinition));
+        } else if (type == "console-input") {
+            dataSources.push_back(std::make_shared<ConsoleInputDataSource>(dataSourceDefinition));
         } else if (type == "csv-file-output") {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition));
         } else if (type == "key-value-file-output") {
@@ -90,26 +93,20 @@ void Network::start() {
     bool _errMode = errorMode;
     // Initialize data source and open a thread to execute updates
     for (auto& dataSource: dataSources) {
-        try {
-            dataSource->open();
-            dataSource->initializationMutex.lock();
-            if (dataSource->state == UNINITIALIZED) {
-                throw std::runtime_error(fmt::format("[{}] Data source in uninitialized (invalid) state!", dataSource->id));
-            }
-            dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
-                // Delay start of thread until all data sources have been initialized
-                std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
-                dataSource->initializationMutex.lock();
-                SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
-                dataSourceThread(dataSource, _errMode);
-                dataSource->initializationMutex.unlock();
-                SM::getLogger()->info(fmt::format("[{}] Finished worker thread with ID {}", dataSource->id, threadId));
-            }));
-        } catch (std::exception &e) {
-            dataSource->state = CLOSED;
-            dataSource->parent->error = true;
-            return;
+        dataSource->open();
+        dataSource->initializationMutex.lock();
+        if (dataSource->state == UNINITIALIZED) {
+            throw std::runtime_error(fmt::format("[{}] Data source in uninitialized (invalid) state!", dataSource->id));
         }
+        dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
+            // Delay start of thread until all data sources have been initialized
+            std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+            dataSource->initializationMutex.lock();
+            SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
+            dataSourceThread(dataSource, _errMode);
+            dataSource->initializationMutex.unlock();
+            SM::getLogger()->info(fmt::format("[{}] Finished worker thread with ID {}", dataSource->id, threadId));
+        }));
     }
 }
 
