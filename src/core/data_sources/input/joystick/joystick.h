@@ -9,6 +9,9 @@ class JoystickDataSource: public DataSource {
 private:
     SDL_Joystick* joy;
     std::unique_ptr<SimpleTimer> pollTimer;
+    std::unique_ptr<SimpleTimer> reconnectTimer;
+    bool isJoystickOpen = false;
+    void openJoystick();
 public:
     JoystickDataSource(const json &definition): DataSource(definition) {}
     void open() override;

@@ -85,7 +85,7 @@ Logger::Logger() {
 }
 
 Logger::~Logger() {
-    
+
 }
 
 LoggerLevel Logger::getLevel() {
