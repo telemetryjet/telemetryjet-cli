@@ -80,9 +80,13 @@ void Logger::alert(std::string message) {
     }
 }
 
-Logger::Logger() = default;
+Logger::Logger() {
 
-Logger::~Logger() = default;
+}
+
+Logger::~Logger() {
+    
+}
 
 LoggerLevel Logger::getLevel() {
     return level;

@@ -5,9 +5,10 @@
 
 class ConsoleInputDataSource : public DataSource {
 public:
-    ConsoleInputDataSource(const json &definition): DataSource(definition) {}
+    ConsoleInputDataSource(const json &definition): DataSource(definition) {
+        assertDependency("console", "", fmt::format("[{}] Multiple data sources cannot share use of standard input/output.", id));
+    }
     void open() override;
-    void close() override;
     void update() override;
 };
 

@@ -8,6 +8,7 @@
 #include <core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h>
 #include <core/data_sources/input/system-stats/system_stats.h>
 #include <core/data_sources/input/joystick/joystick.h>
+#include <core/data_sources/input/console-input/console_input.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -22,6 +23,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<TestInputDataSource>(dataSourceDefinition));
         } else if (type == "console-output") {
             dataSources.push_back(std::make_shared<ConsoleOutputDataSource>(dataSourceDefinition));
+        } else if (type == "console-input") {
+            dataSources.push_back(std::make_shared<ConsoleInputDataSource>(dataSourceDefinition));
         } else if (type == "csv-file-output") {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition));
         } else if (type == "key-value-file-output") {

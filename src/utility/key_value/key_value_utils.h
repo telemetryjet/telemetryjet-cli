@@ -5,5 +5,6 @@
 #include <list>
 
 std::pair<std::string, std::string> parseKeyValueBuffer(std::list<uint8_t> keyValueBuffer);
+std::pair<std::string, std::string> parseKeyValueString(std::string keyValueString);
 
 #endif
