@@ -55,6 +55,7 @@ set(SOURCES
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
         src/core/data_sources/input/system-stats/system_stats.cpp
         src/core/data_sources/input/joystick/joystick.cpp
+        src/core/data_sources/input/console-input/console_input.cpp
 )
 
 # Platform-specific sources
@@ -121,6 +122,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
         src/core/data_sources/input/system-stats/system_stats.h
         src/core/data_sources/input/joystick/joystick.h
+        src/core/data_sources/input/console-input/console_input.h
 )
 
 # Put version numbers into header
