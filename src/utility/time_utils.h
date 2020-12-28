@@ -27,4 +27,21 @@ inline std::string getTimestamp() {
     return str;
 }
 
+inline std::pair<std::string, std::string> getAwsTimestamps() {
+    std::time_t rawtime;
+    struct tm* timeinfo;
+    char buffer1[80];
+    char buffer2[80];
+
+    std::time(&rawtime);
+    timeinfo = std::gmtime(&rawtime);
+
+    std::strftime(buffer1, sizeof(buffer1), "%Y%m%dT%H%M%SZ", timeinfo);
+    std::strftime(buffer2, sizeof(buffer2), "%Y%m%d", timeinfo);
+    std::string str1(buffer1);
+    std::string str2(buffer2);
+    return std::make_pair(str1, str2);
+}
+
+
 #endif

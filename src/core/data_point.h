@@ -7,6 +7,9 @@
 #include <iostream>
 #include <boost/variant.hpp>
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 // Alias various types so we acn easily change their underlying type if needed
 typedef std::string string_t;
@@ -76,6 +79,15 @@ public:
     inline int64_t   getInt64()   { return boost::get<int64_t>(value);   }
     inline float32_t getFloat32() { return boost::get<float32_t>(value); }
     inline float64_t getFloat64() { return boost::get<float64_t>(value); }
+
+    std::string toJson() {
+        json val = {
+                {"timestamp", timestamp},
+                {"key", key},
+                {"value", toString()}
+        };
+        return val.dump();
+    }
 
     std::string toString() {
         switch (type) {
