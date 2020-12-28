@@ -1,12 +1,13 @@
 #ifndef DATA_POINT_H
 #define DATA_POINT_H
 
-#include <utility>
-#include <variant>
-#include <string>
-#include <iostream>
+#include <nlohmann/json.hpp>
 #include <boost/variant.hpp>
 #include <fmt/format.h>
+#include <iostream>
+#include <string>
+#include <utility>
+#include <variant>
 
 // Alias various types so we acn easily change their underlying type if needed
 typedef std::string string_t;
@@ -122,6 +123,15 @@ public:
                 return "";
             }
         }
+    }
+
+    std::string toJsonString() {
+        nlohmann::json obj;
+        obj["key"] = key;
+        obj["timestamp"] = timestamp;
+        obj["value"] = toString();
+        obj["type"] = type;
+        return obj.dump();
     }
 };
 

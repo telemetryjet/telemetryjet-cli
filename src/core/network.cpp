@@ -10,6 +10,7 @@
 #include <core/data_sources/input/joystick/joystick.h>
 #include <core/data_sources/output/sqlite-output/sqlite_output.h>
 #include <core/data_sources/input/console-input/console_input.h>
+#include <core/data_sources/bidirectional/websocket/client/websocket_client.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -40,8 +41,10 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition));
         } else if (type == "joystick") {
             dataSources.push_back(std::make_shared<JoystickDataSource>(dataSourceDefinition));
-        } else if (type == "sqlite-output") {
+        } else if (type == "sql-table-output") {
             dataSources.push_back(std::make_shared<SqliteOutputDataSource>(dataSourceDefinition));
+        } else if (type == "websocket-client") {
+            dataSources.push_back(std::make_shared<WebsocketClientDataSource>(dataSourceDefinition));
         } else {
             throw std::runtime_error(fmt::format("[{}] Data source has unknown type {}.", id, type));
         }
