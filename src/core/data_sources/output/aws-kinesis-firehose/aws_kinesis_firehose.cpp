@@ -30,17 +30,48 @@ AwsKinesisFirehoseDataSource::AwsKinesisFirehoseDataSource(const json &definitio
 }
 
 void AwsKinesisFirehoseDataSource::update() {
-    if (!in.empty()) {
+    rateLimitTimer->wait();
+    rateLimitCount = 0;
+    bool isRateLimited = false;
+    while (!in.empty() && !isRateLimited) {
+        SM::getLogger()->warning(fmt::format("[{}] {} records to process...", id, in.size()));
         try {
             json requestBody = {
                     {"DeliveryStreamName", deliveryStreamName},
                     {"Records", json::array()}
             };
-            for (auto& inDataPoint : in) {
+            uint64_t numRecordsInRequest = 0;
+            for (uint64_t i = 0; i < 500; i++) {
+                if (in.empty()) {
+                    break;
+                }
+
+                if (rateLimitCount > maxRecordsPerSecond) {
+                    // Break if we are over the rate limit
+                    SM::getLogger()->warning(fmt::format("[{}] Hit rate limit for Firehose, dropping data...", id));
+                    isRateLimited = true;
+                    break;
+                }
+
+                auto& inDataPoint = in.front();
+                in.pop_front();
                 requestBody["Records"].push_back({
-                    {"Data", base64_encode(fmt::format("{}\n", inDataPoint->toJson()))}
+                    {"Data", base64_encode(inDataPoint->toJson(), false)}
                 });
+
+                rateLimitCount++;
+                numRecordsInRequest++;
+                if (numRecordsInRequest >= 500) {
+                    break;
+                }
             }
+            if (numRecordsInRequest == 0) {
+                // Break if we did not actually send any records
+                isRateLimited = true;
+                return;
+            }
+            SM::getLogger()->warning(fmt::format("[{}] Sending {} records to Firehose...", id, requestBody["Records"].size()));
+
             std::string contentString = requestBody.dump();
             //SM::getLogger()->info(fmt::format("CONTENT:\n{}", contentString));
             std::string shaContentString = AWSV4::sha256_base16(contentString);
@@ -109,6 +140,8 @@ void AwsKinesisFirehoseDataSource::open() {
     hostname = fmt::format("firehose.{}.amazonaws.com", region);
     baseUrl = fmt::format("https://{}.{}.amazonaws.com/", service, region);
     client = std::make_shared<HttpsClient>(hostname, false);
+    rateLimitTimer = std::make_shared<SimpleTimer>(1000);
+    rateLimitCount = 0;
     DataSource::open();
     state = ACTIVE_OUTPUT_ONLY;
 }
@@ -116,5 +149,6 @@ void AwsKinesisFirehoseDataSource::open() {
 void AwsKinesisFirehoseDataSource::close() {
     client->stop();
     client.reset();
+    rateLimitTimer.reset();
     DataSource::close();
 }

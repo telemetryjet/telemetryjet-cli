@@ -86,7 +86,7 @@ public:
                 {"key", key},
                 {"value", toString()}
         };
-        return val.dump();
+        return val.dump() + "\n";
     }
 
     std::string toString() {
