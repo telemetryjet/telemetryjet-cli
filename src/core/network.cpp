@@ -100,7 +100,7 @@ void Network::start() {
         }
         dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
             // Delay start of thread until all data sources have been initialized
-            std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+            auto threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
             dataSource->initializationMutex.lock();
             SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
             dataSourceThread(dataSource, _errMode);
@@ -159,8 +159,8 @@ bool Network::isDone() {
         // to get the last data points from an input file.
         if (dataSource->state == ACTIVE_OUTPUT_ONLY
             && (
-                dataSource->_inQueue.size() > 0 ||
-                dataSource->in.size() > 0
+                !dataSource->_inQueue.empty() ||
+                !dataSource->in.empty()
            )) {
             allDone = false;
         }
