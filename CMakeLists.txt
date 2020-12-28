@@ -58,6 +58,8 @@ set(SOURCES
         src/utility/csv/csv_parser.cpp
         src/core/data_sources/output/sqlite-output/sqlite_output.cpp
         src/core/data_sources/input/console-input/console_input.cpp
+        src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp
+        src/core/data_sources/bidirectional/websocket/server/websocket_server.cpp
 )
 
 # Platform-specific sources
@@ -127,7 +129,9 @@ set(HEADERS_PRIVATE
         src/utility/csv/csv_parser.h
         src/core/data_sources/output/sqlite-output/sqlite_output.h
         src/core/data_sources/input/console-input/console_input.h
-        src/core/data_sources/bidirectional/websocket/client/websocket_client.h src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp)
+        src/core/data_sources/bidirectional/websocket/client/websocket_client.h
+        src/core/data_sources/bidirectional/websocket/server/websocket_server.h
+)
 
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)

@@ -11,6 +11,7 @@
 #include <core/data_sources/output/sqlite-output/sqlite_output.h>
 #include <core/data_sources/input/console-input/console_input.h>
 #include <core/data_sources/bidirectional/websocket/client/websocket_client.h>
+#include <core/data_sources/bidirectional/websocket/server/websocket_server.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -45,6 +46,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<SqliteOutputDataSource>(dataSourceDefinition));
         } else if (type == "websocket-client") {
             dataSources.push_back(std::make_shared<WebsocketClientDataSource>(dataSourceDefinition));
+        } else if (type == "websocket-server") {
+            dataSources.push_back(std::make_shared<WebsocketServerDataSource>(dataSourceDefinition));
         } else {
             throw std::runtime_error(fmt::format("[{}] Data source has unknown type {}.", id, type));
         }
