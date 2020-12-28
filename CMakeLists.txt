@@ -216,7 +216,7 @@ FetchContent_MakeAvailable(SQLiteCpp)
 FetchContent_Declare(
         Simple-Web-Server
         GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
-        GIT_TAG v3.1
+        GIT_TAG v3.1.1
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 
