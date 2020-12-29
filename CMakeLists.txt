@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
+cmake_policy(SET CMP0077 NEW)
 
 project(TelemetryJetCli VERSION 0.1.0
                         DESCRIPTION "TelemetryJet CLI"
@@ -38,6 +39,8 @@ set(SOURCES
         src/utility/key_value/key_value_utils.cpp
         src/utility/sdl/sdl.cpp
         src/utility/csv/csv_parser.cpp
+        src/utility/encoding/base64/base64.cpp
+        src/utility/encoding/aws-sig-v4/awsv4.cpp
         src/services/service_manager.cpp
         src/services/logger/logger.cpp
         src/services/config/config.cpp
@@ -50,6 +53,7 @@ set(SOURCES
         src/core/data_sources/output/console-output/console_output.cpp
         src/core/data_sources/output/csv-file-output/csv_file_output.cpp
         src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
+        src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.cpp
         src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
@@ -109,6 +113,8 @@ set(HEADERS_PRIVATE
         src/utility/key_value/key_value_utils.h
         src/utility/sdl/sdl.h
         src/utility/csv/csv_parser.h
+        src/utility/encoding/base64/base64.h
+        src/utility/encoding/aws-sig-v4/awsv4.h
         src/services/service_manager.h
         src/services/config/config.h
         src/services/logger/logger.h
@@ -121,6 +127,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/output/console-output/console_output.h
         src/core/data_sources/output/csv-file-output/csv_file_output.h
         src/core/data_sources/output/key-value-file-output/key_value_file_output.h
+        src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.h
         src/core/data_sources/input/key-value-file-input/key_value_file_input.h
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
@@ -143,6 +150,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 # Build static on linux and windows but not macos
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wa,-mbig-obj" )
     SET(BUILD_SHARED_LIBS OFF)
     SET(CMAKE_EXE_LINKER_FLAGS "-static")
 else()
@@ -174,6 +182,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 #--------------- EXTERNAL DEPENDENCIES --------------------
 
 include(FetchContent)
+include(ExternalProject)
 
 set(Boost_DEBUG 1)
 set(Boost_USE_STATIC_LIBS ON)
@@ -215,7 +224,7 @@ FetchContent_MakeAvailable(SQLiteCpp)
 FetchContent_Declare(
         Simple-Web-Server
         GIT_REPOSITORY https://gitlab.com/eidheim/Simple-Web-Server.git
-        GIT_TAG v3.1
+        GIT_TAG v3.1.1
 )
 FetchContent_MakeAvailable(Simple-Web-Server)
 

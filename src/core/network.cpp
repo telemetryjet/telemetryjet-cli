@@ -3,6 +3,7 @@
 #include <core/data_sources/output/console-output/console_output.h>
 #include <core/data_sources/output/csv-file-output/csv_file_output.h>
 #include <core/data_sources/output/key-value-file-output/key_value_file_output.h>
+#include <core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.h>
 #include <core/data_sources/input/key-value-file-input/key_value_file_input.h>
 #include <core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h>
 #include <core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h>
@@ -48,6 +49,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<WebsocketClientDataSource>(dataSourceDefinition));
         } else if (type == "websocket-server") {
             dataSources.push_back(std::make_shared<WebsocketServerDataSource>(dataSourceDefinition));
+        } else if (type == "aws-kinesis-firehose") {
+            dataSources.push_back(std::make_shared<AwsKinesisFirehoseDataSource>(dataSourceDefinition));
         } else {
             throw std::runtime_error(fmt::format("[{}] Data source has unknown type {}.", id, type));
         }
@@ -106,7 +109,7 @@ void Network::start() {
         }
         dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
             // Delay start of thread until all data sources have been initialized
-            std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+            auto threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
             dataSource->initializationMutex.lock();
             SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
             dataSourceThread(dataSource, _errMode);
@@ -165,8 +168,8 @@ bool Network::isDone() {
         // to get the last data points from an input file.
         if (dataSource->state == ACTIVE_OUTPUT_ONLY
             && (
-                dataSource->_inQueue.size() > 0 ||
-                dataSource->in.size() > 0
+                !dataSource->_inQueue.empty() ||
+                !dataSource->in.empty()
            )) {
             allDone = false;
         }
@@ -180,6 +183,7 @@ void Network::checkDataSources() {
             // Check for errors
             if (errorMode) {
                 if (dataSource->error) {
+                    SM::getLogger()->error(fmt::format("[{}] Error in data source, exiting...", dataSource->id));
                     error = true;
                 }
             }

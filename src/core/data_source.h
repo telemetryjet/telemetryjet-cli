@@ -68,7 +68,7 @@ public:
     void transferInDataPoints() {
         inMutex.lock();
         while (_inQueue.size() > 0) {
-            in.push_front(_inQueue.front());
+            in.push_back(_inQueue.front());
             _inQueue.pop_front();
         }
         inMutex.unlock();

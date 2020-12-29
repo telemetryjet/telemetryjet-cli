@@ -81,7 +81,7 @@ void WebsocketServerDataSource::update() {
     if (!in.empty()) {
         for (auto& dp : in) {
             for (auto& connection : server.get_connections()) {
-                connection->send(dp->toJsonString());
+                connection->send(dp->toJson());
             }
         }
     }

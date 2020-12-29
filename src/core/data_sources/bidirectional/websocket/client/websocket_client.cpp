@@ -56,7 +56,7 @@ void WebsocketClientDataSource::update() {
     // send incoming data points to ws server
     if (!in.empty()) {
         for (auto& dp : in) {
-            wsConnection->send(dp->toJsonString());
+            wsConnection->send(dp->toJson());
         }
 
         // TODO: write to sql cache when ws server is offline
