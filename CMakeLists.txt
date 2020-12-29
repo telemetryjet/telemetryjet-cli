@@ -238,7 +238,7 @@ FetchContent_MakeAvailable(Simple-WebSocket-Server)
 
 FetchContent_Declare(
         NemaTode
-        GIT_REPOSITORY https://github.com/ckgt/NemaTode
+        GIT_REPOSITORY https://github.com/chrisdalke/NemaTode.git
 )
 FetchContent_MakeAvailable(NemaTode)
 
