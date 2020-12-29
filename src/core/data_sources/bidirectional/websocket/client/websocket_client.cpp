@@ -16,8 +16,6 @@ void WebsocketClientDataSource::open() {
     client.on_close = [this](const std::shared_ptr<WsClient::Connection>& connection,
                              int status,
                              const std::string& reason) {
-        wsConnection.reset();
-        clientThread.join();
         SM::getLogger()->info(
             fmt::format("Closed websocket client connection to server at {} with status code {}.",
                         path,
@@ -52,6 +50,9 @@ void WebsocketClientDataSource::open() {
 
 void WebsocketClientDataSource::close() {
     wsConnection->send_close(1000);
+    wsConnection.reset();
+    client.stop();
+    clientThread.join();
     DataSource::close();
 }
 
