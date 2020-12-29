@@ -44,8 +44,7 @@ void WebsocketServerDataSource::open() {
     ws.on_message = [this](const std::shared_ptr<WsServer::Connection>& connection,
                            const std::shared_ptr<WsServer::InMessage>& in_message) {
         auto jsonObj = json::parse(in_message->string());
-        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp") || !jsonObj.contains("value")
-            || !jsonObj.contains("type")) {
+        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp") || !jsonObj.contains("value")) {
             throw std::runtime_error(
                 fmt::format("Unable to parse message received by websocket server: {}",
                             in_message->string()));
