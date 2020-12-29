@@ -9,7 +9,10 @@
 #include <core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h>
 #include <core/data_sources/input/system-stats/system_stats.h>
 #include <core/data_sources/input/joystick/joystick.h>
+#include <core/data_sources/output/sqlite-output/sqlite_output.h>
 #include <core/data_sources/input/console-input/console_input.h>
+#include <core/data_sources/bidirectional/websocket/client/websocket_client.h>
+#include <core/data_sources/bidirectional/websocket/server/websocket_server.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -40,6 +43,12 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<SystemStatsDataSource>(dataSourceDefinition));
         } else if (type == "joystick") {
             dataSources.push_back(std::make_shared<JoystickDataSource>(dataSourceDefinition));
+        } else if (type == "sql-table-output") {
+            dataSources.push_back(std::make_shared<SqliteOutputDataSource>(dataSourceDefinition));
+        } else if (type == "websocket-client") {
+            dataSources.push_back(std::make_shared<WebsocketClientDataSource>(dataSourceDefinition));
+        } else if (type == "websocket-server") {
+            dataSources.push_back(std::make_shared<WebsocketServerDataSource>(dataSourceDefinition));
         } else if (type == "aws-kinesis-firehose") {
             dataSources.push_back(std::make_shared<AwsKinesisFirehoseDataSource>(dataSourceDefinition));
         } else {
@@ -100,7 +109,7 @@ void Network::start() {
         }
         dataSourceWorkerThreads.push_back(std::make_shared<boost::thread>([dataSource, _errMode](){
             // Delay start of thread until all data sources have been initialized
-            std::string threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
+            auto threadId = boost::lexical_cast<std::string>(boost::this_thread::get_id());
             dataSource->initializationMutex.lock();
             SM::getLogger()->info(fmt::format("[{}] Started worker thread with ID {}", dataSource->id, threadId));
             dataSourceThread(dataSource, _errMode);
@@ -159,8 +168,8 @@ bool Network::isDone() {
         // to get the last data points from an input file.
         if (dataSource->state == ACTIVE_OUTPUT_ONLY
             && (
-                dataSource->_inQueue.size() > 0 ||
-                dataSource->in.size() > 0
+                !dataSource->_inQueue.empty() ||
+                !dataSource->in.empty()
            )) {
             allDone = false;
         }
