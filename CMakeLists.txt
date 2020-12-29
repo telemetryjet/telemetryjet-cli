@@ -193,6 +193,8 @@ if(WIN32 AND "x${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" STREQUAL "x")
     message(STATUS "Compiler architecture: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 endif()
 
+add_definitions(-DMQTT_USE_TLS)
+add_definitions(-DMQTT_USE_WS)
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 find_package(Boost COMPONENTS log log_setup system filesystem date_time thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})

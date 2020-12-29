@@ -16,11 +16,12 @@
 class MqttClientDataSource: public DataSource {
 private:
     std::string host;
-    uint64_t port;
+    uint64_t port = 1883;
     std::string transport = "tcp";
-    bool tlsEnabled;
+    bool tlsEnabled = false;
     std::string caCertFile;
     std::unique_ptr<boost::asio::io_context> ioContext;
+    std::unique_ptr<MQTT_NS::sync_client> client;
 public:
     explicit MqttClientDataSource(const json &definition);
     void open() override;
