@@ -49,6 +49,8 @@ set(SOURCES
         src/core/data_sources/base/file-output/file_output.cpp
         src/core/data_sources/base/serial-stream/serial_stream.cpp
         src/core/data_sources/bidirectional/key-value-stream/key_value_stream.cpp
+        src/core/data_sources/bidirectional/mqtt-client/mqtt_client.cpp
+        src/core/data_sources/bidirectional/mqtt-server/mqtt_server.cpp
         src/core/data_sources/input/test-input/test_input.cpp
         src/core/data_sources/output/console-output/console_output.cpp
         src/core/data_sources/output/csv-file-output/csv_file_output.cpp
@@ -119,6 +121,8 @@ set(HEADERS_PRIVATE
         src/core/data_sources/base/file-output/file_output.h
         src/core/data_sources/base/serial-stream/serial_stream.h
         src/core/data_sources/bidirectional/key-value-stream/key_value_stream.h
+        src/core/data_sources/bidirectional/mqtt-client/mqtt_client.h
+        src/core/data_sources/bidirectional/mqtt-server/mqtt_server.h
         src/core/data_sources/input/test-input/test_input.h
         src/core/data_sources/output/console-output/console_output.h
         src/core/data_sources/output/csv-file-output/csv_file_output.h
@@ -238,6 +242,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL2)
 
+FetchContent_Declare(
+        mqtt_cpp_iface
+        GIT_REPOSITORY https://github.com/redboltz/mqtt_cpp.git
+)
+FetchContent_MakeAvailable(mqtt_cpp_iface)
+
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.7.3)
@@ -268,6 +278,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE NemaTode)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE serialport-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE mqtt_cpp_iface)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::log_setup Boost::log Boost::system Boost::filesystem Boost::date_time)
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
 
