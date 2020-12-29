@@ -42,6 +42,9 @@ void NMEA0183StreamDataSource::update() {
         std::string tempLine;
         for (auto& inChar : serial->getBuffer()) {
             try {
+                if (rawFileOut) {
+                    outputFile << inChar;
+                }
                 parser.readByte(inChar);
             } catch (std::exception &e) {
                 SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to parse NMEA sentence at {}", id, getTimestamp()));
