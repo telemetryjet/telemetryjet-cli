@@ -53,22 +53,22 @@ public:
     const data_type_union_t value;
     const DataPointType type;
 
-    DataPoint(string_t key, uint64_t timestamp):                  key(std::move(key)), timestamp(timestamp), type(DataPointType::EVENT) {}
-    DataPoint(string_t key, uint64_t timestamp, string_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::STRING)  {}
-    DataPoint(string_t key, uint64_t timestamp, bool_t value):    key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::BOOLEAN) {}
-    DataPoint(string_t key, uint64_t timestamp, uint8_t value):   key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT8)   {}
-    DataPoint(string_t key, uint64_t timestamp, uint16_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT16)  {}
-    DataPoint(string_t key, uint64_t timestamp, uint32_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT32)  {}
-    DataPoint(string_t key, uint64_t timestamp, uint64_t value):  key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::UINT64)  {}
-    DataPoint(string_t key, uint64_t timestamp, int8_t value):    key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::INT8)    {}
-    DataPoint(string_t key, uint64_t timestamp, int16_t value):   key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::INT16)   {}
-    DataPoint(string_t key, uint64_t timestamp, int32_t value):   key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::INT32)   {}
-    DataPoint(string_t key, uint64_t timestamp, int64_t value):   key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::INT64)   {}
-    DataPoint(string_t key, uint64_t timestamp, float32_t value): key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::FLOAT32) {}
-    DataPoint(string_t key, uint64_t timestamp, float64_t value): key(std::move(key)), timestamp(timestamp), value(value), type(DataPointType::FLOAT64) {}
+    DataPoint(string_t key, uint64_t timestamp):                  key(key), timestamp(timestamp), type(DataPointType::EVENT) {}
+    DataPoint(string_t key, uint64_t timestamp, string_t value):  key(key), timestamp(timestamp), value(value), type(DataPointType::STRING)  {}
+    DataPoint(string_t key, uint64_t timestamp, bool_t value):    key(key), timestamp(timestamp), value(value), type(DataPointType::BOOLEAN) {}
+    DataPoint(string_t key, uint64_t timestamp, uint8_t value):   key(key), timestamp(timestamp), value(value), type(DataPointType::UINT8)   {}
+    DataPoint(string_t key, uint64_t timestamp, uint16_t value):  key(key), timestamp(timestamp), value(value), type(DataPointType::UINT16)  {}
+    DataPoint(string_t key, uint64_t timestamp, uint32_t value):  key(key), timestamp(timestamp), value(value), type(DataPointType::UINT32)  {}
+    DataPoint(string_t key, uint64_t timestamp, uint64_t value):  key(key), timestamp(timestamp), value(value), type(DataPointType::UINT64)  {}
+    DataPoint(string_t key, uint64_t timestamp, int8_t value):    key(key), timestamp(timestamp), value(value), type(DataPointType::INT8)    {}
+    DataPoint(string_t key, uint64_t timestamp, int16_t value):   key(key), timestamp(timestamp), value(value), type(DataPointType::INT16)   {}
+    DataPoint(string_t key, uint64_t timestamp, int32_t value):   key(key), timestamp(timestamp), value(value), type(DataPointType::INT32)   {}
+    DataPoint(string_t key, uint64_t timestamp, int64_t value):   key(key), timestamp(timestamp), value(value), type(DataPointType::INT64)   {}
+    DataPoint(string_t key, uint64_t timestamp, float32_t value): key(key), timestamp(timestamp), value(value), type(DataPointType::FLOAT32) {}
+    DataPoint(string_t key, uint64_t timestamp, float64_t value): key(key), timestamp(timestamp), value(value), type(DataPointType::FLOAT64) {}
 
     inline string_t  getString()  { return boost::get<string_t>(value);  }
-    inline bool_t    getBoolean() { return boost::get<bool_t>(value); }
+    inline bool_t    getBoolean() { return boost::get<bool_t>(value);    }
     inline uint8_t   getUInt8()   { return boost::get<uint8_t>(value);   }
     inline uint16_t  getUInt16()  { return boost::get<uint16_t>(value);  }
     inline uint32_t  getUInt32()  { return boost::get<uint32_t>(value);  }
@@ -81,11 +81,11 @@ public:
     inline float64_t getFloat64() { return boost::get<float64_t>(value); }
 
     std::string toJson() {
-        json val = {
-                {"timestamp", timestamp},
-                {"key", key},
-                {"value", toString()}
-        };
+        std::string stringValue = toString();
+        json val;
+        val["timestamp"] = timestamp;
+        val["key"] = key;
+        val["value"] = stringValue;
         return val.dump() + "\n";
     }
 
@@ -101,34 +101,34 @@ public:
                 return getBoolean() ? "true" : "false";
             }
             case DataPointType::UINT8: {
-                return fmt::format("{}", getUInt8());
+                return fmt::format("{:d}", getUInt8());
             }
             case DataPointType::UINT16: {
-                return fmt::format("{}", getUInt16());
+                return fmt::format("{:d}", getUInt16());
             }
             case DataPointType::UINT32: {
-                return fmt::format("{}", getUInt32());
+                return fmt::format("{:d}", getUInt32());
             }
             case DataPointType::UINT64: {
-                return fmt::format("{}", getUInt64());
+                return fmt::format("{:d}", getUInt64());
             }
             case DataPointType::INT8: {
-                return fmt::format("{}", getInt8());
+                return fmt::format("{:d}", getInt8());
             }
             case DataPointType::INT16: {
-                return fmt::format("{}", getInt16());
+                return fmt::format("{:d}", getInt16());
             }
             case DataPointType::INT32: {
-                return fmt::format("{}", getInt32());
+                return fmt::format("{:d}", getInt32());
             }
             case DataPointType::INT64: {
-                return fmt::format("{}", getInt64());
+                return fmt::format("{:d}", getInt64());
             }
             case DataPointType::FLOAT32: {
-                return fmt::format("{}", getFloat32());
+                return fmt::format("{:f}", getFloat32());
             }
             case DataPointType::FLOAT64: {
-                return fmt::format("{}", getFloat64());
+                return fmt::format("{:f}", getFloat64());
             }
             default: {
                 return "";

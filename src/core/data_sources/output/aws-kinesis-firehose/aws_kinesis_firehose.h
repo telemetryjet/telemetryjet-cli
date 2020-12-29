@@ -16,9 +16,11 @@ private:
     std::string deliveryStreamName;
     std::string accessKeyId;
     std::string secretAccessKey;
+    uint64_t interval = 1000;
     uint64_t maxRecordsPerSecond = 5000;
     std::shared_ptr<HttpsClient> client;
     std::shared_ptr<SimpleTimer> rateLimitTimer;
+    std::shared_ptr<SimpleTimer> intervalTimer;
     uint64_t rateLimitCount = 0;
 public:
     explicit AwsKinesisFirehoseDataSource(const json &definition);
