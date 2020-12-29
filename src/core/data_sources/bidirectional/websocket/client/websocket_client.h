@@ -11,6 +11,7 @@ private:
     std::string path;
     WsClient client;
     std::shared_ptr<WsClient::Connection> wsConnection;
+    std::thread clientThread;
 
     std::string getServerPath();
 public:

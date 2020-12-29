@@ -17,6 +17,7 @@ void WebsocketClientDataSource::open() {
                              int status,
                              const std::string& reason) {
         wsConnection.reset();
+        clientThread.join();
         SM::getLogger()->info(
             fmt::format("Closed websocket client connection to server at {} with status code {}.",
                         path,
@@ -42,7 +43,10 @@ void WebsocketClientDataSource::open() {
         write(createDataPointFromString(jsonObj["key"], jsonObj["timestamp"], jsonObj["value"]));
     };
 
-    client.start();
+    clientThread = std::thread([this]() {
+      client.start();
+    });
+
     DataSource::open();
 }
 
