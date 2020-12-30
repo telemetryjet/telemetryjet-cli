@@ -20,8 +20,7 @@ private:
     std::string transport = "tcp";
     bool tlsEnabled = false;
     std::string caCertFile;
-    std::unique_ptr<boost::asio::io_context> ioContext;
-    std::unique_ptr<MQTT_NS::sync_client> client;
+    boost::asio::io_context ioContext;
 public:
     explicit MqttClientDataSource(const json &definition);
     void open() override;

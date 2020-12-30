@@ -9,8 +9,7 @@
  *  - "certFile"
  *  - "privateKeyFile"
  */
-MqttClientDataSource::MqttClientDataSource(const json& definition)
-    : DataSource(definition) {
+MqttClientDataSource::MqttClientDataSource(const json& definition): DataSource(definition) {
     if (options.is_null()) {
         throw std::runtime_error(fmt::format("[{}] data source type '{}' requires an options object", id, type));
     }
@@ -47,17 +46,63 @@ void MqttClientDataSource::open() {
     SM::getLogger()->info(fmt::format("[{}] Port: {}", id, port));
     SM::getLogger()->info(fmt::format("[{}] Transport: {}", id, transport));
     SM::getLogger()->info(fmt::format("[{}] TLS Enabled: {}", id, tlsEnabled));
+    auto& client;
     if (tlsEnabled) {
         SM::getLogger()->info(fmt::format("[{}] CA Cert File: {}", id, caCertFile));
+        if (transport == "tcp") {
+            client = MQTT_NS::make_tls_async_client(ioContext, host, port);
+        } else {
+            client = MQTT_NS::make_tls_async_client_ws(ioContext, host, port);
+        }
+    } else {
+        if (transport == "tcp") {
+            client = MQTT_NS::make_async_client(ioContext, host, port);
+        } else {
+            client = MQTT_NS::make_async_client_ws(ioContext, host, port);
+        }
     }
-    client = MQTT_NS::make_async_client();
+    using packet_id_t = typename std::remove_reference_t<decltype(*client)>::packet_id_t;
+
+    // Setup client
+    client->set_client_id("cid1");
+    client->set_clean_session(true);
+    if (tlsEnabled) {
+        client->get_ssl_context().load_verify_file(caCertFile);
+    }
+
+    // Setup handlers
+    client->set_connack_handler([&] (bool sp, MQTT_NS::connect_return_code connack_return_code) {
+      if (connack_return_code == MQTT_NS::connect_return_code::accepted) {
+          // Connection successful
+          SM::getLogger()->info(fmt::format("[{}] Connected to MQTT server", id));
+          error = false;
+      } else {
+          // Connection failed
+          SM::getLogger()->warning(fmt::format("[{}] Failed to connect to MQTT server", id));
+          error = true;
+      }
+      return true;
+    });
+
+    client->set_close_handler([&] () {
+        SM::getLogger()->info(fmt::format("[{}] Disconnected from MQTT server", id));
+    });
+
+    client->set_error_handler([&] (MQTT_NS::error_code ec) {
+        SM::getLogger()->info(fmt::format("[{}] Error in MQTT client: {}", id, ec.message()));
+    });
+
+    client->connect();
     DataSource::open();
 }
 
 void MqttClientDataSource::close() {
+    //client->disconnect();
+    //client.reset();
     DataSource::close();
 }
 
 void MqttClientDataSource::update() {
+    //ioc.poll();
     DataSource::update();
 }
