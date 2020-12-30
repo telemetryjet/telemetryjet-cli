@@ -222,6 +222,6 @@ public:
 };
 
 std::shared_ptr<DataPoint>
-createDataPointFromString(const string_t& key, uint32_t timestamp, const string_t& stringValue);
+createDataPointFromString(const string_t& key, uint64_t timestamp, const string_t& stringValue);
 
 #endif

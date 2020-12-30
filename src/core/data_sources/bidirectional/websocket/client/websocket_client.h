@@ -20,6 +20,7 @@ public:
     void open() override;
     void close() override;
     void update() override;
+    void checkOnline() override;
 };
 
 #endif

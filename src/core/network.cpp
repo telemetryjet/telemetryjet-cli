@@ -68,6 +68,9 @@ void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
         try {
             boost::this_thread::interruption_point();
 
+            // check if the data source is online
+            dataSource->checkOnline();
+
             // Move any in data points into the internal queue.
             // This prevents locking if a data source has a long-running update call.
             dataSource->transferInDataPoints();
@@ -78,6 +81,12 @@ void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
             // Set a "last updated" time. The network uses this to detect situations where a data source
             // is stuck in a single update for a significant amount of time, and logs a warning.
             dataSource->lastUpdated = getCurrentMillis();
+
+            // If the data source is offline, transfer the data points in the in queue to the sqlite
+            // cache before we clear it. These will be retried when the data source comes back online
+            if(!dataSource->online) {
+                dataSource->cacheIncomingDataPoints();
+            }
 
             // Clear inputs from this data source.
             // Some data sources never handle inputs, so if they ignore the data, it gets cleared.

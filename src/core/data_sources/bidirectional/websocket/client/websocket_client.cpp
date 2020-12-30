@@ -4,11 +4,13 @@ WebsocketClientDataSource::WebsocketClientDataSource(const json& definition)
     : DataSource(definition)
     , path(getServerPath())
     , client(path) {
+    online = false;
 }
 
 void WebsocketClientDataSource::open() {
     client.on_open = [this](const std::shared_ptr<WsClient::Connection>& connection) {
         wsConnection = connection;
+        online = true;
         SM::getLogger()->info(
             fmt::format("Opened websocket client connection to server at {}.", path));
     };
@@ -33,7 +35,8 @@ void WebsocketClientDataSource::open() {
     client.on_message = [this](const std::shared_ptr<WsClient::Connection>& connection,
                                const std::shared_ptr<WsClient::InMessage>& message) {
         auto jsonObj = json::parse(message->string());
-        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp") || !jsonObj.contains("value")) {
+        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp")
+            || !jsonObj.contains("value")) {
             throw std::runtime_error(
                 fmt::format("Unable to parse message from websocket server: {}",
                             message->string()));
@@ -41,9 +44,7 @@ void WebsocketClientDataSource::open() {
         write(createDataPointFromString(jsonObj["key"], jsonObj["timestamp"], jsonObj["value"]));
     };
 
-    clientThread = std::thread([this]() {
-      client.start();
-    });
+    clientThread = std::thread([this]() { client.start(); });
 
     DataSource::open();
 }
@@ -58,13 +59,17 @@ void WebsocketClientDataSource::close() {
 
 void WebsocketClientDataSource::update() {
     // send incoming data points to ws server
-    if (!in.empty()) {
+    if (online && !in.empty()) {
         for (auto& dp : in) {
             wsConnection->send(dp->toJson());
         }
 
         // TODO: write to sql cache when ws server is offline
     }
+}
+
+void WebsocketClientDataSource::checkOnline() {
+    // TODO: set online member variable
 }
 
 std::string WebsocketClientDataSource::getServerPath() {
