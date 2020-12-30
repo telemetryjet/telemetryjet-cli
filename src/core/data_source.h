@@ -42,7 +42,7 @@ public:
     std::shared_ptr<DataSource> getptr();
     const std::string id;
     const std::string type;
-    bool online;
+    bool online = true;
     json options;
     std::mutex inMutex;
     std::mutex outMutex;
