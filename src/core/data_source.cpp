@@ -30,7 +30,9 @@ void DataSource::checkOnline() {
 
 // Write to the queue, to be output to all other data sources on the next iteration
 void DataSource::write(std::shared_ptr<DataPoint> dataPoint) {
+    outMutex.lock();
     out.push_back(dataPoint);
+    outMutex.unlock();
 }
 
 // Write to the queue immediately.

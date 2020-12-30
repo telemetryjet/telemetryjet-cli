@@ -45,6 +45,7 @@ public:
     bool online;
     json options;
     std::mutex inMutex;
+    std::mutex outMutex;
     std::mutex initializationMutex;
     std::deque<std::shared_ptr<DataPoint>> _inQueue;
     std::deque<std::shared_ptr<DataPoint>> in;

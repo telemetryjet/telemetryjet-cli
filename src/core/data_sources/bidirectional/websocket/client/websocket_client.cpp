@@ -63,8 +63,6 @@ void WebsocketClientDataSource::update() {
         for (auto& dp : in) {
             wsConnection->send(dp->toJson());
         }
-
-        // TODO: write to sql cache when ws server is offline
     }
 }
 

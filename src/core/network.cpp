@@ -217,6 +217,7 @@ void Network::checkDataSources() {
 // This MUST be called from within the same thread that the data source is running on
 // The output queue is not guarded with a mutex
 void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
+    dataSourceOut->outMutex.lock();
     if (!dataSourceOut->out.empty()) {
         // Add prefix ID to all data points
         for (auto& dataPoint : dataSourceOut->out) {
@@ -237,4 +238,5 @@ void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
         // Clear the outputs after copying them to the other data sources
         dataSourceOut->out.clear();
     }
+    dataSourceOut->outMutex.unlock();
 }
