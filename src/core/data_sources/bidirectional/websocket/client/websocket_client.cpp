@@ -18,11 +18,11 @@ void WebsocketClientDataSource::open() {
     client.on_close = [this](const std::shared_ptr<WsClient::Connection>& connection,
                              int status,
                              const std::string& reason) {
-        SM::getLogger()->info(
-            fmt::format("[{}] Closed websocket client connection to server at {} with status code {}.",
-                        id,
-                        path,
-                        status));
+        SM::getLogger()->info(fmt::format(
+            "[{}] Closed websocket client connection to server at {} with status code {}.",
+            id,
+            path,
+            status));
         online = false;
         clientThreadWantsExit = true;
     };
@@ -42,8 +42,9 @@ void WebsocketClientDataSource::open() {
                                const std::shared_ptr<WsClient::InMessage>& message) {
         try {
 
-        } catch (std::exception &e) {
-            SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to decode WebSocket client message", id));
+        } catch (std::exception& e) {
+            SM::getLogger()->warning(
+                fmt::format("[{}] Warning: Failed to decode WebSocket client message", id));
         }
         auto jsonObj = json::parse(message->string());
         if (!jsonObj.contains("key") || !jsonObj.contains("timestamp")
@@ -64,7 +65,7 @@ void WebsocketClientDataSource::startClientThread() {
     if (!clientThreadRunning) {
         clientThreadRunning = true;
         clientThreadWantsExit = false;
-        clientThread = std::thread([this]() { client.start(); });
+        clientThread = boost::thread([this]() { client.start(); });
     }
 }
 
