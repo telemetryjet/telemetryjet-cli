@@ -84,7 +84,7 @@ void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
 
             // If the data source is offline, transfer the data points in the in queue to the sqlite
             // cache before we clear it. These will be retried when the data source comes back online
-            if(!dataSource->online) {
+            if(!dataSource->online & dataSource->cache) {
                 dataSource->cacheIncomingDataPoints();
             }
 

@@ -64,8 +64,7 @@ void DataSource::cacheIncomingDataPoints() {
                 insertStatement.bind(4, dp->toString());
                 insertStatement.exec();
             } catch (std::exception& e) {
-                throw std::runtime_error(
-                    fmt::format("Error adding datapoint to sqlite cache: {}", e.what()));
+                SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to cache data point to SQLite database: {}", e.what()));
             }
         }
     }

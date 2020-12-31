@@ -13,6 +13,7 @@
 #include <nlohmann/json.hpp>
 #include <utility>
 #include <vector>
+#include "utility/path_utils.h"
 
 using json = nlohmann::json;
 
@@ -29,6 +30,8 @@ typedef enum { UNINITIALIZED, ACTIVE, ACTIVE_OUTPUT_ONLY, INACTIVE, CLOSED } Dat
 
 class DataSource : public std::enable_shared_from_this<DataSource> {
 private:
+    std::string cacheMode;
+    std::string cacheFilename;
     SQLite::Database* sqliteCache;
     std::mutex sqliteCacheMutex;
 
@@ -42,7 +45,8 @@ public:
     std::shared_ptr<DataSource> getptr();
     const std::string id;
     const std::string type;
-    bool online = true;
+    std::atomic<bool> cache = false;
+    std::atomic<bool> online = true;
     json options;
     std::mutex inMutex;
     std::mutex outMutex;
@@ -58,23 +62,59 @@ public:
 
     DataSource(const json& definition)
         : id(definition["id"])
-        , type(definition["type"])
-        , online(true) {
+        , type(definition["type"]) {
+        assertDependency("id", id, fmt::format("[{}] Multiple data sources cannot share the same ID: {}", id, id));
+
         lastUpdated = getCurrentMillis();
         if (definition.count("options") > 0) {
             options = definition["options"];
         }
 
-        // init sqlite cache
-        const std::lock_guard<std::mutex> lock(sqliteCacheMutex);
-        std::string databasePath = fmt::format("file:./{}_cache.db", id);
-        sqliteCache
-            = new SQLite::Database(databasePath,
-                                   SQLite::OPEN_URI | SQLite::OPEN_READWRITE
-                                       | SQLite::OPEN_CREATE);  // NOLINT(hicpp-signed-bitwise)
-        sqliteCache->exec(
-            "create table if not exists data (id integer primary key, key text not null, timestamp "
-            "text not null, data_type integer not null, value text not null)");
+        json cacheConfig;
+        if (options.contains("cache")) {
+            if (options["cache"].is_object()) {
+                cacheConfig = options["cache"];
+                if (cacheConfig.contains("enabled")) {
+                    if (!cacheConfig["enabled"].is_boolean()) {
+                        throw std::runtime_error(fmt::format("[{}] data source cache requires option 'enabled' of type Boolean", id, type));
+                    }
+                    cache = cacheConfig["enabled"];
+                }
+            } else {
+                throw std::runtime_error(fmt::format("[{}] 'cache' configuration must be an Object", id, type));
+            }
+        }
+
+        if (cache) {
+            if (cacheConfig.contains("filename")) {
+                if (!cacheConfig["filename"].is_string()) {
+                    throw std::runtime_error(
+                            fmt::format("[{}] data source cache requires option 'filename' of type String", id, type));
+                }
+                cacheFilename = cacheConfig["filename"];
+            } else {
+                cacheFilename = resolveRelativePathHome(fmt::format("{}_cache.db", id));
+            }
+
+            /*
+            if (!cacheConfig.contains("mode") || !cacheConfig["mode"].is_string()) {
+                throw std::runtime_error(fmt::format("[{}] data source cache requires option 'mode' of type String", id, type));
+            }
+            cacheMode = cacheConfig["mode"];
+             */
+
+            // init sqlite cache
+            assertDependency("file", cacheFilename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, cacheFilename));
+            const std::lock_guard<std::mutex> lock(sqliteCacheMutex);
+            std::string databasePath = cacheFilename;
+            sqliteCache
+                    = new SQLite::Database(fmt::format("file:{}", cacheFilename),
+                                           SQLite::OPEN_URI | SQLite::OPEN_READWRITE
+                                           | SQLite::OPEN_CREATE);  // NOLINT(hicpp-signed-bitwise)
+            sqliteCache->exec(
+                    "create table if not exists data (id integer primary key, key text not null, timestamp "
+                    "text not null, data_type integer not null, value text not null)");
+        }
     };
     virtual void open();
     virtual void close();
@@ -88,7 +128,7 @@ public:
         inMutex.lock();
 
         // if data source is online, transfer in any data points that are in the cache
-        if (online) {
+        if (online && cache) {
             transferInCachedDataPoints();
         }
 
