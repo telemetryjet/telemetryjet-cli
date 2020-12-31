@@ -64,7 +64,7 @@ void DataSource::cacheIncomingDataPoints() {
                 insertStatement.bind(4, dp->toString());
                 insertStatement.exec();
             } catch (std::exception& e) {
-                SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to cache data point to SQLite database: {}", e.what()));
+                SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to cache data point to SQLite database: {}", id, e.what()));
             }
         }
     }
@@ -85,7 +85,7 @@ void DataSource::transferInCachedDataPoints() {
             in.push_back(createDataPointFromString(key, timestamp, value));
         }
     } catch (std::exception& e) {
-        throw std::runtime_error(fmt::format("Error getting data from sqlite cache. {}", e.what()));
+        throw std::runtime_error(fmt::format("[{}] Error getting data from sqlite cache. {}", id, e.what()));
     }
 
     // delete data points from cache
@@ -95,7 +95,7 @@ void DataSource::transferInCachedDataPoints() {
             deleteStatement.exec();
         } catch (std::exception& e) {
             throw std::runtime_error(
-                fmt::format("Error deleting all data from sqlite cache. {}", e.what()));
+                fmt::format("[{}] Error deleting all data from sqlite cache. {}", id, e.what()));
         }
     }
 }

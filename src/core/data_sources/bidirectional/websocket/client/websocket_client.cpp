@@ -23,7 +23,6 @@ void WebsocketClientDataSource::open() {
                         id,
                         path,
                         status));
-        online = false;
         clientThreadWantsExit = true;
     };
 
@@ -34,25 +33,23 @@ void WebsocketClientDataSource::open() {
                         id,
                         path,
                         ec.message()));
-        online = false;
         clientThreadWantsExit = true;
     };
 
     client.on_message = [this](const std::shared_ptr<WsClient::Connection>& connection,
                                const std::shared_ptr<WsClient::InMessage>& message) {
         try {
-
+            auto jsonObj = json::parse(message->string());
+            if (!jsonObj.contains("key") || !jsonObj.contains("timestamp")
+                || !jsonObj.contains("value")) {
+                throw std::runtime_error(
+                        fmt::format("Unable to parse message from websocket server: {}",
+                                    message->string()));
+            }
+            write(createDataPointFromString(jsonObj["key"], jsonObj["timestamp"], jsonObj["value"]));
         } catch (std::exception &e) {
             SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to decode WebSocket client message", id));
         }
-        auto jsonObj = json::parse(message->string());
-        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp")
-            || !jsonObj.contains("value")) {
-            throw std::runtime_error(
-                fmt::format("Unable to parse message from websocket server: {}",
-                            message->string()));
-        }
-        write(createDataPointFromString(jsonObj["key"], jsonObj["timestamp"], jsonObj["value"]));
     };
 
     startClientThread();
@@ -62,6 +59,8 @@ void WebsocketClientDataSource::open() {
 
 void WebsocketClientDataSource::startClientThread() {
     if (!clientThreadRunning) {
+        wsConnection.reset();
+        online = false;
         clientThreadRunning = true;
         clientThreadWantsExit = false;
         clientThread = std::thread([this]() { client.start(); });
@@ -70,13 +69,15 @@ void WebsocketClientDataSource::startClientThread() {
 
 void WebsocketClientDataSource::stopClientThread() {
     if (clientThreadRunning) {
-        wsConnection->send_close(1000);
-        wsConnection.reset();
+        online = false;
+        if (wsConnection != nullptr) {
+            wsConnection->send_close(1000);
+            wsConnection.reset();
+        }
         client.stop();
         clientThread.join();
         clientThreadRunning = false;
         clientThreadWantsExit = false;
-        online = false;
     }
 }
 
@@ -88,6 +89,7 @@ void WebsocketClientDataSource::close() {
 void WebsocketClientDataSource::update() {
     if (clientThreadWantsExit) {
         stopClientThread();
+        return;
     }
 
     // send incoming data points to ws server
