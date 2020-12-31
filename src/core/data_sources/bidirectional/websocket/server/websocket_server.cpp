@@ -44,7 +44,8 @@ void WebsocketServerDataSource::open() {
     ws.on_message = [this](const std::shared_ptr<WsServer::Connection>& connection,
                            const std::shared_ptr<WsServer::InMessage>& in_message) {
         auto jsonObj = json::parse(in_message->string());
-        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp") || !jsonObj.contains("value")) {
+        if (!jsonObj.contains("key") || !jsonObj.contains("timestamp")
+            || !jsonObj.contains("value")) {
             throw std::runtime_error(
                 fmt::format("Unable to parse message received by websocket server: {}",
                             in_message->string()));
@@ -54,7 +55,7 @@ void WebsocketServerDataSource::open() {
 
     // Start server and receive assigned port when server is listening for requests
     std::promise<unsigned short> server_port;
-    serverThread = std::thread([this, &server_port]() {
+    serverThread = boost::thread([this, &server_port]() {
         // Start server
         server.start([&server_port](unsigned short portVal) { server_port.set_value(portVal); });
     });

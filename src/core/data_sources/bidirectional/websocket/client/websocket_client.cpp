@@ -23,6 +23,7 @@ void WebsocketClientDataSource::open() {
                         id,
                         path,
                         status));
+        online = false;
         clientThreadWantsExit = true;
     };
 
@@ -47,8 +48,10 @@ void WebsocketClientDataSource::open() {
                                     message->string()));
             }
             write(createDataPointFromString(jsonObj["key"], jsonObj["timestamp"], jsonObj["value"]));
-        } catch (std::exception &e) {
-            SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to decode WebSocket client message", id));
+        } catch (std::exception& e) {
+            SM::getLogger()->warning(
+                fmt::format("[{}] Warning: Failed to decode WebSocket client message", id));
+
         }
     };
 
@@ -63,7 +66,7 @@ void WebsocketClientDataSource::startClientThread() {
         online = false;
         clientThreadRunning = true;
         clientThreadWantsExit = false;
-        clientThread = std::thread([this]() { client.start(); });
+        clientThread = boost::thread([this]() { client.start(); });
     }
 }
 
