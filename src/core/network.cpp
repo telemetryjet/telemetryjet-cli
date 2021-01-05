@@ -1,6 +1,7 @@
 #include <core/data_sources/bidirectional/key-value-stream/key_value_stream.h>
 #include <core/data_sources/input/test-input/test_input.h>
 #include <core/data_sources/output/console-output/console_output.h>
+#include <core/data_sources/input/csv-file-input/csv_file_input.h>
 #include <core/data_sources/output/csv-file-output/csv_file_output.h>
 #include <core/data_sources/output/key-value-file-output/key_value_file_output.h>
 #include <core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.h>
@@ -31,6 +32,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<ConsoleInputDataSource>(dataSourceDefinition));
         } else if (type == "csv-file-output") {
             dataSources.push_back(std::make_shared<CsvFileOutputDataSource>(dataSourceDefinition));
+        } else if (type == "csv-file-input") {
+            dataSources.push_back(std::make_shared<CsvFileInputDataSource>(dataSourceDefinition));
         } else if (type == "key-value-file-output") {
             dataSources.push_back(std::make_shared<KeyValueFileOutputDataSource>(dataSourceDefinition));
         } else if (type == "key-value-file-input") {
