@@ -64,6 +64,7 @@ set(SOURCES
         src/core/data_sources/input/console-input/console_input.cpp
         src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp
         src/core/data_sources/bidirectional/websocket/server/websocket_server.cpp
+        src/core/data_sources/input/csv-file-input/csv_file_input.cpp
 )
 
 # Platform-specific sources
@@ -138,7 +139,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/console-input/console_input.h
         src/core/data_sources/bidirectional/websocket/client/websocket_client.h
         src/core/data_sources/bidirectional/websocket/server/websocket_server.h
-)
+        src/core/data_sources/input/csv-file-input/csv_file_input.h)
 
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)
