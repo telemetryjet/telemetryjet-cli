@@ -16,6 +16,7 @@ void SystemStatsDataSource::computeMemoryAvailable() {
 }
 
 void SystemStatsDataSource::computeCpuStats() {
+    /*
     uint64_t timestamp = getCurrentMillis();
 
     // Read in all CPU time values from /proc/stat
@@ -42,5 +43,5 @@ void SystemStatsDataSource::computeCpuStats() {
         std::cout << utilization << '%' << std::endl;
         previous_idle_time = idle_time;
         previous_total_time = total_time;
-    }
+    }*/
 }
