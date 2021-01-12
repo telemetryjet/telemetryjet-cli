@@ -3,17 +3,19 @@
 
 #include "core/data_source.h"
 #include "server_ws.hpp"
+#include <boost/thread.hpp>
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
 class WebsocketServerDataSource : public DataSource {
 private:
     WsServer server;
-    std::thread serverThread;
+    boost::thread serverThread;
     int port;
     std::string endpoint;
+
 public:
-    WebsocketServerDataSource(const json &definition);
+    WebsocketServerDataSource(const json& definition);
     ~WebsocketServerDataSource() = default;
     void open() override;
     void close() override;
