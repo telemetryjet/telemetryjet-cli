@@ -29,6 +29,7 @@ public:
     void pollBlocking();
     void close();
     void open();
+    void writeLine(std::string line);
 
     // Getters
               int getNumBytes();

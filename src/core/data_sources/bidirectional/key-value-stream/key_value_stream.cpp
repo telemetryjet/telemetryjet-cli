@@ -23,4 +23,11 @@ void KeyValueStream::update() {
         }
         serial->clearBuffer();
     }
+
+    // send incoming data points to serial stream
+    if (online && !in.empty()) {
+        for (auto& dp : in) {
+            serial->writeLine(fmt::format("{}={}", dp->key, dp->getString()));
+        }
+    }
 }
