@@ -9,6 +9,7 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include "openssl/sha.h"
 #include "openssl/hmac.h"
 
