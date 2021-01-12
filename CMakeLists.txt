@@ -3,7 +3,7 @@ cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
 cmake_policy(SET CMP0077 NEW)
 
-project(TelemetryJetCli VERSION 0.1.0
+project(TelemetryJetCli VERSION 0.2.0
                         DESCRIPTION "TelemetryJet CLI"
                         LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
@@ -160,10 +160,10 @@ else()
     else()
         if (UNIX)
             target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+            target_link_libraries(${PROJECT_NAME} PUBLIC -latomic)
             SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
             SET(BUILD_SHARED_LIBS OFF)
             SET(CMAKE_EXE_LINKER_FLAGS "-static")
-            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
         else()
         endif()
     endif()
