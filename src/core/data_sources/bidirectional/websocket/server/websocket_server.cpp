@@ -21,6 +21,7 @@ WebsocketServerDataSource::WebsocketServerDataSource(const json& definition)
 }
 
 void WebsocketServerDataSource::open() {
+    isOnline = false;
     server.config.port = port;
     auto& ws = server.endpoint[fmt::format("^/{}/?$", endpoint)];
 

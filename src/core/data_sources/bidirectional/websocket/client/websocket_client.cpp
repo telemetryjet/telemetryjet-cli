@@ -4,13 +4,13 @@ WebsocketClientDataSource::WebsocketClientDataSource(const json& definition)
     : DataSource(definition)
     , path(getServerPath())
     , client(path) {
-    online = false;
+    isOnline = false;
 }
 
 void WebsocketClientDataSource::open() {
     client.on_open = [this](const std::shared_ptr<WsClient::Connection>& connection) {
         wsConnection = connection;
-        online = true;
+        isOnline = true;
         SM::getLogger()->info(
             fmt::format("[{}] Opened websocket client connection to server at {}.", id, path));
     };
@@ -23,7 +23,7 @@ void WebsocketClientDataSource::open() {
                         id,
                         path,
                         status));
-        online = false;
+        isOnline = false;
         clientThreadWantsExit = true;
     };
 
@@ -55,6 +55,7 @@ void WebsocketClientDataSource::open() {
         }
     };
 
+    isOnline = false;
     startClientThread();
     reconnectTimer = std::make_unique<SimpleTimer>(5000);
     DataSource::open();
@@ -63,7 +64,7 @@ void WebsocketClientDataSource::open() {
 void WebsocketClientDataSource::startClientThread() {
     if (!clientThreadRunning) {
         wsConnection.reset();
-        online = false;
+        isOnline = false;
         clientThreadRunning = true;
         clientThreadWantsExit = false;
         clientThread = boost::thread([this]() { client.start(); });
@@ -72,7 +73,7 @@ void WebsocketClientDataSource::startClientThread() {
 
 void WebsocketClientDataSource::stopClientThread() {
     if (clientThreadRunning) {
-        online = false;
+        isOnline = false;
         if (wsConnection != nullptr) {
             wsConnection->send_close(1000);
             wsConnection.reset();
@@ -96,18 +97,15 @@ void WebsocketClientDataSource::update() {
     }
 
     // send incoming data points to ws server
-    if (online && !in.empty()) {
+    if (isOnline && !in.empty()) {
         for (auto& dp : in) {
             wsConnection->send(dp->toJson());
         }
     }
-    if (!online && reconnectTimer->check()) {
+
+    if (!isOnline && reconnectTimer->check()) {
         startClientThread();
     }
-}
-
-void WebsocketClientDataSource::checkOnline() {
-    // TODO: set online member variable
 }
 
 std::string WebsocketClientDataSource::getServerPath() {

@@ -13,7 +13,9 @@ private:
     bool isJoystickOpen = false;
     void openJoystick();
 public:
-    JoystickDataSource(const json &definition): DataSource(definition) {}
+    JoystickDataSource(const json &definition): DataSource(definition) {
+        outputEnabled = false;
+    }
     void open() override;
     void close() override;
     void update() override;

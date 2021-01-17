@@ -4,7 +4,7 @@ void JoystickDataSource::openJoystick() {
     isJoystickOpen = false;
     if (SDL_NumJoysticks() <= 0) {
         SM::getLogger()->warning(fmt::format("[{}] Could not connect to a joystick! Will retry in 5000ms", id));
-        error = true;
+        hasError = true;
         return;
     }
 
@@ -12,11 +12,11 @@ void JoystickDataSource::openJoystick() {
 
     if (!joy) {
         SM::getLogger()->warning(fmt::format("[{}] Could not connect to a joystick! Will retry in 5000ms", id));
-        error = true;
+        hasError = true;
         return;
     }
 
-    error = false;
+    hasError = false;
     isJoystickOpen = true;
     SM::getLogger()->info(fmt::format("[{}] Opened joystick {}", id,SDL_JoystickName(joy)));
 }
@@ -35,6 +35,7 @@ void JoystickDataSource::close() {
 }
 
 void JoystickDataSource::update() {
+    isOnline = isJoystickOpen;
     if (isJoystickOpen) {
         pollTimer->wait();
 

@@ -14,51 +14,58 @@
 #include <utility>
 #include <vector>
 #include "utility/path_utils.h"
+#include "utility/timer/simple_timer.h"
 
 using json = nlohmann::json;
 
 class Network;
 
-/**
- * Data Source State
- * Uninitialized -- open() not yet called successfully.
- * Active -- Data source is running.
- * Done -- Data source is running, but is done processing data.
- * Closed -- close() has been called and data source is inactive.
- */
-typedef enum { UNINITIALIZED, ACTIVE, ACTIVE_OUTPUT_ONLY, INACTIVE, CLOSED } DataSourceState;
+typedef enum { UNINITIALIZED, ACTIVE, INACTIVE, CLOSED } DataSourceState;
 
 class DataSource : public std::enable_shared_from_this<DataSource> {
 private:
-    std::string cacheMode;
-    std::string cacheFilename;
-    SQLite::Database* sqliteCache;
-    std::mutex sqliteCacheMutex;
-
-    void transferInCachedDataPoints();
 
 protected:
+    // Dependency tracking (Files, ports, etc) between data sources
     static std::mutex dependencyMutex;
     static std::map<std::string, int> dependencyMap;
 
 public:
-    std::shared_ptr<DataSource> getptr();
+    // Data source metadata
+    json options;
+    Network* parent;
     const std::string id;
     const std::string type;
-    std::atomic<bool> cache = false;
-    std::atomic<bool> online = true;
-    json options;
+    std::atomic<bool> isOnline = true;
+    std::atomic<bool> hasError = false;
+
+    // Mode parameters and settings
+    std::atomic<bool> inputEnabled = true;
+    std::atomic<bool> outputEnabled = true;
+    std::atomic<DataSourceState> state = UNINITIALIZED;
+    std::atomic<uint64_t> lastUpdated;
+
+    // Input and output queues; thread synchronization
+    std::shared_ptr<DataSource> getptr();
     std::mutex inMutex;
     std::mutex outMutex;
     std::mutex initializationMutex;
     std::deque<std::shared_ptr<DataPoint>> _inQueue;
     std::deque<std::shared_ptr<DataPoint>> in;
     std::deque<std::shared_ptr<DataPoint>> out;
-    Network* parent;
 
-    std::atomic<DataSourceState> state = UNINITIALIZED;
-    std::atomic<uint64_t> lastUpdated;
-    std::atomic<bool> error = false;
+    // Rate limiting
+    // Rate limit imposes a limit on both 1) Number of data points per second 2) Number of data points per iteration
+    std::atomic<int> rateLimit = INT_MAX;
+    std::atomic<int> rateLimitCounter = 0;
+    std::unique_ptr<SimpleTimer> rateLimitResetTimer;
+
+    // SQLite data point cache
+    std::atomic<bool> hasCache = false;
+    std::atomic<int> cacheNumItems = 0;
+    std::string cacheFilename;
+    SQLite::Database* sqliteCache;
+    std::mutex sqliteCacheMutex;
 
     DataSource(const json& definition)
         : id(definition["id"])
@@ -70,6 +77,16 @@ public:
             options = definition["options"];
         }
 
+        if (definition.contains("input") && definition["input"].is_boolean()) {
+            inputEnabled = definition["input"];
+        }
+        if (definition.contains("output") && definition["output"].is_boolean()) {
+            outputEnabled = definition["output"];
+        }
+        if (options.contains("rateLimit") && options["rateLimit"].is_number_integer()) {
+            rateLimit = options["rateLimit"];
+        }
+
         json cacheConfig;
         if (options.contains("cache")) {
             if (options["cache"].is_object()) {
@@ -78,43 +95,25 @@ public:
                     if (!cacheConfig["enabled"].is_boolean()) {
                         throw std::runtime_error(fmt::format("[{}] data source cache requires option 'enabled' of type Boolean", id, type));
                     }
-                    cache = cacheConfig["enabled"];
+                    if (cacheConfig["enabled"]) {
+                        hasCache = true;
+                        if (cacheConfig.contains("filename")) {
+                            if (!cacheConfig["filename"].is_string()) {
+                                throw std::runtime_error(
+                                        fmt::format("[{}] data source cache requires option 'filename' of type String", id, type));
+                            }
+                            cacheFilename = resolveRelativePathHome(cacheConfig["filename"]);
+                        } else {
+                            cacheFilename = resolveRelativePathHome(fmt::format("{}_cache.db", id));
+                        }
+                        assertDependency("file", cacheFilename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, cacheFilename));
+                    }
                 }
             } else {
                 throw std::runtime_error(fmt::format("[{}] 'cache' configuration must be an Object", id, type));
             }
         }
-
-        if (cache) {
-            if (cacheConfig.contains("filename")) {
-                if (!cacheConfig["filename"].is_string()) {
-                    throw std::runtime_error(
-                            fmt::format("[{}] data source cache requires option 'filename' of type String", id, type));
-                }
-                cacheFilename = cacheConfig["filename"];
-            } else {
-                cacheFilename = resolveRelativePathHome(fmt::format("{}_cache.db", id));
-            }
-
-            /*
-            if (!cacheConfig.contains("mode") || !cacheConfig["mode"].is_string()) {
-                throw std::runtime_error(fmt::format("[{}] data source cache requires option 'mode' of type String", id, type));
-            }
-            cacheMode = cacheConfig["mode"];
-             */
-
-            // init sqlite cache
-            assertDependency("file", cacheFilename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, cacheFilename));
-            const std::lock_guard<std::mutex> lock(sqliteCacheMutex);
-            std::string databasePath = cacheFilename;
-            sqliteCache
-                    = new SQLite::Database(fmt::format("file:{}", cacheFilename),
-                                           SQLite::OPEN_URI | SQLite::OPEN_READWRITE
-                                           | SQLite::OPEN_CREATE);  // NOLINT(hicpp-signed-bitwise)
-            sqliteCache->exec(
-                    "create table if not exists data (id integer primary key, key text not null, timestamp "
-                    "text not null, data_type integer not null, value text not null)");
-        }
+        rateLimitResetTimer = std::make_unique<SimpleTimer>(1000);
     };
     virtual void open();
     virtual void close();
@@ -124,22 +123,13 @@ public:
     virtual void write(std::shared_ptr<DataPoint> dataPoint);
     virtual void writeImmediate(std::shared_ptr<DataPoint> dataPoint);
 
-    void transferInDataPoints() {
-        inMutex.lock();
+    void startUpdate();
+    void finishUpdate();
 
-        // if data source is online, transfer in any data points that are in the cache
-        if (online && cache) {
-            transferInCachedDataPoints();
-        }
-
-        while (_inQueue.size() > 0) {
-            in.push_back(_inQueue.front());
-            _inQueue.pop_front();
-        }
-        inMutex.unlock();
-    }
-
-    void cacheIncomingDataPoints();
+    void initializeCache(); // Initialize the cache
+    void closeCache(); // Close the cache and cleanup resources
+    void readCacheValues(int batchSize); // Read a batch from the cache file into the input queue if it's allowed
+    void writeCacheValues(); // Write all values on the input queue into the cache file
 
     // Flush list of output data points to be sent to the other data sources
     void flushDataPoints();

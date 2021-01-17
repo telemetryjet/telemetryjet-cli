@@ -64,6 +64,7 @@ set(SOURCES
         src/core/data_sources/input/console-input/console_input.cpp
         src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp
         src/core/data_sources/bidirectional/websocket/server/websocket_server.cpp
+        src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.cpp
 )
 
 # Platform-specific sources
@@ -138,6 +139,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/console-input/console_input.h
         src/core/data_sources/bidirectional/websocket/client/websocket_client.h
         src/core/data_sources/bidirectional/websocket/server/websocket_server.h
+        src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.h
 )
 
 # Put version numbers into header
@@ -150,20 +152,20 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS_PRIVATE})
 # Build static on linux and windows but not macos
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC -static)
+    SET(CMAKE_EXE_LINKER_FLAGS "-static")
+    SET(BUILD_SHARED_LIBS OFF)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wa,-mbig-obj" )
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-    SET(BUILD_SHARED_LIBS OFF)
-    SET(CMAKE_EXE_LINKER_FLAGS "-static")
 else()
     if (APPLE)
     else()
         if (UNIX)
             target_link_libraries(${PROJECT_NAME} PUBLIC -static)
-            target_link_libraries(${PROJECT_NAME} PUBLIC -latomic)
             SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
             SET(BUILD_SHARED_LIBS OFF)
             SET(CMAKE_EXE_LINKER_FLAGS "-static")
+            target_link_libraries(${PROJECT_NAME} PUBLIC -latomic)
         else()
         endif()
     endif()

@@ -25,6 +25,7 @@ FileOutputDataSource::FileOutputDataSource(const json &definition): DataSource(d
         throw std::runtime_error(fmt::format("[{}] data source type '{}' has invalid value for 'mode': {}", id, type, modeString));
     }
     assertDependency("file", filename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, filename));
+    inputEnabled = false;
 }
 
 void FileOutputDataSource::open() {
@@ -52,7 +53,6 @@ void FileOutputDataSource::open() {
     }
     flushTimer = std::make_unique<SimpleTimer>(1000);
     DataSource::open();
-    state = ACTIVE_OUTPUT_ONLY;
 }
 
 void FileOutputDataSource::close() {

@@ -1,8 +1,6 @@
 #include "console_input.h"
 #include <string>
 #include <iostream>
-#include <sstream>
-#include "services/service_manager.h"
 #include "utility/key_value/key_value_utils.h"
 
 void ConsoleInputDataSource::open() {

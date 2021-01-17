@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <variant>
+#include "utility/messagepack/messagepack.h"
 
 using json = nlohmann::json;
 

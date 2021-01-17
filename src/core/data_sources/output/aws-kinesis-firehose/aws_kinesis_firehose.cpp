@@ -34,6 +34,7 @@ AwsKinesisFirehoseDataSource::AwsKinesisFirehoseDataSource(const json &definitio
     deliveryStreamName = options["deliveryStreamName"];
     accessKeyId = options["accessKeyId"];
     secretAccessKey = options["secretAccessKey"];
+    inputEnabled = false;
 }
 
 void AwsKinesisFirehoseDataSource::update() {
@@ -155,12 +156,12 @@ void AwsKinesisFirehoseDataSource::update() {
                 throw std::runtime_error(response->content.string());
             }
         }
-        error = false;
+        hasError = false;
     } catch (boost::thread_interrupted& e) {
         throw e;
     } catch (std::exception &e) {
         SM::getLogger()->error(fmt::format("[{}] Failed to send data to Firehose: {}", id, e.what()));
-        error = true;
+        hasError = true;
     }
 }
 
@@ -172,7 +173,6 @@ void AwsKinesisFirehoseDataSource::open() {
     intervalTimer = std::make_shared<SimpleTimer>(interval);
     rateLimitCount = 0;
     DataSource::open();
-    state = ACTIVE_OUTPUT_ONLY;
 }
 
 void AwsKinesisFirehoseDataSource::close() {

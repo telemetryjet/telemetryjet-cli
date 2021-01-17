@@ -89,7 +89,8 @@ void SerialStreamDataSource::close() {
 
 void SerialStreamDataSource::update() {
     if (serial->isOpen()) {
-        error = false;
+        hasError = false;
+        isOnline = true;
         serial->pollBlocking();
     }
 
@@ -97,6 +98,7 @@ void SerialStreamDataSource::update() {
         // Periodically try to open serial port
         serial->open();
         // Set error flag if we are unable to connect
-        error = !serial->isOpen();
+        hasError = !serial->isOpen();
+        isOnline = serial->isOpen();
     }
 }

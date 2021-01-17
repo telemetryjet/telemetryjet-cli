@@ -13,6 +13,7 @@
 #include <core/data_sources/input/console-input/console_input.h>
 #include <core/data_sources/bidirectional/websocket/client/websocket_client.h>
 #include <core/data_sources/bidirectional/websocket/server/websocket_server.h>
+#include <core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -49,6 +50,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<WebsocketClientDataSource>(dataSourceDefinition));
         } else if (type == "websocket-server") {
             dataSources.push_back(std::make_shared<WebsocketServerDataSource>(dataSourceDefinition));
+        } else if (type == "telemetryjet-server") {
+            dataSources.push_back(std::make_shared<TelemetryJetServerDataSource>(dataSourceDefinition));
         } else if (type == "aws-kinesis-firehose") {
             dataSources.push_back(std::make_shared<AwsKinesisFirehoseDataSource>(dataSourceDefinition));
         } else {
@@ -64,37 +67,18 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
 // Handles the complete lifecycle of a data source:
 // initialization, main loop, and cleanup.
 void dataSourceThread(std::shared_ptr<DataSource> dataSource, bool errorMode) {
-    while (dataSource->state == ACTIVE || dataSource->state == ACTIVE_OUTPUT_ONLY) {
+    while (dataSource->state == ACTIVE) {
         try {
             boost::this_thread::interruption_point();
 
-            // check if the data source is online
+            // Update the online status of the data source
             dataSource->checkOnline();
 
-            // Move any in data points into the internal queue.
-            // This prevents locking if a data source has a long-running update call.
-            dataSource->transferInDataPoints();
-
             // Update the data source
+            dataSource->startUpdate();
             dataSource->update();
+            dataSource->finishUpdate();
 
-            // Set a "last updated" time. The network uses this to detect situations where a data source
-            // is stuck in a single update for a significant amount of time, and logs a warning.
-            dataSource->lastUpdated = getCurrentMillis();
-
-            // If the data source is offline, transfer the data points in the in queue to the sqlite
-            // cache before we clear it. These will be retried when the data source comes back online
-            if(!dataSource->online & dataSource->cache) {
-                dataSource->cacheIncomingDataPoints();
-            }
-
-            // Clear inputs from this data source.
-            // Some data sources never handle inputs, so if they ignore the data, it gets cleared.
-            // This prevents input cache buildup and an eventual OOM error.
-            dataSource->in.clear();
-
-            // Flush any output data points into the other data sources
-            dataSource->flushDataPoints();
         } catch (boost::thread_interrupted& e) {
             dataSource->state = INACTIVE;
         } catch (std::exception &e) {
@@ -128,14 +112,12 @@ void Network::start() {
     }
 }
 
-
 void Network::releaseDataSourceInitMutexes() {
     // Unlock all the data sources, releasing them to start handling data at the same time
     for (auto& dataSource: dataSources) {
         dataSource->initializationMutex.unlock();
     }
 }
-
 
 void Network::stop() {
     // Set interrupt flag on the network.
@@ -169,18 +151,19 @@ bool Network::isDone() {
     // If all data sources are done, we can exit
     bool allDone = true;
     for (auto& dataSource: dataSources) {
-        if (dataSource->state == ACTIVE) {
+        if (dataSource->inputEnabled && dataSource->state == ACTIVE) {
             allDone = false;
         }
         // Also give a chance for the output-only data sources to output their full queues
         // Prevents race conditions on exit; we want the output to flush completely at least once
         // to get the last data points from an input file.
-        if (dataSource->state == ACTIVE_OUTPUT_ONLY
-            && (
-                !dataSource->_inQueue.empty() ||
-                !dataSource->in.empty()
-           )) {
-            allDone = false;
+        if (dataSource->outputEnabled) {
+            if (!dataSource->_inQueue.empty() || !dataSource->in.empty()) {
+                allDone = false;
+            }
+            if (dataSource->hasCache && dataSource->cacheNumItems > 0) {
+                allDone = false;
+            }
         }
     }
     return allDone;
@@ -189,33 +172,26 @@ bool Network::isDone() {
 void Network::checkDataSources() {
     if (dataSourceCheckTimer->check()) {
         for (auto& dataSource: dataSources) {
-            // Check for errors
-            if (errorMode) {
-                if (dataSource->error) {
-                    SM::getLogger()->error(fmt::format("[{}] Error in data source, exiting...", dataSource->id));
-                    error = true;
+            if (dataSource->state == ACTIVE) {
+                // Check for errors
+                if (errorMode) {
+                    if (dataSource->hasError) {
+                        SM::getLogger()->error(fmt::format("[{}] Error in data source, exiting...", dataSource->id));
+                        error = true;
+                    }
+                }
+
+                // Check for long-running updates
+                uint64_t dataSourceLastUpdatedDelta = getCurrentMillis() - dataSource->lastUpdated;
+                if (dataSourceLastUpdatedDelta > 5000) {
+                    SM::getLogger()->warning(fmt::format("[{}] Warning: Data source stuck in update ({} ms)", dataSource->id, dataSourceLastUpdatedDelta));
                 }
             }
-
-            // Check for long-running updates
-            uint64_t dataSourceLastUpdatedDelta = getCurrentMillis() - dataSource->lastUpdated;
-            if (dataSourceLastUpdatedDelta > 5000) {
-                SM::getLogger()->warning(fmt::format("[{}] Warning: Data source stuck in update ({} ms)", dataSource->id, dataSourceLastUpdatedDelta));
-            }
-
-            // TODO: Check for indications that the input data sources are producing more than the output data sources
-            // To detect: For each data source output, check size of input queue before and after handling
-            // If the size is LARGER after handling a loop, we're getting data faster than we can handle it
-            // Flag this in a counter, and if this happens too many times trigger a warning message
-            // To test this, add an artificial lag to the console data source to make it take 100ms per line it outputs.
-            // If a data source outputs more than that, it will overwhelm the console data source.
         }
     }
 }
 
 // Write from a data source's output queue into all the other data sources
-// This MUST be called from within the same thread that the data source is running on
-// The output queue is not guarded with a mutex
 void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
     dataSourceOut->outMutex.lock();
     if (!dataSourceOut->out.empty()) {
@@ -227,11 +203,11 @@ void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
         if (!interrupted) {
             for (auto& dataSourceIn : dataSources) {
                 if (dataSourceIn != dataSourceOut) {
+                    dataSourceIn->inMutex.lock();
                     for (auto& dataPoint : dataSourceOut->out) {
-                        dataSourceIn->inMutex.lock();
                         dataSourceIn->_inQueue.push_back(dataPoint);
-                        dataSourceIn->inMutex.unlock();
                     }
+                    dataSourceIn->inMutex.unlock();
                 }
             }
         }

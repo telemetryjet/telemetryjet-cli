@@ -1,5 +1,4 @@
 #include "file_input.h"
-#include "utility/path_utils.h"
 
 namespace fs = boost::filesystem;
 
@@ -12,6 +11,7 @@ FileInputDataSource::FileInputDataSource(const json &definition): DataSource(def
     }
     filename = options["filename"];
     assertDependency("file", filename, fmt::format("[{}] Multiple data sources cannot share the same input/output filename: {}", id, filename));
+    outputEnabled = false;
 }
 
 void FileInputDataSource::open() {

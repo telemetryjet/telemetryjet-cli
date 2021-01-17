@@ -14,5 +14,4 @@ void ConsoleOutputDataSource::update() {
 
 void ConsoleOutputDataSource::open() {
     DataSource::open();
-    state = ACTIVE_OUTPUT_ONLY;
 }

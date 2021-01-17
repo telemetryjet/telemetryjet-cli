@@ -1,6 +1,5 @@
 #include "key_value_stream.h"
 #include <string>
-#include <boost/algorithm/string.hpp>
 
 void KeyValueStream::update() {
     SerialStreamDataSource::update();
@@ -25,7 +24,7 @@ void KeyValueStream::update() {
     }
 
     // send incoming data points to serial stream
-    if (online && !in.empty()) {
+    if (isOnline && !in.empty()) {
         for (auto& dp : in) {
             serial->writeLine(fmt::format("{}={}", dp->key, dp->getString()));
         }
