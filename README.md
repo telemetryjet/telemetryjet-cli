@@ -1,6 +1,8 @@
-[![asciicast](https://asciinema.org/a/377404.svg)](https://asciinema.org/a/377404)
-
 # TelemetryJet CLI
+
+![version-badge](https://img.shields.io/github/v/release/telemetryjet/telemetryjet-cli)
+![commit-activity-badge](https://img.shields.io/github/last-commit/telemetryjet/telemetryjet-arduino-sdk)
+![license-badge](https://img.shields.io/github/license/telemetryjet/telemetryjet-arduino-sdk)
 
 ## Overview
 
