@@ -15,7 +15,6 @@ enum class ArduinoSdkDataPointType : int {
     INT32,
     INT64,
     FLOAT32,
-    FLOAT64,
     NUM_TYPES
 };
 
@@ -118,10 +117,6 @@ void TelemetryJetArduinoSdkDataSource::update() {
                                 dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (float32_t)mpack_expect_float(&reader));
                                 break;
                             }
-                            case ArduinoSdkDataPointType::FLOAT64: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (float64_t)mpack_expect_double(&reader));
-                                break;
-                            }
                         }
 
                         if (mpack_reader_destroy(&reader) == mpack_ok) {
@@ -191,12 +186,9 @@ void TelemetryJetArduinoSdkDataSource::update() {
                     type = (uint8_t)ArduinoSdkDataPointType::INT64;
                     break;
                 }
-                case DataPointType::FLOAT32: {
-                    type = (uint8_t)ArduinoSdkDataPointType::FLOAT32;
-                    break;
-                }
+                case DataPointType::FLOAT32:
                 case DataPointType::FLOAT64: {
-                    type = (uint8_t)ArduinoSdkDataPointType::FLOAT64;
+                    type = (uint8_t)ArduinoSdkDataPointType::FLOAT32;
                     break;
                 }
                 default: {
@@ -225,39 +217,51 @@ void TelemetryJetArduinoSdkDataSource::update() {
             switch (dp->type) {
                 case DataPointType::EVENT: {
                     mpack_write_bool(&writer, true);
+                    break;
                 }
                 case DataPointType::BOOLEAN: {
                     mpack_write_bool(&writer, dp->getBoolean());
+                    break;
                 }
                 case DataPointType::UINT8: {
                     mpack_write_u8(&writer, dp->getUInt8());
+                    break;
                 }
                 case DataPointType::UINT16: {
                     mpack_write_u16(&writer, dp->getUInt16());
+                    break;
                 }
                 case DataPointType::UINT32: {
                     mpack_write_u32(&writer, dp->getUInt32());
+                    break;
                 }
                 case DataPointType::UINT64: {
                     mpack_write_u64(&writer, dp->getUInt64());
+                    break;
                 }
                 case DataPointType::INT8: {
                     mpack_write_i8(&writer, dp->getInt8());
+                    break;
                 }
                 case DataPointType::INT16: {
                     mpack_write_i16(&writer, dp->getInt16());
+                    break;
                 }
                 case DataPointType::INT32: {
                     mpack_write_i32(&writer, dp->getInt32());
+                    break;
                 }
                 case DataPointType::INT64: {
                     mpack_write_i64(&writer, dp->getInt64());
+                    break;
                 }
                 case DataPointType::FLOAT32: {
                     mpack_write_float(&writer, dp->getFloat32());
+                    break;
                 }
                 case DataPointType::FLOAT64: {
-                    mpack_write_double(&writer, dp->getFloat64());
+                    mpack_write_float(&writer, (float32_t)dp->getFloat64());
+                    break;
                 }
                 default: {
                     break;
@@ -297,6 +301,7 @@ void TelemetryJetArduinoSdkDataSource::update() {
 
             // Write buffer
             serial->writeBuffer(txBuffer, packetLength);
+
             numTxPackets++;
         }
         in.clear();
