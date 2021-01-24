@@ -108,3 +108,18 @@ void SerialWrapper::writeLine(std::string line) {
         }
     }
 }
+
+void SerialWrapper::writeByte(uint8_t byte) {
+    uint8_t buf[1];
+    buf[0] = byte;
+    writeBuffer(buf, 1);
+}
+
+void SerialWrapper::writeBuffer(uint8_t* buffer, size_t length) {
+    if (serialPortOpen) {
+        sp_return writeStatus = sp_nonblocking_write(serialPort, buffer, length);
+        if (writeStatus < 0) {
+            SM::getLogger()->warning(fmt::format("Failed to write buffer to serial port [error code = {}]", writeStatus));
+        }
+    }
+}

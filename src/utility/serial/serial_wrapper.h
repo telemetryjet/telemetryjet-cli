@@ -30,6 +30,8 @@ public:
     void close();
     void open();
     void writeLine(std::string line);
+    void writeBuffer(uint8_t* buffer, size_t length);
+    void writeByte(uint8_t byte);
 
     // Getters
               int getNumBytes();

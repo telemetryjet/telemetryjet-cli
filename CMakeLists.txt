@@ -41,6 +41,7 @@ set(SOURCES
         src/utility/csv/csv_parser.cpp
         src/utility/encoding/base64/base64.cpp
         src/utility/encoding/aws-sig-v4/awsv4.cpp
+        src/utility/encoding/cobs/cobs.cpp
         src/services/service_manager.cpp
         src/services/logger/logger.cpp
         src/services/config/config.cpp
@@ -65,6 +66,7 @@ set(SOURCES
         src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp
         src/core/data_sources/bidirectional/websocket/server/websocket_server.cpp
         src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.cpp
+        src/core/data_sources/bidirectional/telemetryjet-arduino-sdk/telemetryjet_arduino_sdk.cpp
 )
 
 # Platform-specific sources
@@ -116,6 +118,7 @@ set(HEADERS_PRIVATE
         src/utility/csv/csv_parser.h
         src/utility/encoding/base64/base64.h
         src/utility/encoding/aws-sig-v4/awsv4.h
+        src/utility/encoding/cobs/cobs.h
         src/services/service_manager.h
         src/services/config/config.h
         src/services/logger/logger.h
@@ -140,6 +143,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/bidirectional/websocket/client/websocket_client.h
         src/core/data_sources/bidirectional/websocket/server/websocket_server.h
         src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.h
+        src/core/data_sources/bidirectional/telemetryjet-arduino-sdk/telemetryjet_arduino_sdk.h
 )
 
 # Put version numbers into header
