@@ -88,17 +88,24 @@ void SerialStreamDataSource::close() {
 }
 
 void SerialStreamDataSource::update() {
-    if (serial->isOpen()) {
-        hasError = false;
-        isOnline = true;
-        serial->pollBlocking();
+    if (isOnline) {
+        if (serial->isOpen()) {
+            hasError = false;
+            isOnline = true;
+            serial->pollBlocking();
+        } else {
+            hasError = true;
+            isOnline = false;
+            serial->close();
+        }
+    } else {
+        if (reconnectTimer->check()) {
+            // Periodically try to open serial port
+            serial->open();
+            // Set error flag if we are unable to connect
+            hasError = !serial->isOpen();
+            isOnline = serial->isOpen();
+        }
     }
 
-    if (reconnectTimer->check() && !serial->isOpen()) {
-        // Periodically try to open serial port
-        serial->open();
-        // Set error flag if we are unable to connect
-        hasError = !serial->isOpen();
-        isOnline = serial->isOpen();
-    }
 }

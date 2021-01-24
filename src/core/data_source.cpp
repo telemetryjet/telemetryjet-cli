@@ -40,6 +40,11 @@ void DataSource::checkOnline() {
 
 // Write to the queue, to be output to all other data sources on the next iteration
 void DataSource::write(std::shared_ptr<DataPoint> dataPoint) {
+    // Skip data point if a filter is enabled and there is no value
+    if (hasInputFilter && inputFilter.count(dataPoint->key) == 0) {
+        return;
+    }
+
     if (inputEnabled) {
         outMutex.lock();
         out.push_back(dataPoint);
@@ -50,6 +55,11 @@ void DataSource::write(std::shared_ptr<DataPoint> dataPoint) {
 // Write to the queue immediately.
 // Useful if the update() function is performing some type of blocking logic
 void DataSource::writeImmediate(std::shared_ptr<DataPoint> dataPoint) {
+    // Skip data point if a filter is enabled and there is no value
+    if (hasInputFilter && inputFilter.count(dataPoint->key) == 0) {
+        return;
+    }
+
     if (inputEnabled) {
         write(dataPoint);
         flushDataPoints();
@@ -83,7 +93,17 @@ void DataSource::startUpdate() {
             if (!hasCache && rateLimitCounter >= rateLimit) {
                 break;
             }
-            in.push_back(_inQueue.front());
+            auto& inDp = _inQueue.front();
+
+            // Skip data point if a filter is enabled and there is no value
+            if (hasOutputFilter) {
+                if (outputFilter.count(inDp->key) > 0) {
+                    in.push_back(inDp);
+                }
+            } else {
+                in.push_back(inDp);
+            }
+
             _inQueue.pop_front();
         }
         _inQueue.clear();
