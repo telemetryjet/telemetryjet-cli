@@ -119,7 +119,7 @@ void TelemetryJetServerDataSource::update() {
             out_message->write(data, size);
             wsConnection->send(out_message, nullptr, 130);
             free(data);
-            SM::getLogger()->info(fmt::format("[{}] Wrote value chunk of {} items, {} bytes", id, numDataPoints, size));
+            //SM::getLogger()->info(fmt::format("[{}] Wrote value chunk of {} items, {} bytes", id, numDataPoints, size));
         }
         in.clear();
     }

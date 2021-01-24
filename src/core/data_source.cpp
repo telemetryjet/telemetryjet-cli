@@ -183,8 +183,9 @@ void DataSource::readCacheValues(int batchSize) {
     } catch (std::exception& e) {
         throw std::runtime_error(fmt::format("[{}] Error getting data from sqlite cache. {}", id, e.what()));
     }
-    SM::getLogger()->info(fmt::format("[{}] Read {} values from cache.", id, in.size()));
+    rateLimitCounter += in.size();
     cacheNumItems -= in.size();
+    SM::getLogger()->info(fmt::format("[{}] Read {} data points from cache. Cache size: {} items", id, in.size(), cacheNumItems));
 }
 
 // Write all values on the input queue into the cache
@@ -217,7 +218,7 @@ void DataSource::writeCacheValues() {
             insertStatement.bind(idx + 2, static_cast<long long>(dp->timestamp));
             insertStatement.bind(idx + 3, static_cast<int>(dp->type));
             insertStatement.bind(idx + 4, dp->toString());
-            idx++;
+            idx += 4;
         }
         try {
             insertStatement.exec();
@@ -225,7 +226,7 @@ void DataSource::writeCacheValues() {
         } catch (std::exception& e) {
             SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to cache data point to SQLite database: {}", id, e.what()));
         }
-        SM::getLogger()->info(fmt::format("[{}] Wrote {} values from cache.", id, numDataPointsWritten));
+        SM::getLogger()->info(fmt::format("[{}] Wrote {} data points to cache. Cache size: {} items", id, numDataPointsWritten, cacheNumItems));
         in.clear();
     }
 }
