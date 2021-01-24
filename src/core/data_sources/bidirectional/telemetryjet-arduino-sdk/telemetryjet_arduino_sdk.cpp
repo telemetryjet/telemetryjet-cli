@@ -83,43 +83,43 @@ void TelemetryJetArduinoSdkDataSource::update() {
                                 break;
                             }
                             case ArduinoSdkDataPointType::UINT8: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u8(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (uint8_t)mpack_expect_u8(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::UINT16: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u16(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (uint16_t)mpack_expect_u16(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::UINT32: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u32(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (uint32_t)mpack_expect_u32(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::UINT64: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u64(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (uint64_t)mpack_expect_u64(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::INT8: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i8(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (int8_t)mpack_expect_i8(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::INT16: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i16(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (int16_t)mpack_expect_i16(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::INT32: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i32(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (int32_t)mpack_expect_i32(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::INT64: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i64(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (int64_t)mpack_expect_i64(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::FLOAT32: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_float(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (float32_t)mpack_expect_float(&reader));
                                 break;
                             }
                             case ArduinoSdkDataPointType::FLOAT64: {
-                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_double(&reader));
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (float64_t)mpack_expect_double(&reader));
                                 break;
                             }
                         }
