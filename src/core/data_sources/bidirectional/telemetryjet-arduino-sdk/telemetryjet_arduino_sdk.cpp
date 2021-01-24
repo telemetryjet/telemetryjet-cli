@@ -15,11 +15,137 @@ enum class ArduinoSdkDataPointType : int {
     INT32,
     INT64,
     FLOAT32,
-    FLOAT64
+    FLOAT64,
+    NUM_TYPES
 };
 
 void TelemetryJetArduinoSdkDataSource::update() {
     SerialStreamDataSource::update();
+
+    if (!serial->getBuffer().empty()) {
+        for (auto& inChar : serial->getBuffer()) {
+            uint8_t inByte = inChar;
+            if (rxIndex >= 32) {
+                rxIndex = 0;
+            }
+            rxBuffer[rxIndex++] = inByte;
+
+            // 0x0 pads the end of a packet
+            // Reset the buffer and parse if possible
+            if (inByte == 0x0) {
+                if (rxIndex > 6) {
+                    // If we see 0x0 and have contents in the buffer, read packet
+                    // Minimum length of a packet is 5 bytes:
+                    // - Checksum (1 byte)
+                    // - Checksum correction byte (1 byte)
+                    // - COBS header byte (1 byte)
+                    // - Key (1+ byte)
+                    // - Type (1+ byte)
+                    // - Value (1+ byte)
+                    // - Packet boundary (0x0, 1 byte)
+
+                    auto checksumValue = (uint8_t)rxBuffer[0];
+                    auto paddingByteValue = (uint8_t)rxBuffer[1];
+
+                    // 1 - Validate checksum
+                    uint8_t checksum = 0;
+                    for (uint16_t bufferIdx = 0; bufferIdx < rxIndex; bufferIdx++) {
+                        checksum += (uint8_t)rxBuffer[bufferIdx];
+                    }
+                    // Get padding/flag byte
+
+                    if (checksum == 0xFF) {
+                        // Expand COBS encoded binary string
+                        // Offset the array by the two checksum bytes that are not contained in the cobs encoding
+                        size_t packetLength = UnStuffData(rxBuffer + 2, rxIndex - 2, tempBuffer);
+
+                        // Process messagepack structure
+                        mpack_reader_t reader;
+                        mpack_reader_init_data(&reader, reinterpret_cast<char*>(tempBuffer), packetLength);
+
+                        uint64_t timestamp = getCurrentMillis();
+                        uint16_t key = mpack_expect_u16(&reader);
+                        uint8_t type = mpack_expect_u8(&reader);
+
+                        // Convert dimension key ID into a string dimension name
+                        std::string keyString;
+                        for (const auto& [_keyStr, _keyInt] : dimensions) {
+                            if (_keyInt == key) {
+                                keyString = _keyStr;
+                                break;
+                            }
+                        }
+                        std::shared_ptr<DataPoint> dataPoint = nullptr;
+
+                        switch ((ArduinoSdkDataPointType)type) {
+                            case ArduinoSdkDataPointType::BOOLEAN: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_bool(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::UINT8: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u8(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::UINT16: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u16(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::UINT32: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u32(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::UINT64: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_u64(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::INT8: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i8(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::INT16: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i16(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::INT32: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i32(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::INT64: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_i64(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::FLOAT32: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_float(&reader));
+                                break;
+                            }
+                            case ArduinoSdkDataPointType::FLOAT64: {
+                                dataPoint = std::make_shared<DataPoint>(keyString, timestamp, (bool_t)mpack_expect_double(&reader));
+                                break;
+                            }
+                        }
+
+                        if (mpack_reader_destroy(&reader) == mpack_ok) {
+                            // Write packet values as a data point
+                            if (type < (uint8_t)ArduinoSdkDataPointType::NUM_TYPES && !keyString.empty() && dataPoint != nullptr) {
+                                write(dataPoint);
+                            }
+                        } else {
+                            SM::getLogger()->warning(fmt::format("[{}] Warning: Dropped packet (Failed to unpack data)", id));
+                            numDroppedRxPackets++;
+                        }
+                    } else {
+                        SM::getLogger()->warning(fmt::format("[{}] Warning: Dropped packet (Invalid checksum)", id));
+                        numDroppedRxPackets++;
+                    }
+                } else {
+                    SM::getLogger()->warning(fmt::format("[{}] Warning: Dropped packet (Packet too short)", id));
+                }
+                rxIndex = 0;
+            }
+        }
+        serial->clearBuffer();
+    }
+
 
     // Outputs: Encode and send packets
     if (isOnline && !in.empty()) {
