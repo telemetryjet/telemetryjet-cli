@@ -54,6 +54,7 @@ set(SOURCES
         src/core/data_sources/output/csv-file-output/csv_file_output.cpp
         src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
         src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.cpp
+        src/core/data_sources/input/csv-file-input/csv_file_input.cpp
         src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
@@ -129,6 +130,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/output/csv-file-output/csv_file_output.h
         src/core/data_sources/output/key-value-file-output/key_value_file_output.h
         src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.h
+        src/core/data_sources/input/csv-file-input/csv_file_input.h
         src/core/data_sources/input/key-value-file-input/key_value_file_input.h
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
