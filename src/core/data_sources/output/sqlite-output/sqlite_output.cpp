@@ -22,6 +22,7 @@ SqliteOutputDataSource::SqliteOutputDataSource(const json& definition)
     db->exec(
         "create table if not exists data (id integer primary key, key text not null, timestamp "
         "text not null, data_type integer not null, value text not null)");
+    inputEnabled = false;
 }
 
 SqliteOutputDataSource::~SqliteOutputDataSource() {

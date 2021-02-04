@@ -1,6 +1,6 @@
 #include "data_point.h"
 
-std::shared_ptr<DataPoint> createDataPointFromString(const string_t& key, uint32_t timestamp, const string_t& stringValue) {
+std::shared_ptr<DataPoint> createDataPointFromString(const string_t& key, uint64_t timestamp, const string_t& stringValue) {
     if (stringValue == "true" || stringValue == "TRUE") {
         return std::make_shared<DataPoint>(key, timestamp, true);
     }

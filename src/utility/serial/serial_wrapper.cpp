@@ -93,3 +93,18 @@ void SerialWrapper::close() {
     serialPortOpen = false;
     SM::getLogger()->debug(fmt::format("Closed serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
 }
+
+void SerialWrapper::writeLine(std::string line) {
+    int bufferLen = line.length() + 1;
+    char buffer[bufferLen];
+    for (int i = 0; i < line.length(); i++) {
+        buffer[i] = line[i];
+    }
+    buffer[bufferLen - 1] = '\n';
+    if (serialPortOpen) {
+        sp_return writeStatus = sp_nonblocking_write(serialPort, buffer, bufferLen);
+        if (writeStatus < 0) {
+            SM::getLogger()->warning(fmt::format("Failed to write line to serial port [error code = {}]", writeStatus));
+        }
+    }
+}

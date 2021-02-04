@@ -19,9 +19,9 @@ void SystemStatsDataSource::computeMemoryAvailable() {
     uint64_t mPhysicalMemoryAvailable = memInfo->ullAvailPhys;
     uint64_t mPhysicalMemoryTotal = memInfo->ullTotalPhys;
     uint64_t mPhysicalMemoryUsed = mPhysicalMemoryTotal - mPhysicalMemoryAvailable;
-    out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.available", id), timestamp, mPhysicalMemoryAvailable));
-    out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.used", id), timestamp, mPhysicalMemoryUsed));
-    out.push_back(std::make_shared<DataPoint>(fmt::format("{}.ram.total", id), timestamp, mPhysicalMemoryTotal));
+    write(std::make_shared<DataPoint>(fmt::format("{}.ram.available", id), timestamp, mPhysicalMemoryAvailable));
+    write(std::make_shared<DataPoint>(fmt::format("{}.ram.used", id), timestamp, mPhysicalMemoryUsed));
+    write(std::make_shared<DataPoint>(fmt::format("{}.ram.total", id), timestamp, mPhysicalMemoryTotal));
 }
 
 
@@ -41,7 +41,7 @@ void SystemStatsDataSource::computeCpuStats() {
         float64_t cpuCurrentProportion = 1.0f - ((totalTicksSinceLastTime > 0) ? ((float)idleTicksSinceLastTime) / totalTicksSinceLastTime : 0);
         cpuPreviousTotalTicks = totalTicks;
         cpuPreviousIdleTicks  = idleTicks;
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.cpu", id), timestamp, cpuCurrentProportion * 100.0));
-        out.push_back(std::make_shared<DataPoint>(fmt::format("{}.cpu.idle", id), timestamp, (1.0 - cpuCurrentProportion) * 100.0));
+        write(std::make_shared<DataPoint>(fmt::format("{}.cpu", id), timestamp, cpuCurrentProportion * 100.0));
+        write(std::make_shared<DataPoint>(fmt::format("{}.cpu.idle", id), timestamp, (1.0 - cpuCurrentProportion) * 100.0));
     }
 }

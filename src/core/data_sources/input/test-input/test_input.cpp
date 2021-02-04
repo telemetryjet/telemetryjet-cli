@@ -19,6 +19,7 @@ TestInputDataSource::TestInputDataSource(const json& definition): DataSource(def
             key = options["key"];
         }
     }
+    outputEnabled = false;
 }
 
 void TestInputDataSource::open() {

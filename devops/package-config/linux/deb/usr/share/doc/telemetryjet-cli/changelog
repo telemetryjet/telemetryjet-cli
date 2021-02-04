@@ -1,5 +1,13 @@
-telemetryjet-cli (0.1.0)
+telemetryjet-cli (0.2.0)
 
-  * Initial Linux release of TelemetryJet CLI. See https://docs.telemetryjet.com/ for help and guides.
+  * Alpha release of TelemetryJet CLI. See https://docs.telemetryjet.com/ for help and guides.
+  * Added console input data source
+  * Added console output data source
+  * Added key-value file and serial stream data sources
+  * Added NMEA 0183 file and serial stream data sources
+  * Added joystick input data source
+  * Added websocket client and server data sources
+  * Added AWS Kinesis data source
+  * Implemented multi-threading: Each data source runs in an independent thread
 
- -- TelemetryJet Team <telemetryjet@gmail.com>  2020-12-01
+ -- TelemetryJet Team <telemetryjet@gmail.com>  2021-01-11

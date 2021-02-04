@@ -14,7 +14,9 @@ private:
     uint64_t cpuPreviousIdleTicks = 0;
     void* windowsMemInfo = nullptr;
 public:
-    SystemStatsDataSource(const json &definition): DataSource(definition) {}
+    SystemStatsDataSource(const json &definition): DataSource(definition) {
+        outputEnabled = false;
+    }
     void open() override;
     void close() override;
     void update() override;
