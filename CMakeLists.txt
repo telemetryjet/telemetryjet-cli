@@ -54,6 +54,7 @@ set(SOURCES
         src/core/data_sources/output/csv-file-output/csv_file_output.cpp
         src/core/data_sources/output/key-value-file-output/key_value_file_output.cpp
         src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.cpp
+        src/core/data_sources/input/csv-file-input/csv_file_input.cpp
         src/core/data_sources/input/key-value-file-input/key_value_file_input.cpp
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.cpp
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.cpp
@@ -64,11 +65,7 @@ set(SOURCES
         src/core/data_sources/input/console-input/console_input.cpp
         src/core/data_sources/bidirectional/websocket/client/websocket_client.cpp
         src/core/data_sources/bidirectional/websocket/server/websocket_server.cpp
-<<<<<<< HEAD
-        src/core/data_sources/input/csv-file-input/csv_file_input.cpp
-=======
         src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.cpp
->>>>>>> fc95850df953eeb8eeda0d3b8444caf60a70cc73
 )
 
 # Platform-specific sources
@@ -133,6 +130,7 @@ set(HEADERS_PRIVATE
         src/core/data_sources/output/csv-file-output/csv_file_output.h
         src/core/data_sources/output/key-value-file-output/key_value_file_output.h
         src/core/data_sources/output/aws-kinesis-firehose/aws_kinesis_firehose.h
+        src/core/data_sources/input/csv-file-input/csv_file_input.h
         src/core/data_sources/input/key-value-file-input/key_value_file_input.h
         src/core/data_sources/input/nmea-0183-file-input/nmea_0183_file_input.h
         src/core/data_sources/input/nmea-0183-stream/nmea_0183_stream.h
@@ -143,12 +141,8 @@ set(HEADERS_PRIVATE
         src/core/data_sources/input/console-input/console_input.h
         src/core/data_sources/bidirectional/websocket/client/websocket_client.h
         src/core/data_sources/bidirectional/websocket/server/websocket_server.h
-<<<<<<< HEAD
-        src/core/data_sources/input/csv-file-input/csv_file_input.h)
-=======
         src/core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.h
 )
->>>>>>> fc95850df953eeb8eeda0d3b8444caf60a70cc73
 
 # Put version numbers into header
 configure_file(src/version.h.in src/version.h)
