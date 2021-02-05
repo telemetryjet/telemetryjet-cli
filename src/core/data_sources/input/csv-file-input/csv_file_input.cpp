@@ -18,8 +18,7 @@ void CsvFileInputDataSource::open() {
 void CsvFileInputDataSource::update() {
     if (inputFile.is_open()) {
         std::string line;
-        int lineCount = 2;
-        while (getline(inputFile, line)) {
+        if (getline(inputFile, line)) {
             std::vector<std::string> values = parseCsvLine(line);
 
             if (values.size() != headers.size()) {
@@ -38,12 +37,12 @@ void CsvFileInputDataSource::update() {
                     write(createDataPointFromString(headers[i], timestamp, values[i]));
                 }
             }
-
             lineCount++;
+        } else {
+            SM::getLogger()->info(fmt::format("[{}] Finished reading from {}", id, filename));
+            state = INACTIVE;
         }
     } else {
         throw std::runtime_error(fmt::format("Input file {} is not open.", filename));
     }
-
-    state = INACTIVE;
 }
