@@ -18,7 +18,7 @@ private:
     int serialPortNumBytes;
     int serialBaudRate;
     std::string serialPortName;
-    sp_port* serialPort;
+    sp_port* serialPort = nullptr;
     std::list<uint8_t> serialPortBuffer;
 public:
     SerialWrapper(std::string portName, int baudRate);
@@ -30,6 +30,8 @@ public:
     void close();
     void open();
     void writeLine(std::string line);
+    void writeBuffer(uint8_t* buffer, size_t length);
+    void writeByte(uint8_t byte);
 
     // Getters
               int getNumBytes();

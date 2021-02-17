@@ -57,6 +57,7 @@ public:
     DataPoint(string_t key, uint64_t timestamp)
         : key(std::move(key))
         , timestamp(timestamp)
+        , value(true)
         , type(DataPointType::EVENT) {
     }
     DataPoint(string_t key, uint64_t timestamp, string_t value)
@@ -171,6 +172,10 @@ public:
 
     std::string toJson() {
         json val = {{"timestamp", timestamp}, {"key", key}, {"value", toString()}};
+        return val.dump() + "\n";
+    }
+    std::string toDebugJson() {
+        json val = {{"timestamp", timestamp}, {"key", key}, {"value", toString()}, {"type", (int)type}};
         return val.dump() + "\n";
     }
 

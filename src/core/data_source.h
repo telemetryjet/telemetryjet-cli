@@ -54,6 +54,12 @@ public:
     std::deque<std::shared_ptr<DataPoint>> in;
     std::deque<std::shared_ptr<DataPoint>> out;
 
+    // Input and output filters
+    std::set<std::string> inputFilter;
+    std::set<std::string> outputFilter;
+    bool hasInputFilter = false;
+    bool hasOutputFilter = false;
+
     // Rate limiting
     // Rate limit imposes a limit on both 1) Number of data points per second 2) Number of data points per iteration
     std::atomic<int> rateLimit = INT_MAX;
@@ -85,6 +91,33 @@ public:
         }
         if (options.contains("rateLimit") && options["rateLimit"].is_number_integer()) {
             rateLimit = options["rateLimit"];
+        }
+
+        if (options.contains("inputFilter")) {
+            if (!options["inputFilter"].is_array()) {
+                throw std::runtime_error(fmt::format("[{}] option 'inputFilter' must be array!", id));
+            } else {
+                hasInputFilter = true;
+                for (auto& filterItem : options["inputFilter"]) {
+                    if (!filterItem.is_string()) {
+                        throw std::runtime_error(fmt::format("[{}] All items in 'inputFilter' array must be of type String!", id));
+                    }
+                    inputFilter.insert(filterItem.get<std::string>());
+                }
+            }
+        }
+        if (options.contains("outputFilter")) {
+            if (!options["outputFilter"].is_array()) {
+                throw std::runtime_error(fmt::format("[{}] option 'outputFilter' must be array!", id));
+            } else {
+                hasOutputFilter = true;
+                for (auto& filterItem : options["outputFilter"]) {
+                    if (!filterItem.is_string()) {
+                        throw std::runtime_error(fmt::format("[{}] All items in 'outputFilter' array must be of type String!", id));
+                    }
+                    outputFilter.insert(filterItem.get<std::string>());
+                }
+            }
         }
 
         json cacheConfig;

@@ -41,6 +41,8 @@ void SerialWrapper::pollBlocking() {
                     serialPortBuffer.push_back(nextBytes[i]);
                     serialPortNumBytes++;
                 }
+            } else {
+                serialPortOpen = false;
             }
         }
     }
@@ -89,7 +91,10 @@ void SerialWrapper::open() {
 }
 
 void SerialWrapper::close() {
-    sp_close(serialPort);
+    if (serialPort != nullptr) {
+        sp_close(serialPort);
+        serialPort = nullptr;
+    }
     serialPortOpen = false;
     SM::getLogger()->debug(fmt::format("Closed serial port [port = {}, rate = {}]", serialPortName, serialBaudRate));
 }
@@ -104,7 +109,24 @@ void SerialWrapper::writeLine(std::string line) {
     if (serialPortOpen) {
         sp_return writeStatus = sp_nonblocking_write(serialPort, buffer, bufferLen);
         if (writeStatus < 0) {
-            SM::getLogger()->warning(fmt::format("Failed to write line to serial port [error code = {}]", writeStatus));
+            //SM::getLogger()->warning(fmt::format("Failed to write line to serial port [error code = {}]", writeStatus));
+            serialPortOpen = false;
+        }
+    }
+}
+
+void SerialWrapper::writeByte(uint8_t byte) {
+    uint8_t buf[1];
+    buf[0] = byte;
+    writeBuffer(buf, 1);
+}
+
+void SerialWrapper::writeBuffer(uint8_t* buffer, size_t length) {
+    if (serialPortOpen) {
+        sp_return writeStatus = sp_nonblocking_write(serialPort, buffer, length);
+        if (writeStatus < 0) {
+            //SM::getLogger()->warning(fmt::format("Failed to write buffer to serial port [error code = {}]", writeStatus));
+            serialPortOpen = false;
         }
     }
 }

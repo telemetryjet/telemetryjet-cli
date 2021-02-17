@@ -15,6 +15,7 @@
 #include <core/data_sources/bidirectional/websocket/client/websocket_client.h>
 #include <core/data_sources/bidirectional/websocket/server/websocket_server.h>
 #include <core/data_sources/bidirectional/telemetryjet-server/telemetryjet_server.h>
+#include <core/data_sources/bidirectional/telemetryjet-arduino-sdk/telemetryjet_arduino_sdk.h>
 #include "network.h"
 #include <boost/lexical_cast.hpp>
 
@@ -55,6 +56,8 @@ Network::Network(const json& definitions, bool errorMode): errorMode(errorMode) 
             dataSources.push_back(std::make_shared<WebsocketServerDataSource>(dataSourceDefinition));
         } else if (type == "telemetryjet-server") {
             dataSources.push_back(std::make_shared<TelemetryJetServerDataSource>(dataSourceDefinition));
+        } else if (type == "telemetryjet-arduino-sdk") {
+            dataSources.push_back(std::make_shared<TelemetryJetArduinoSdkDataSource>(dataSourceDefinition));
         } else if (type == "aws-kinesis-firehose") {
             dataSources.push_back(std::make_shared<AwsKinesisFirehoseDataSource>(dataSourceDefinition));
         } else {
