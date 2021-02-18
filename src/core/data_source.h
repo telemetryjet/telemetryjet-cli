@@ -8,6 +8,7 @@
 #include <SQLiteCpp/Database.h>
 #include <atomic>
 #include <deque>
+#include <set>
 #include <memory>
 #include <mutex>
 #include <nlohmann/json.hpp>
