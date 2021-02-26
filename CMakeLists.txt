@@ -3,7 +3,7 @@ cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0083 NEW)
 cmake_policy(SET CMP0077 NEW)
 
-project(TelemetryJetCli VERSION 0.2.0
+project(TelemetryJetCli VERSION 0.3.0
                         DESCRIPTION "TelemetryJet CLI"
                         LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
