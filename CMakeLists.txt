@@ -221,7 +221,7 @@ FetchContent_MakeAvailable(CLI11)
 FetchContent_Declare(
   fmtlib
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 5.3.0
+  GIT_TAG 7.1.3
 )
 FetchContent_MakeAvailable(fmtlib)
 
@@ -259,7 +259,7 @@ FetchContent_MakeAvailable(SDL2)
 
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.7.3)
+        GIT_TAG v3.9.1)
 
 FetchContent_GetProperties(json)
 if(NOT json_POPULATED)
