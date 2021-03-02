@@ -10,6 +10,7 @@ void CsvFileInputDataSource::open() {
         getline(inputFile, line);
         headers = parseCsvLine(line);
         hasTimestamp = (headers[0] == "timestamp");
+        SM::getLogger()->info(fmt::format("[{}] CSV header length: {}", id, headers.size()));
     } else {
         throw std::runtime_error(fmt::format("Input file {} is not open.", filename));
     }
@@ -35,11 +36,12 @@ void CsvFileInputDataSource::update() {
                 // construct data points and add to the output queue
                 for (int i = startIdx; i < headers.size(); i++) {
                     write(createDataPointFromString(headers[i], timestamp, values[i]));
+                    cellCount++;
                 }
             }
             lineCount++;
         } else {
-            SM::getLogger()->info(fmt::format("[{}] Finished reading from {}", id, filename));
+            SM::getLogger()->info(fmt::format("[{}] Finished reading {} lines, {} cells from {}", id, lineCount, cellCount, filename));
             state = INACTIVE;
         }
     } else {

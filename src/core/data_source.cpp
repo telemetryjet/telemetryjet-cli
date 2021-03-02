@@ -247,7 +247,6 @@ void DataSource::writeCacheValues() {
             SM::getLogger()->warning(fmt::format("[{}] Warning: Failed to cache data point to SQLite database: {}", id, e.what()));
         }
         SM::getLogger()->info(fmt::format("[{}] Wrote {} data points to cache. Cache size: {} items", id, numDataPointsWritten, cacheNumItems));
-        in.clear();
     }
 }
 

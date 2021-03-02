@@ -8,6 +8,7 @@ private:
     std::vector<std::string> headers;
     bool hasTimestamp;
     int lineCount = 0;
+    int cellCount = 0;
 public:
     CsvFileInputDataSource(const json& definition) : FileInputDataSource(definition) {}
     void open() override;
