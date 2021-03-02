@@ -202,9 +202,9 @@ void Network::propagateDataPoints(std::shared_ptr<DataSource> dataSourceOut) {
     dataSourceOut->outMutex.lock();
     if (!dataSourceOut->out.empty()) {
         // Add prefix ID to all data points
-        for (auto& dataPoint : dataSourceOut->out) {
-            dataPoint->key = fmt::format("{}.{}", dataSourceOut->id, dataPoint->key);
-        }
+        //for (auto& dataPoint : dataSourceOut->out) {
+        //    dataPoint->key = fmt::format("{}.{}", dataSourceOut->id, dataPoint->key);
+        //}
 
         if (!interrupted) {
             for (auto& dataSourceIn : dataSources) {

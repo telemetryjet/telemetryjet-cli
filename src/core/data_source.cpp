@@ -178,15 +178,73 @@ void DataSource::readCacheValues(int batchSize) {
 
     const std::lock_guard<std::mutex> lock(sqliteCacheMutex);
     try {
-        SQLite::Statement query(*sqliteCache,fmt::format("select * from data order by timestamp asc limit {}", batchSize));
+        SQLite::Statement query(*sqliteCache,fmt::format("select id, key, timestamp, data_type, value from data order by timestamp asc limit {}", batchSize));
         std::vector<uint64_t> idList;
         while (query.executeStep()) {
             uint64_t id = query.getColumn(0).getInt64();
-            std::string key = query.getColumn(1);
+            std::string key = query.getColumn(1).getString();
             uint64_t timestamp = query.getColumn(2).getInt64();
             uint64_t dataType = query.getColumn(3).getInt64();
-            std::string value = query.getColumn(4);
-            in.push_back(createDataPointFromString(key, timestamp, value));
+
+            switch (dataType) {
+                case (uint64_t)DataPointType::EVENT: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp));
+                    break;
+                }
+                case (uint64_t)DataPointType::STRING: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<string_t>(query.getColumn(4).getString())));
+                    break;
+                }
+                case (uint64_t)DataPointType::BOOLEAN: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<bool_t>(query.getColumn(4).getInt())));
+                    break;
+                }
+                case (uint64_t)DataPointType::UINT8: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<uint8_t>(query.getColumn(4).getUInt())));
+                    break;
+                }
+                case (uint64_t)DataPointType::UINT16: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<uint64_t>(query.getColumn(4).getUInt())));
+                    break;
+                }
+                case (uint64_t)DataPointType::UINT32: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<uint32_t>(query.getColumn(4).getUInt())));
+                    break;
+                }
+                case (uint64_t)DataPointType::UINT64: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<uint16_t>(query.getColumn(4).getInt64())));
+                    break;
+                }
+                case (uint64_t)DataPointType::INT8: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<int8_t>(query.getColumn(4).getInt64())));
+                    break;
+                }
+                case (uint64_t)DataPointType::INT16: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<int16_t>(query.getColumn(4).getInt64())));
+                    break;
+                }
+                case (uint64_t)DataPointType::INT32: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<int32_t>(query.getColumn(4).getInt64())));
+                    break;
+                }
+                case (uint64_t)DataPointType::INT64: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<int64_t>(query.getColumn(4).getInt64())));
+                    break;
+                }
+                case (uint64_t)DataPointType::FLOAT32: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<float32_t>(query.getColumn(4).getDouble())));
+                    break;
+                }
+                case (uint64_t)DataPointType::FLOAT64: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<float64_t>(query.getColumn(4).getDouble())));
+                    break;
+                }
+                default: {
+                    in.push_back(std::make_shared<DataPoint>(key, timestamp, static_cast<string_t>(query.getColumn(4).getString())));
+                    break;
+                }
+            }
+
             idList.push_back(id);
         }
         // Delete rows we just selected
@@ -237,7 +295,66 @@ void DataSource::writeCacheValues() {
             insertStatement.bind(idx + 1, dp->key);
             insertStatement.bind(idx + 2, static_cast<long long>(dp->timestamp));
             insertStatement.bind(idx + 3, static_cast<int>(dp->type));
-            insertStatement.bind(idx + 4, dp->toString());
+
+            switch (dp->type) {
+                case DataPointType::EVENT: {
+                    insertStatement.bind(idx + 4, true);
+                    break;
+                }
+                case DataPointType::STRING: {
+                    insertStatement.bind(idx + 4, dp->getString());
+                    break;
+                }
+                case DataPointType::BOOLEAN: {
+                    insertStatement.bind(idx + 4, dp->getBoolean());
+                    break;
+                }
+                case DataPointType::UINT8: {
+                    insertStatement.bind(idx + 4, dp->getUInt8());
+                    break;
+                }
+                case DataPointType::UINT16: {
+                    insertStatement.bind(idx + 4, dp->getUInt16());
+                    break;
+                }
+                case DataPointType::UINT32: {
+                    insertStatement.bind(idx + 4, dp->getUInt32());
+                    break;
+                }
+                case DataPointType::UINT64: {
+                    insertStatement.bind(idx + 4, (int64_t)dp->getUInt64());
+                    break;
+                }
+                case DataPointType::INT8: {
+                    insertStatement.bind(idx + 4, dp->getInt8());
+                    break;
+                }
+                case DataPointType::INT16: {
+                    insertStatement.bind(idx + 4, dp->getInt16());
+                    break;
+                }
+                case DataPointType::INT32: {
+                    insertStatement.bind(idx + 4, dp->getInt32());
+                    break;
+                }
+                case DataPointType::INT64: {
+                    insertStatement.bind(idx + 4, dp->getInt64());
+                    break;
+                }
+                case DataPointType::FLOAT32: {
+                    insertStatement.bind(idx + 4, dp->getFloat32());
+                    break;
+                }
+                case DataPointType::FLOAT64: {
+                    insertStatement.bind(idx + 4, dp->getFloat64());
+                    break;
+                }
+                default: {
+                    insertStatement.bind(idx + 4, dp->toString());
+                    break;
+                }
+            }
+
             idx += 4;
         }
         try {
