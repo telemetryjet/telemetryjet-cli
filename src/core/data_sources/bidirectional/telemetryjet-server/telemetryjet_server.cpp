@@ -105,11 +105,79 @@ void TelemetryJetServerDataSource::update() {
                 mpack_write_cstr(&writer, "_k");
                 mpack_write_cstr(&writer, dp->key.c_str());
                 mpack_write_cstr(&writer, "_vs");
-                mpack_write_cstr(&writer, dp->toString().c_str());
+
+                if (dp->isStringType()) {
+                    mpack_write_cstr(&writer, dp->toString().c_str());
+                } else {
+                    mpack_write_nil(&writer);
+                }
+
                 mpack_write_cstr(&writer, "_vd");
-                mpack_write_nil(&writer);
+
+                if (dp->isDecimalType()) {
+                    switch (dp->type) {
+                        case DataPointType::FLOAT32: {
+                            mpack_write_float(&writer, dp->getFloat32());
+                            break;
+                        }
+                        case DataPointType::FLOAT64: {
+                            mpack_write_float(&writer, dp->getFloat64());
+                            break;
+                        }
+                        default: {
+                            mpack_write_nil(&writer);
+                            break;
+                        }
+                    }
+                } else {
+                    mpack_write_nil(&writer);
+                }
+
                 mpack_write_cstr(&writer, "_vi");
-                mpack_write_nil(&writer);
+
+                if (dp->isIntegerType()) {
+                    switch (dp->type) {
+                        case DataPointType::UINT8: {
+                            mpack_write_u8(&writer, dp->getUInt8());
+                            break;
+                        }
+                        case DataPointType::UINT16: {
+                            mpack_write_u16(&writer, dp->getUInt16());
+                            break;
+                        }
+                        case DataPointType::UINT32: {
+                            mpack_write_u32(&writer, dp->getUInt32());
+                            break;
+                        }
+                        case DataPointType::UINT64: {
+                            mpack_write_u64(&writer, dp->getUInt64());
+                            break;
+                        }
+                        case DataPointType::INT8: {
+                            mpack_write_i8(&writer, dp->getInt8());
+                            break;
+                        }
+                        case DataPointType::INT16: {
+                            mpack_write_i16(&writer, dp->getInt16());
+                            break;
+                        }
+                        case DataPointType::INT32: {
+                            mpack_write_i32(&writer, dp->getInt32());
+                            break;
+                        }
+                        case DataPointType::INT64: {
+                            mpack_write_i64(&writer, dp->getInt64());
+                            break;
+                        }
+                        default: {
+                            mpack_write_nil(&writer);
+                            break;
+                        }
+                    }
+                } else {
+                    mpack_write_nil(&writer);
+                }
+
                 mpack_finish_map(&writer);
             }
             mpack_finish_array(&writer);

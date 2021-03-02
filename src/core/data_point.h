@@ -179,6 +179,49 @@ public:
         return val.dump() + "\n";
     }
 
+    bool isStringType() {
+        switch (type) {
+            case DataPointType::EVENT:
+            case DataPointType::STRING:
+            case DataPointType::BOOLEAN: {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+    }
+
+    bool isIntegerType() {
+        switch (type) {
+            case DataPointType::UINT8:
+            case DataPointType::UINT16:
+            case DataPointType::UINT32:
+            case DataPointType::UINT64:
+            case DataPointType::INT8:
+            case DataPointType::INT16:
+            case DataPointType::INT32:
+            case DataPointType::INT64: {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+    }
+
+    bool isDecimalType() {
+        switch (type) {
+            case DataPointType::FLOAT32:
+            case DataPointType::FLOAT64: {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+    }
+
     std::string toString() {
         switch (type) {
             case DataPointType::EVENT: {
