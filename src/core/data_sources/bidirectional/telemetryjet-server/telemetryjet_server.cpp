@@ -92,27 +92,20 @@ void TelemetryJetServerDataSource::update() {
             mpack_writer_init_growable(&writer, &data, &size);
 
             uint64_t numDataPoints = std::min((uint64_t)in.size(), (uint64_t)10);
-            mpack_start_array(&writer, numDataPoints);
+            mpack_start_array(&writer, numDataPoints * 6);
 
             for (int i = 0; i < numDataPoints; i++) {
                 auto &dp = in.front();
                 in.pop_front();
-                mpack_start_map(&writer, 2);
-                mpack_write_cstr(&writer, "_ak");
                 mpack_write_cstr(&writer, apiKey.c_str());
-                mpack_write_cstr(&writer, "_ts");
                 mpack_write_i64(&writer, dp->timestamp);
-                mpack_write_cstr(&writer, "_k");
                 mpack_write_cstr(&writer, dp->key.c_str());
-                mpack_write_cstr(&writer, "_vs");
 
                 if (dp->isStringType()) {
                     mpack_write_cstr(&writer, dp->toString().c_str());
                 } else {
                     mpack_write_nil(&writer);
                 }
-
-                mpack_write_cstr(&writer, "_vd");
 
                 if (dp->isDecimalType()) {
                     switch (dp->type) {
@@ -132,8 +125,6 @@ void TelemetryJetServerDataSource::update() {
                 } else {
                     mpack_write_nil(&writer);
                 }
-
-                mpack_write_cstr(&writer, "_vi");
 
                 if (dp->isIntegerType()) {
                     switch (dp->type) {
@@ -177,8 +168,6 @@ void TelemetryJetServerDataSource::update() {
                 } else {
                     mpack_write_nil(&writer);
                 }
-
-                mpack_finish_map(&writer);
             }
             mpack_finish_array(&writer);
             mpack_writer_destroy(&writer);
