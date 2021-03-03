@@ -99,7 +99,7 @@ void TelemetryJetServerDataSource::update() {
                 in.pop_front();
                 mpack_write_utf8_cstr(&writer, apiKey.c_str());
                 mpack_write_i64(&writer, dp->timestamp);
-                mpack_write_utf8_cstr(&writer, (dp->key.c_str());
+                mpack_write_utf8_cstr(&writer, dp->key.c_str());
 
                 if (dp->isStringType()) {
                     mpack_write_utf8_cstr(&writer, fmt::format("{}", dp->toString()).c_str());
