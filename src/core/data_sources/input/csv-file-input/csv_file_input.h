@@ -9,8 +9,16 @@ private:
     bool hasTimestamp;
     int lineCount = 0;
     int cellCount = 0;
+    bool firstLineIsHeader = true;
+    std::string separator = ",";
+    std::string timestampColumnName = "timestamp";
+    bool hasRelativeTimestamp = false;
+    uint64_t startTimestamp;
+    std::string timestampUnits = "milliseconds";
+
+    void parseCsvSpecificOptions(const json& definition);
 public:
-    CsvFileInputDataSource(const json& definition) : FileInputDataSource(definition) {}
+    explicit CsvFileInputDataSource(const json& definition);
     void open() override;
     void update() override;
 };
