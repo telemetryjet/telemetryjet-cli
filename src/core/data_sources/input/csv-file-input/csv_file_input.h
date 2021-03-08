@@ -5,16 +5,17 @@
 
 class CsvFileInputDataSource : public FileInputDataSource {
 private:
+    bool isFirstLineHeader = true;
     std::vector<std::string> headers;
-    bool hasTimestamp;
+    std::string separator = ",";
+    bool hasTimestamp = false;
+    bool hasRelativeTimestamp = false;
+    std::string timestampColumnName = "timestamp";
+    int timestampColumn = 0;
+    std::string timestampUnits = "milliseconds";
+    uint64_t startTimestamp = 0;
     int lineCount = 0;
     int cellCount = 0;
-    bool firstLineIsHeader = true;
-    std::string separator = ",";
-    std::string timestampColumnName = "timestamp";
-    bool hasRelativeTimestamp = false;
-    uint64_t startTimestamp;
-    std::string timestampUnits = "milliseconds";
 
     void parseCsvSpecificOptions(const json& definition);
 public:

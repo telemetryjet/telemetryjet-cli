@@ -9,15 +9,24 @@ CsvFileInputDataSource::CsvFileInputDataSource(const json& definition) : FileInp
 void CsvFileInputDataSource::open() {
     FileInputDataSource::open();
 
-    // read in headers
-    if (inputFile.is_open()) {
-        std::string line;
-        getline(inputFile, line);
-        headers = parseCsvLine(line);
-        hasTimestamp = (headers[0] == "timestamp");
-        SM::getLogger()->info(fmt::format("[{}] CSV header length: {}", id, headers.size()));
-    } else {
-        throw std::runtime_error(fmt::format("Input file {} is not open.", filename));
+    // if headers have not been overridden
+    if (headers.empty() && isFirstLineHeader) {
+        if (inputFile.is_open()) {
+            std::string line;
+            getline(inputFile, line);
+            headers = parseCsvLine(line, separator);
+            SM::getLogger()->info(fmt::format("[{}] CSV header length: {}", id, headers.size()));
+        } else {
+            throw std::runtime_error(fmt::format("Input file {} is not open.", filename));
+        }
+    }
+
+    for (int i = 0; i < headers.size(); i++) {
+        const auto& header = headers[i];
+        if(header == timestampColumnName) {
+            timestampColumn = i;
+            hasTimestamp = true;
+        }
     }
 }
 
@@ -25,7 +34,7 @@ void CsvFileInputDataSource::update() {
     if (inputFile.is_open()) {
         std::string line;
         if (getline(inputFile, line)) {
-            std::vector<std::string> values = parseCsvLine(line);
+            std::vector<std::string> values = parseCsvLine(line, separator);
 
             if (values.size() != headers.size()) {
                 SM::getLogger()->warning(fmt::format(
@@ -35,11 +44,15 @@ void CsvFileInputDataSource::update() {
                     headers.size(),
                     values.size()));
             } else {
-                uint64_t timestamp = hasTimestamp ? std::stoull(values[0]) : 0;
-                int startIdx = hasTimestamp ? 1 : 0;
+                uint64_t timestamp = hasTimestamp ? std::stoull(values[timestampColumn]) : 0;
+                // TODO: convert to absolute timestamp in proper units
 
                 // construct data points and add to the output queue
-                for (int i = startIdx; i < headers.size(); i++) {
+                for (int i = 0; i < headers.size(); i++) {
+                    if (i == timestampColumn) {
+                        continue;
+                    }
+
                     write(createDataPointFromString(headers[i], timestamp, values[i]));
                     cellCount++;
                 }
@@ -60,7 +73,7 @@ void CsvFileInputDataSource::parseCsvSpecificOptions(const json& definition) {
         if (!options[firstLineIsHeaderKey].is_boolean()) {
             throw std::runtime_error(fmt::format("[{}] data source type '{}' expects boolean for {}", id, type, firstLineIsHeaderKey));
         }
-        firstLineIsHeader = options[firstLineIsHeaderKey];
+        isFirstLineHeader = options[firstLineIsHeaderKey];
     }
 
     const std::string separatorKey = "separator";
@@ -68,6 +81,7 @@ void CsvFileInputDataSource::parseCsvSpecificOptions(const json& definition) {
         if (!options[separatorKey].is_string()) {
             throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, separatorKey));
         }
+        // TODO: validate sanitized separator
         separator = options[separatorKey];
     }
 
@@ -85,6 +99,7 @@ void CsvFileInputDataSource::parseCsvSpecificOptions(const json& definition) {
             throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, headerStringKey));
         }
         const std::string csvHeaderString = options[headerStringKey];
+        headers = parseCsvLine(csvHeaderString, separator);
     }
 
     const std::string timestampTypeKey = "timestampType";
