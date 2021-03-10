@@ -68,77 +68,69 @@ void CsvFileInputDataSource::update() {
 }
 
 void CsvFileInputDataSource::parseCsvSpecificOptions(const json& definition) {
-    const std::string firstLineIsHeaderKey = "firstLineIsHeader";
-    if (options.contains(firstLineIsHeaderKey)) {
-        if (!options[firstLineIsHeaderKey].is_boolean()) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects boolean for {}", id, type, firstLineIsHeaderKey));
+    if (options.contains(FIRST_LINE_IS_HEADER_KEY)) {
+        if (!options[FIRST_LINE_IS_HEADER_KEY].is_boolean()) {
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects boolean for {}", id, type, FIRST_LINE_IS_HEADER_KEY));
         }
-        isFirstLineHeader = options[firstLineIsHeaderKey];
+        isFirstLineHeader = options[FIRST_LINE_IS_HEADER_KEY];
     }
 
-    const std::string separatorKey = "separator";
-    if (options.contains(separatorKey)) {
-        if (!options[separatorKey].is_string()) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, separatorKey));
+    if (options.contains(SEPARATOR_KEY)) {
+        if (!options[SEPARATOR_KEY].is_string()) {
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, SEPARATOR_KEY));
         }
         // TODO: validate sanitized separator
-        separator = options[separatorKey];
+        separator = options[SEPARATOR_KEY];
     }
 
-    const std::string timestampColumnNameKey = "timestampColumnName";
-    if (options.contains(timestampColumnNameKey)) {
-        if (!options[timestampColumnNameKey].is_string()) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, timestampColumnNameKey));
+    if (options.contains(TIMESTAMP_COLUMN_NAME_KEY)) {
+        if (!options[TIMESTAMP_COLUMN_NAME_KEY].is_string()) {
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, TIMESTAMP_COLUMN_NAME_KEY));
         }
-        timestampColumnName = options[timestampColumnNameKey];
+        timestampColumnName = options[TIMESTAMP_COLUMN_NAME_KEY];
     }
 
-    const std::string headerStringKey = "headers";
-    if (options.contains(headerStringKey)) {
-        if (!options[headerStringKey].is_string()) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, headerStringKey));
+    if (options.contains(HEADERS_KEY)) {
+        if (!options[HEADERS_KEY].is_string()) {
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {}", id, type, HEADERS_KEY));
         }
-        const std::string csvHeaderString = options[headerStringKey];
+        const std::string csvHeaderString = options[HEADERS_KEY];
         headers = parseCsvLine(csvHeaderString, separator);
     }
 
-    const std::string timestampTypeKey = "timestampType";
-    if (options.contains(timestampTypeKey)) {
+    if (options.contains(TIMESTAMP_TYPE_KEY)) {
         bool isValid = false;
-        if (options[timestampTypeKey].is_string()) {
-            const std::string timestampType = boost::algorithm::to_lower_copy(static_cast<std::string>(options[timestampTypeKey]));
-            // probably want to save these as constants somewhere instead of comparing strings
-            hasRelativeTimestamp = (timestampType == "relative");
-            isValid = (timestampType == "absolute" || timestampType == "relative");
+        if (options[TIMESTAMP_TYPE_KEY].is_string()) {
+            TimestampType timestampType = convertTimestampType(options[TIMESTAMP_TYPE_KEY]);
+            if (timestampType == TimestampType::RELATIVE) {
+                hasRelativeTimestamp = true;
+            }
+            isValid = (timestampType != TimestampType::UNKNOWN);
         }
 
         if (!isValid) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {} with value 'absolute' or 'relative'.", id, type, timestampTypeKey));
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {} with value 'absolute' or 'relative'.", id, type, TIMESTAMP_TYPE_KEY));
         }
     }
 
     if (hasRelativeTimestamp) {
-        const std::string startTimestampKey = "startTimestamp";
-        if (options.contains(startTimestampKey)) {
-            if (!options[startTimestampKey].is_number_integer()) {
-                throw std::runtime_error(fmt::format("[{}] data source type '{}' expects integer for {}", id, type, startTimestampKey));
+        if (options.contains(START_TIMESTAMP_KEY)) {
+            if (!options[START_TIMESTAMP_KEY].is_number_integer()) {
+                throw std::runtime_error(fmt::format("[{}] data source type '{}' expects integer for {}", id, type, START_TIMESTAMP_KEY));
             }
-            startTimestamp = options[startTimestampKey];
+            startTimestamp = options[START_TIMESTAMP_KEY];
         }
     }
 
-    const std::string timestampUnitsKey = "timestampUnits";
-    if (options.contains(timestampUnitsKey)) {
+    if (options.contains(TIMESTAMP_UNITS_KEY)) {
         bool isValid = false;
-        if (options[timestampUnitsKey].is_string()) {
-            timestampUnits = boost::algorithm::to_lower_copy(static_cast<std::string>(options[timestampUnitsKey]));
-            // probably want to save these as constants somewhere instead of comparing strings
-            isValid = (timestampUnits == "seconds" || timestampUnits == "milliseconds" || timestampUnits == "microseconds");
+        if (options[TIMESTAMP_UNITS_KEY].is_string()) {
+            timestampUnits = convertTimestampUnits(options[TIMESTAMP_UNITS_KEY]);
+            isValid = (timestampUnits != TimestampUnits::UNKNOWN);
         }
 
         if (!isValid) {
-            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {} with value 'seconds', 'milliseconds' or 'microseconds'.", id, type, timestampUnitsKey));
+            throw std::runtime_error(fmt::format("[{}] data source type '{}' expects string for {} with value 'seconds', 'milliseconds' or 'microseconds'.", id, type, TIMESTAMP_UNITS_KEY));
         }
     }
 }
-

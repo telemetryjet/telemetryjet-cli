@@ -5,6 +5,20 @@
 #include <iostream>
 #include <chrono>
 #include <locale>
+#include <boost/algorithm/string.hpp>
+
+enum class TimestampUnits : int {
+    UNKNOWN,
+    MICROSECONDS,
+    MILLISECONDS,
+    SECONDS
+};
+
+enum class TimestampType : int {
+    UNKNOWN,
+    RELATIVE,
+    ABSOLUTE
+};
 
 /*
  * Gets a timestamp as milliseconds since epoch.
@@ -43,5 +57,26 @@ inline std::pair<std::string, std::string> getAwsTimestamps() {
     return std::make_pair(str1, str2);
 }
 
+inline TimestampUnits convertTimestampUnits(const std::string& units) {
+    auto unitString = boost::algorithm::to_lower_copy(units);
+    if (unitString == "microseconds") {
+        return TimestampUnits::MICROSECONDS;
+    } else if (unitString == "milliseconds") {
+        return TimestampUnits::MILLISECONDS;
+    } else if (unitString == "seconds") {
+        return TimestampUnits::SECONDS;
+    }
+    return TimestampUnits::UNKNOWN;
+}
+
+inline TimestampType convertTimestampType(const std::string& timestampType) {
+    auto type = boost::algorithm::to_lower_copy(timestampType);
+    if (type == "relative") {
+        return TimestampType::RELATIVE;
+    } else if (type == "absolute") {
+        return TimestampType::ABSOLUTE;
+    }
+    return TimestampType::UNKNOWN;
+}
 
 #endif
